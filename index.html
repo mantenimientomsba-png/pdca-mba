@@ -110,7 +110,7 @@
       height: 28px;
     }
 
-    /* NOMBRE DEL PDCA SITUADO EXACTAMENTE EN EL CUADRO DESTACADO */
+    /* NOMBRE DEL PDCA UBICADO EXACTAMENTE DEBAJO DE "PDCA" */
     .celda-subtitulo-plan {
       text-align: center;
       font-weight: bold;
@@ -143,7 +143,7 @@
       color: #000;
     }
 
-    /* TABLA 5W2H - 8 COLUMNAS EXACTAS A WORD */
+    /* TABLA 5W2H - 8 COLUMNAS EXACTAS */
     .tabla-contenedor-inner {
       width: 100%;
       margin-top: 3px;
@@ -337,10 +337,10 @@
           </form>
 
           <div class="alert alert-light border small text-muted text-start mt-4 mb-0 py-2" style="font-size: 8pt;">
-            <strong>Legajos habilitados:</strong><br>
-            • <strong>9001</strong> (Gerente - clave: 1234)<br>
-            • <strong>3110</strong> (Revisor - clave: 1234)<br>
-            • <strong>2045</strong> (Monitor - clave: 1234)
+            <strong>Legajos y Roles habilitados:</strong><br>
+            • <strong>9001</strong> (Gerente Mantenimiento - clave: 1234) ➔ <em>Aprueba y asigna N° oficial</em><br>
+            • <strong>3110</strong> (Favio Graciette / Revisor - clave: 1234) ➔ <em>Valida y revisa</em><br>
+            • <strong>2045</strong> (Omar Funes / Monitor - clave: 1234) ➔ <em>Carga y seguimiento</em>
           </div>
         </div>
       </div>
@@ -368,7 +368,7 @@
   <div class="row g-2 g-md-3 mb-4">
     <div class="col-6 col-md-3">
       <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-primary">
-        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Planes Activos</span>
+        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Total Planes</span>
         <div class="d-flex justify-content-between align-items-center mt-1">
           <span class="kpi-numero text-dark" id="kpiTotalPlanes">0</span>
         </div>
@@ -376,26 +376,25 @@
     </div>
     <div class="col-6 col-md-3">
       <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-warning">
-        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">En Proceso</span>
+        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">En Borrador / Revisión</span>
         <div class="d-flex justify-content-between align-items-center mt-1">
           <span class="kpi-numero text-warning" id="kpiEnProceso">0</span>
         </div>
       </div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-success">
-        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Finalizados</span>
+      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-info">
+        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Aprobados (En Curso)</span>
         <div class="d-flex justify-content-between align-items-center mt-1">
-          <span class="kpi-numero text-success" id="kpiFinalizados">0</span>
+          <span class="kpi-numero text-info" id="kpiAprobados">0</span>
         </div>
       </div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-info">
-        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Mis Tareas</span>
+      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-success">
+        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Finalizados (Dead Line)</span>
         <div class="d-flex justify-content-between align-items-center mt-1">
-          <span class="kpi-numero text-info" id="kpiMisTareas">0</span>
-          <span class="badge bg-info-subtle text-info small" style="font-size: 7pt;" id="kpiMisTareasDetalle">0 comp.</span>
+          <span class="kpi-numero text-success" id="kpiFinalizados">0</span>
         </div>
       </div>
     </div>
@@ -404,23 +403,24 @@
   <div class="card shadow-sm border-0 rounded-3 mb-4">
     <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
       <h6 class="fw-bold m-0 text-dark">Planes Registrados</h6>
-      <select class="form-select form-select-sm" id="filtroEstadoDashboard" style="width: 170px;" onchange="renderizarTablaDashboard()">
+      <select class="form-select form-select-sm" id="filtroEstadoDashboard" style="width: 180px;" onchange="renderizarTablaDashboard()">
         <option value="TODOS">Todos los estados</option>
         <option value="BORRADOR">Borradores</option>
         <option value="REVISADO">Revisados</option>
-        <option value="FINALIZADO">Finalizados</option>
+        <option value="APROBADO">Aprobados (En Curso)</option>
+        <option value="FINALIZADO">Finalizados (Dead Line)</option>
       </select>
     </div>
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0" style="font-size: 9pt;">
         <thead class="table-light">
           <tr>
-            <th>PDCA</th>
-            <th>Nombre / Objeto del Plan</th>
-            <th class="d-none d-md-table-cell">Responsable</th>
-            <th class="text-center">PDF Cloud</th>
-            <th class="text-center">Estado</th>
-            <th class="text-end">Acción</th>
+            <th style="width: 14%;">PDCA</th>
+            <th style="width: 34%;">Nombre / Objeto del Plan</th>
+            <th style="width: 18%;" class="d-none d-md-table-cell">Responsable / Plazo</th>
+            <th style="width: 11%;" class="text-center">PDF Cloud</th>
+            <th style="width: 13%;" class="text-center">Estado</th>
+            <th style="width: 10%;" class="text-end">Acción</th>
           </tr>
         </thead>
         <tbody id="tablaDashboardBody"></tbody>
@@ -438,13 +438,16 @@
       <div class="d-flex align-items-center gap-2">
         <button class="btn btn-sm btn-outline-dark fw-semibold" onclick="cambiarVista('dashboard')">⬅ Volver</button>
         <select id="pdcaSelect" class="form-select form-select-sm" style="max-width: 280px;" onchange="seleccionarPDCA(this.value)"></select>
-        <button class="btn btn-sm btn-outline-danger fw-semibold" onclick="eliminarPDCAActual()" title="Eliminar este PDCA">🗑️ Borrar Plan</button>
+        <button class="btn btn-sm btn-outline-danger fw-semibold" onclick="eliminarPDCAActual()" title="Eliminar definitivamente este PDCA">🗑️ Borrar Plan</button>
       </div>
       <div class="d-flex align-items-center gap-1 flex-wrap">
         <button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirModalAuditoriaIA('plan')">✨ Auditar IA</button>
         <span id="badgeEstadoPantalla" class="badge bg-secondary">BORRADOR</span>
-        <button class="btn btn-sm btn-outline-warning" id="btnRevisarPlan" onclick="registrarRevisionPlan()">Revisar</button>
-        <button class="btn btn-sm btn-success fw-semibold" id="btnFinalizarPlan" onclick="finalizarPlanPDCA()">✔ Finalizar Plan</button>
+        
+        <!-- BOTONES DE FLUJO Y JERARQUÍA -->
+        <button class="btn btn-sm btn-outline-warning fw-semibold" id="btnRevisarPlan" onclick="registrarRevisionPlan()">📝 Revisar Plan</button>
+        <button class="btn btn-sm btn-success fw-semibold" id="btnAprobarPlan" onclick="aprobarPlanGerencia()">✔ Aprobar y Asignar N° (Gerente)</button>
+        <button class="btn btn-sm btn-outline-success fw-semibold d-none" id="btnMarcarFinalizado" onclick="forzarFinalizacionPlan()">🏁 Finalizar Plan</button>
         <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanGerente()">🔓 Reabrir Edición</button>
         
         <button class="btn btn-sm btn-primary fw-semibold" onclick="guardarPDFenBaseDeDatos()" title="Archiva el PDF en Cloud Firestore">
@@ -465,7 +468,7 @@
 
   <div class="container-fluid px-1 px-md-3 py-3">
     <div id="bannerBloqueo" class="alert alert-danger py-2 mb-2 no-print d-none" style="max-width: 210mm; margin: auto; font-size: 8.5pt;">
-      <strong>🔒 PLAN FINALIZADO Y BLOQUEADO:</strong> Aprobado formalmente por Gerencia.
+      <strong>🔒 PLAN OFICIAL BLOQUEADO:</strong> Aprobado y formalizado por Gerencia para asegurar trazabilidad.
     </div>
 
     <!-- CONTENEDOR DE HOJAS A4 -->
@@ -601,7 +604,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header bg-dark text-white py-2">
-        <h6 class="modal-title m-0 fw-bold">Nuevo Plan PDCA</h6>
+        <h6 class="modal-title m-0 fw-bold">Nuevo Plan PDCA (Borrador)</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <form id="formNuevoPDCA" onsubmit="guardarNuevoPDCA(event)">
@@ -612,7 +615,7 @@
               <input type="text" class="form-control form-control-sm" id="newCodDoc" value="01-9999-99-99-99-9999-PD-00-01-02" required>
             </div>
             <div class="col-6 col-md-4">
-              <label class="form-label fw-bold small mb-1">PDCA N°:</label>
+              <label class="form-label fw-bold small mb-1">PDCA N° (Correlativo):</label>
               <input type="text" class="form-control form-control-sm bg-light" id="newNumPdca" value="Se asignará al aprobar" readonly>
             </div>
             <div class="col-12 col-md-3">
@@ -659,7 +662,7 @@
 </div>
 
 <script>
-  // CONFIGURACIÓN FIREBASE
+  // CONFIGURACIÓN OFICIAL FIREBASE
   const firebaseConfig = {
     apiKey: "AIzaSyDeyYbcazMTgUk217e8afabEV9GY0HlT6g",
     authDomain: "pdca-mision-buenos-aires.firebaseapp.com",
@@ -688,6 +691,7 @@
     "Política 7: Fortalecer la comunicación institucional."
   ];
 
+  // USUARIOS CON ROLES Y JERARQUÍAS
   const usuariosSistema = [
     { legajo: "9001", clave: "1234", nombre: "Gerente de Mantenimiento", rol: "GERENTE" },
     { legajo: "3110", clave: "1234", nombre: "Favio Graciette", rol: "REVISOR" },
@@ -706,12 +710,12 @@
       efecto: "Disminuir el costo operativo de gasoil y consolidar un estándar de conducción económica en la flota.",
       responsable: "Gabriel Monzón",
       deadline: "31/10/2026",
-      estado: "FINALIZADO",
+      estado: "APROBADO",
       bloqueado: true,
       fechaRevision: "28/09/2026",
-      revisadoPor: "Favio Graciette",
+      revisadoPor: "Favio Graciette (Leg. 3110)",
       fechaAprobacion: "01/10/2026",
-      aprobadoPor: "Gerencia de Mantenimiento",
+      aprobadoPor: "Gerente de Mantenimiento (Leg. 9001)",
       pdfBase64: null,
       acciones: [
         { 
@@ -749,7 +753,49 @@
   }
 
   // ==========================================
-  // DISTRIBUCIÓN MILIMÉTRICA REAL EN HOJAS A4
+  // EVALUACIÓN DE FECHAS Y ESTADO FINALIZADO
+  // ==========================================
+  function parsearFecha(str) {
+    if (!str) return null;
+    const limpio = str.trim();
+    const partesSlash = limpio.split('/');
+    if (partesSlash.length === 3) {
+      const d = parseInt(partesSlash[0], 10);
+      const m = parseInt(partesSlash[1], 10) - 1;
+      let y = parseInt(partesSlash[2], 10);
+      if (y < 100) y += 2000;
+      return new Date(y, m, d, 23, 59, 59);
+    }
+    const partesGuion = limpio.split('-');
+    if (partesGuion.length === 3) {
+      return new Date(parseInt(partesGuion[0], 10), parseInt(partesGuion[1], 10) - 1, parseInt(partesGuion[2], 10), 23, 59, 59);
+    }
+    const d = new Date(limpio);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function evaluarEstadoPlan(plan) {
+    if (plan.estado === "BORRADOR" || plan.estado === "REVISADO") {
+      return plan.estado;
+    }
+
+    // Si ya está aprobado o finalizado, evaluamos el Dead Line con la fecha actual
+    if (plan.deadline) {
+      const fDeadLine = parsearFecha(plan.deadline);
+      if (fDeadLine) {
+        const hoy = new Date();
+        if (hoy > fDeadLine) {
+          plan.estado = "FINALIZADO";
+        } else if (plan.estado === "FINALIZADO" && !plan.cierreManual) {
+          plan.estado = "APROBADO";
+        }
+      }
+    }
+    return plan.estado;
+  }
+
+  // ==========================================
+  // DISTRIBUCIÓN MILIMÉTRICA EN HOJAS A4
   // ==========================================
   function calcularDistribucionPaginas(plan) {
     const reglaMeta = document.getElementById("reglaMetaCont");
@@ -847,6 +893,7 @@
   // RENDERIZADO DEL ENCABEZADO Y HOJA FORMAL
   // ==========================================
   function renderizarDocumentoOficialPaginado(plan) {
+    evaluarEstadoPlan(plan);
     const contenedor = document.getElementById("contenedorHojasImpresion");
     contenedor.innerHTML = "";
 
@@ -858,7 +905,7 @@
       const hojaDiv = document.createElement("div");
       hojaDiv.className = `hoja-a4 pagina-${p.num}`;
 
-      // ENCABEZADO EXACTO: "PDCA" ARRIBA Y EL NOMBRE ABAJO (ROWSPAN 2)
+      // ENCABEZADO REGLAMENTARIO EXACTO: "PDCA" ARRIBA Y EL NOMBRE DEBAJO (ROWSPAN 2)
       let headerHTML = `
         <table class="tabla-encabezado-oficial">
           <tr>
@@ -1006,7 +1053,7 @@
   }
 
   // ==========================================
-  // PARSER DE WORD CON EXTRACCIÓN DEL TÍTULO
+  // PARSER DE WORD ROBUSTO (NO TOMA "ORDEN")
   // ==========================================
   async function procesarArchivoWord(event) {
     const file = event.target.files[0];
@@ -1038,11 +1085,24 @@
 
         const tablas = Array.from(parserDiv.querySelectorAll("table"));
 
-        // EXTRACCIÓN EXACTA DEL TÍTULO DESDE LA CABECERA OFICIAL
+        // 1. Identificar cuál es la tabla 5W2H para aislarla
+        let tabla5w2h = null;
+        for (let t of tablas) {
+          const tText = t.textContent.toLowerCase();
+          if ((tText.includes("qué") || tText.includes("que")) && 
+              (tText.includes("cómo") || tText.includes("como") || tText.includes("por qué") || tText.includes("porque"))) {
+            tabla5w2h = t;
+            break;
+          }
+        }
+        if (!tabla5w2h && tablas.length > 0) tabla5w2h = tablas[tablas.length - 1];
+
+        // 2. Extraer el nombre del PDCA desde la tabla de cabecera oficial
         let tituloExtraido = "";
-        if (tablas.length > 0) {
-          const celdasHeader = tablas[0].querySelectorAll("td, th");
-          for (let c of celdasHeader) {
+        for (let t of tablas) {
+          if (t === tabla5w2h) continue; // NUNCA BUSCAR EN LA TABLA 5W2H
+          const celdas = Array.from(t.querySelectorAll("td, th"));
+          for (let c of celdas) {
             const txt = c.textContent.replace(/[\t\r\n]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
             if (!txt) continue;
             const txtUpper = txt.toUpperCase();
@@ -1050,26 +1110,41 @@
             if (txtUpper.startsWith("CÓD") || txtUpper.startsWith("COD")) continue;
             if (txtUpper.startsWith("PDCA:") || txtUpper.startsWith("PDCA :")) continue;
             if (txt.toLowerCase().includes("página") || txt.toLowerCase().includes("pagina")) continue;
-            if (txt.toLowerCase().includes("misión buenos aires")) continue;
-            if (txt.length >= 5) {
+            if (txt.toLowerCase().includes("misión") || txt.toLowerCase().includes("buenos aires")) continue;
+            if (txt.toLowerCase().includes("orden") || txt.toLowerCase().includes("qué")) continue;
+            if (txt.length >= 4) {
               tituloExtraido = txt;
               break;
             }
           }
-        }
-
-        // Si no lo encuentra en la primera tabla, busca por regex o usa el archivo
-        if (!tituloExtraido) {
-          const mTit = parserDiv.textContent.match(/(?:PDCA\s*\n+|Subtítulo\s*:?\s*)([^\n\r]+)/i);
-          if (mTit && mTit[1] && !mTit[1].includes("01-") && !mTit[1].includes("CÓD") && !mTit[1].toLowerCase().includes("página")) {
-            tituloExtraido = mTit[1].trim();
-          } else {
-            tituloExtraido = file.name.replace(/\.docx$/i, '').trim();
-          }
+          if (tituloExtraido) break;
         }
 
         parserDiv.querySelectorAll('p, tr, div, li, td, th').forEach(el => el.insertAdjacentHTML('beforeend', '\n'));
         const textoPlano = parserDiv.innerText || parserDiv.textContent;
+
+        // Fallback de texto si el encabezado no vino en tabla de Word
+        if (!tituloExtraido || tituloExtraido.toLowerCase() === "orden") {
+          const m = textoPlano.match(/PDCA\s*\n+([\s\S]*?)(?=\n\s*(?:Pol[ií]tica|Objetivo|Meta|CÓD|PDCA:))/i);
+          if (m && m[1]) {
+            const lineas = m[1].split('\n').map(l => l.trim()).filter(l => l.length > 3);
+            for (let l of lineas) {
+              const lu = l.toUpperCase();
+              if (!lu.startsWith("CÓD") && !lu.startsWith("COD") && !lu.startsWith("PDCA:") && !lu.includes("PÁGINA") && !lu.includes("ORDEN")) {
+                tituloExtraido = l;
+                break;
+              }
+            }
+          }
+        }
+
+        if (!tituloExtraido || tituloExtraido.toLowerCase() === "orden") {
+          tituloExtraido = file.name
+            .replace(/\.docx$/i, '')
+            .replace(/\s*-\s*copia\s*/gi, '')
+            .replace(/^PDCA\s*[:-]?\s*/i, '')
+            .trim();
+        }
 
         function extraerCampoExacto(texto, clave, regexSiguiente) {
           const reg = new RegExp(`(?:${clave})\\s*:\\s*([\\s\\S]*?)(?=(?:${regexSiguiente})\\s*:|$)`, 'i');
@@ -1090,19 +1165,8 @@
         const mPdcaNum = textoPlano.match(/PDCA\s*:\s*(\d{3,4}\/\d{4})/i);
         const numPdcaExtraido = mPdcaNum ? mPdcaNum[1] : "";
 
-        // EXTRACCIÓN DE ACCIONES DEL 5W2H
+        // Extracción de tareas 5W2H
         const accionesExtraidas = [];
-        let tabla5w2h = null;
-        for (let t of tablas) {
-          const tText = t.textContent.toLowerCase();
-          if ((tText.includes("qué") || tText.includes("que")) && 
-              (tText.includes("cómo") || tText.includes("como") || tText.includes("por qué") || tText.includes("porque"))) {
-            tabla5w2h = t;
-            break;
-          }
-        }
-        if (!tabla5w2h && tablas.length > 0) tabla5w2h = tablas[tablas.length - 1];
-
         if (tabla5w2h) {
           const filas = Array.from(tabla5w2h.querySelectorAll("tr"));
           let colMap = { ord: -1, que: -1, porQue: -1, como: -1, cuanto: -1, quien: -1, donde: -1, cuando: -1 };
@@ -1174,23 +1238,36 @@
           });
         }
 
+        // Determinación de estado según correlativo oficial existente y fecha Dead Line
+        let estadoCalculado = "BORRADOR";
+        let estaBloqueado = false;
+
+        if (numPdcaExtraido) {
+          estadoCalculado = "APROBADO";
+          estaBloqueado = true;
+          const fDL = parsearFecha(deadlineExtraido);
+          if (fDL && new Date() > fDL) {
+            estadoCalculado = "FINALIZADO";
+          }
+        }
+
         const nuevoPlan = {
           codDoc: "01-9999-99-99-99-9999-PD-00-01-02",
           numPdca: numPdcaExtraido,
           paginaDoc: "Página 1 de 2",
-          titulo: tituloExtraido || "Plan Importado de Word",
+          titulo: tituloExtraido,
           politica: politicaExtraida,
           objetivo: objetivoExtraido,
           meta: metaExtraida,
           efecto: efectoExtraido,
           responsable: responsableExtraido,
           deadline: deadlineExtraido,
-          estado: numPdcaExtraido ? "FINALIZADO" : "BORRADOR",
-          bloqueado: !!numPdcaExtraido,
+          estado: estadoCalculado,
+          bloqueado: estaBloqueado,
           fechaRevision: "",
           revisadoPor: "",
-          fechaAprobacion: "",
-          aprobadoPor: "",
+          fechaAprobacion: numPdcaExtraido ? "01/10/2026" : "",
+          aprobadoPor: numPdcaExtraido ? "Gerencia de Mantenimiento" : "",
           pdfBase64: null,
           acciones: accionesExtraidas.length > 0 ? accionesExtraidas : [
             { orden: 1, que: "Revisión técnica de flota", porQue: "Carga inicial", como: "Auditoría", cuanto: "", quien: responsableExtraido, donde: "La Plata", cuando: deadlineExtraido, estado: "PENDIENTE" }
@@ -1205,7 +1282,7 @@
         actualizarDashboard();
         cambiarVista("documento");
 
-        alert(`¡DOCUMENTO RECONOCIDO CON ÉXITO!\n\nNombre del PDCA: ${nuevoPlan.titulo}\nEstado: ${nuevoPlan.estado}\nAcciones detectadas: ${nuevoPlan.acciones.length}`);
+        alert(`¡PLAN IMPORTADO CON ÉXITO!\n\nNombre del PDCA: ${nuevoPlan.titulo}\nEstado: ${nuevoPlan.estado}\nAcciones 5W2H reconocidas: ${nuevoPlan.acciones.length}`);
 
       } catch (err) {
         alert("Error al procesar Word: " + err.message);
@@ -1213,6 +1290,108 @@
     };
     reader.readAsArrayBuffer(file);
     event.target.value = "";
+  }
+
+  // ==========================================
+  // FLUJO DE ESTADOS: REVISIÓN, APROBACIÓN Y FINALIZACIÓN
+  // ==========================================
+  function registrarRevisionPlan() {
+    if (!usuarioSesion) return;
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) {
+      alert("El plan ya se encuentra formalizado y cerrado.");
+      return;
+    }
+    const fechaHoy = new Date().toLocaleDateString('es-AR');
+    plan.revisadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
+    plan.fechaRevision = fechaHoy;
+    plan.estado = "REVISADO";
+
+    sincronizarPlanEnCloud(plan);
+    alert(`PLAN REVISADO:\n\nRevisado por: ${plan.revisadoPor}\nFecha: ${fechaHoy}\nEstado: REVISADO.\nQueda listo para aprobación oficial de Gerencia.`);
+    cargarPDCA(indiceActual);
+  }
+
+  function aprobarPlanGerencia() {
+    if (!usuarioSesion) return;
+    if (usuarioSesion.rol !== "GERENTE") {
+      alert("PERMISO DENEGADO: La aprobación oficial y asignación de número es potestad exclusiva del Gerente de Mantenimiento.");
+      return;
+    }
+    const plan = baseDatos[indiceActual];
+
+    if (plan.estado === "BORRADOR" && !plan.revisadoPor) {
+      const resp = confirm("ATENCIÓN: Este plan aún no fue revisado por el auditor/revisor. ¿Desea aprobarlo y asignarle número oficial de todos modos?");
+      if (!resp) return;
+    }
+
+    const confirmar = confirm(`¿Confirma la aprobación formal del plan?\n\nAl confirmar:\n1. Se asignará número correlativo consecutivo oficial.\n2. Se registrará la firma del Gerente.\n3. El plan quedará BLOQUEADO en la base de datos.`);
+    if (!confirmar) return;
+
+    const fechaHoy = new Date().toLocaleDateString('es-AR');
+    plan.aprobadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
+    plan.fechaAprobacion = fechaHoy;
+    plan.bloqueado = true;
+
+    // Asignación de correlativo oficial consecutivo para trazabilidad
+    if (!plan.numPdca || plan.numPdca.trim() === "" || plan.numPdca.startsWith("----")) {
+      const anioActual = new Date().getFullYear();
+      plan.numPdca = obtenerSiguienteNumeroPDCA(anioActual);
+    }
+
+    evaluarEstadoPlan(plan);
+    if (plan.estado !== "FINALIZADO") {
+      plan.estado = "APROBADO";
+    }
+
+    sincronizarPlanEnCloud(plan);
+    alert(`¡PLAN OFICIALIZADO!\n\nCorrelativo asignado: PDCA ${plan.numPdca}\nAprobado por: ${plan.aprobadoPor}\nEstado: ${plan.estado}`);
+    cargarPDCA(indiceActual);
+  }
+
+  function forzarFinalizacionPlan() {
+    if (!usuarioSesion) return;
+    if (usuarioSesion.rol !== "GERENTE") {
+      alert("Solo el Gerente puede marcar un plan como Finalizado anticipadamente.");
+      return;
+    }
+    const plan = baseDatos[indiceActual];
+    const confirmar = confirm(`¿Confirma la finalización del plan "${plan.titulo}"?\n\nEl plan pasará formalmente a estado FINALIZADO.`);
+    if (!confirmar) return;
+
+    plan.estado = "FINALIZADO";
+    plan.bloqueado = true;
+    plan.cierreManual = true;
+
+    sincronizarPlanEnCloud(plan);
+    alert("El plan ha sido marcado como FINALIZADO.");
+    cargarPDCA(indiceActual);
+  }
+
+  function desbloquearPlanGerente() {
+    if (!usuarioSesion || usuarioSesion.rol !== "GERENTE") return;
+    const motivo = prompt("Ingrese el motivo técnico de la reapertura:");
+    if (!motivo) return;
+    const plan = baseDatos[indiceActual];
+    plan.bloqueado = false;
+    plan.estado = "REABIERTO_EDICION";
+    sincronizarPlanEnCloud(plan);
+    cargarPDCA(indiceActual);
+  }
+
+  function obtenerSiguienteNumeroPDCA(anio) {
+    let maximo = 83;
+    baseDatos.forEach(plan => {
+      if (plan.numPdca && plan.numPdca.includes('/')) {
+        const partes = plan.numPdca.split('/');
+        const num = parseInt(partes[0], 10);
+        const y = parseInt(partes[1], 10);
+        if (!isNaN(num) && y === anio) {
+          if (num > maximo) maximo = num;
+        }
+      }
+    });
+    return String(maximo + 1).padStart(4, '0') + '/' + anio;
   }
 
   // ==========================================
@@ -1224,7 +1403,7 @@
       return;
     }
     const plan = baseDatos[index];
-    const confirmar = confirm(`¿Confirma que desea BORRAR el PDCA "${plan.titulo}"?\n\nEsta acción es irreversible y eliminará el plan de la base de datos.`);
+    const confirmar = confirm(`¿Confirma que desea BORRAR el PDCA:\n"${plan.titulo}"?\n\nEsta acción es irreversible y eliminará el registro de la base de datos.`);
     if (!confirmar) return;
 
     if (db && plan.id) {
@@ -1251,7 +1430,7 @@
         cargarPDCA(indiceActual);
       }
     }
-    alert("Plan eliminado correctamente.");
+    alert("El PDCA ha sido eliminado correctamente.");
   }
 
   function eliminarPDCAActual() {
@@ -1262,10 +1441,10 @@
     if (!usuarioSesion) return;
     const plan = baseDatos[indiceActual];
     if (plan.bloqueado && usuarioSesion.rol !== "GERENTE") {
-      alert("El plan está finalizado y bloqueado. Solo el Gerente puede modificarlo.");
+      alert("El plan está formalizado. Solo el Gerente puede modificarlo.");
       return;
     }
-    const nuevo = prompt("Modificar Nombre / Objeto del PDCA:", plan.titulo);
+    const nuevo = prompt("Modificar Nombre / Objeto del PDCA (Cabecera):", plan.titulo);
     if (nuevo !== null && nuevo.trim() !== "") {
       plan.titulo = nuevo.trim();
       sincronizarPlanEnCloud(plan);
@@ -1273,46 +1452,6 @@
       actualizarDashboard();
       renderizarDocumentoOficialPaginado(plan);
     }
-  }
-
-  // ==========================================
-  // FINALIZAR PLAN PDCA
-  // ==========================================
-  function finalizarPlanPDCA() {
-    if (!usuarioSesion) return;
-    if (usuarioSesion.rol !== "GERENTE") {
-      alert("PERMISO DENEGADO: La finalización y aprobación oficial del plan es potestad exclusiva de la Gerencia.");
-      return;
-    }
-    const plan = baseDatos[indiceActual];
-    const confirmar = confirm(`¿Confirma la finalización y aprobación formal del plan?\n\n1. El estado pasará a FINALIZADO.\n2. Se asignará número correlativo consecutivo si está pendiente.\n3. El plan quedará BLOQUEADO en la base de datos.`);
-    if (!confirmar) return;
-
-    const fechaHoy = new Date().toLocaleDateString('es-AR');
-    plan.aprobadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
-    plan.fechaAprobacion = fechaHoy;
-    plan.estado = "FINALIZADO";
-    plan.bloqueado = true;
-
-    if (!plan.numPdca || plan.numPdca.trim() === "" || plan.numPdca.startsWith("----")) {
-      const anioActual = new Date().getFullYear();
-      plan.numPdca = obtenerSiguienteNumeroPDCA(anioActual);
-    }
-
-    sincronizarPlanEnCloud(plan);
-    alert(`¡PLAN FINALIZADO CON ÉXITO!\n\nCorrelativo: PDCA ${plan.numPdca}\nEstado: FINALIZADO\nBloqueado para modificaciones.`);
-    cargarPDCA(indiceActual);
-  }
-
-  function desbloquearPlanGerente() {
-    if (!usuarioSesion || usuarioSesion.rol !== "GERENTE") return;
-    const motivo = prompt("Motivo de reapertura para modificaciones:");
-    if (!motivo) return;
-    const plan = baseDatos[indiceActual];
-    plan.bloqueado = false;
-    plan.estado = "REABIERTO_EDICION";
-    sincronizarPlanEnCloud(plan);
-    cargarPDCA(indiceActual);
   }
 
   // ==========================================
@@ -1342,7 +1481,7 @@
         plan.pdfBase64 = base64data;
         sincronizarPlanEnCloud(plan);
         gestionarEstadoBloqueoUI(plan);
-        alert("¡PDF GUARDADO EN LA BASE DE DATOS!\n\nEl documento oficial quedó almacenado en Cloud Firestore.");
+        alert("¡PDF GUARDADO EN LA BASE DE DATOS!\n\nEl documento oficial quedó archivado en Cloud Firestore.");
       };
       reader.readAsDataURL(pdfBlob);
     } catch (e) {
@@ -1430,7 +1569,7 @@
 
   function actualizarDatosUsuarioSesion() {
     if (!usuarioSesion) return;
-    document.getElementById("txtNavbarUsuario").innerHTML = `👤 Legajo <strong>${usuarioSesion.legajo}</strong>`;
+    document.getElementById("txtNavbarUsuario").innerHTML = `👤 Legajo <strong>${usuarioSesion.legajo}</strong> (${usuarioSesion.rol})`;
     document.getElementById("dashSaludoUsuario").innerText = `Hola, ${usuarioSesion.nombre}`;
   }
 
@@ -1438,34 +1577,24 @@
     actualizarDatosUsuarioSesion();
     let totalPlanes = baseDatos.length;
     let enProceso = 0;
+    let aprobados = 0;
     let finalizados = 0;
-    let misTareasTotal = 0;
-    let misTareasCompletadas = 0;
-
-    const nombreUsuario = usuarioSesion ? usuarioSesion.nombre.toLowerCase() : "";
 
     baseDatos.forEach(plan => {
-      if (plan.estado === "FINALIZADO" || plan.estado === "APROBADO") {
+      evaluarEstadoPlan(plan);
+      if (plan.estado === "FINALIZADO") {
         finalizados++;
+      } else if (plan.estado === "APROBADO") {
+        aprobados++;
       } else {
         enProceso++;
-      }
-
-      if (plan.acciones && Array.isArray(plan.acciones)) {
-        plan.acciones.forEach(acc => {
-          if (nombreUsuario && acc.quien && acc.quien.toLowerCase().includes(nombreUsuario)) {
-            misTareasTotal++;
-            if (acc.estado === "COMPLETADA") misTareasCompletadas++;
-          }
-        });
       }
     });
 
     document.getElementById("kpiTotalPlanes").innerText = totalPlanes;
     document.getElementById("kpiEnProceso").innerText = enProceso;
+    document.getElementById("kpiAprobados").innerText = aprobados;
     document.getElementById("kpiFinalizados").innerText = finalizados;
-    document.getElementById("kpiMisTareas").innerText = misTareasTotal;
-    document.getElementById("kpiMisTareasDetalle").innerText = `${misTareasCompletadas} comp.`;
 
     renderizarTablaDashboard();
   }
@@ -1476,13 +1605,17 @@
     const filtro = document.getElementById("filtroEstadoDashboard").value;
 
     baseDatos.forEach((plan, i) => {
-      if (filtro === "FINALIZADO" && plan.estado !== "FINALIZADO" && plan.estado !== "APROBADO") return;
-      if (filtro === "BORRADOR" && plan.estado !== "BORRADOR") return;
+      evaluarEstadoPlan(plan);
+
+      if (filtro === "FINALIZADO" && plan.estado !== "FINALIZADO") return;
+      if (filtro === "APROBADO" && plan.estado !== "APROBADO") return;
       if (filtro === "REVISADO" && plan.estado !== "REVISADO") return;
+      if (filtro === "BORRADOR" && plan.estado !== "BORRADOR") return;
 
       let badgeEstado = '<span class="badge bg-secondary">Borrador</span>';
       if (plan.estado === "REVISADO") badgeEstado = '<span class="badge bg-warning text-dark">Revisado</span>';
-      if (plan.estado === "FINALIZADO" || plan.estado === "APROBADO") badgeEstado = '<span class="badge bg-success">Finalizado 🔒</span>';
+      if (plan.estado === "APROBADO") badgeEstado = '<span class="badge bg-info text-dark">Aprobado 🔒</span>';
+      if (plan.estado === "FINALIZADO") badgeEstado = '<span class="badge bg-success">Finalizado 🔒</span>';
 
       const badgePdf = plan.pdfBase64 
         ? '<span class="badge bg-primary">☁️ PDF Listo</span>' 
@@ -1490,9 +1623,12 @@
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td class="fw-bold">${plan.numPdca || '<span class="text-muted">Pend.</span>'}</td>
+        <td class="fw-bold">${plan.numPdca || '<span class="text-muted fst-italic">Pendiente</span>'}</td>
         <td><strong>${plan.titulo}</strong></td>
-        <td class="d-none d-md-table-cell">${plan.responsable}</td>
+        <td class="d-none d-md-table-cell">
+          <span class="d-block">${plan.responsable}</span>
+          <span class="text-muted small">Plazo: ${plan.deadline}</span>
+        </td>
         <td class="text-center">${badgePdf}</td>
         <td class="text-center">${badgeEstado}</td>
         <td class="text-end">
@@ -1620,7 +1756,8 @@
     const banner = document.getElementById("bannerBloqueo");
     const badge = document.getElementById("badgeEstadoPantalla");
     const btnRev = document.getElementById("btnRevisarPlan");
-    const btnFin = document.getElementById("btnFinalizarPlan");
+    const btnApr = document.getElementById("btnAprobarPlan");
+    const btnFin = document.getElementById("btnMarcarFinalizado");
     const btnDesbloq = document.getElementById("btnDesbloquearPlan");
     const btnVerPdf = document.getElementById("btnVerPdfCloud");
 
@@ -1632,10 +1769,19 @@
 
     if (plan.bloqueado) {
       banner.classList.remove("d-none");
-      badge.innerText = "FINALIZADO (BLOQUEADO)";
-      badge.className = "badge bg-success";
       btnRev.classList.add("d-none");
-      btnFin.classList.add("d-none");
+      btnApr.classList.add("d-none");
+
+      if (plan.estado === "FINALIZADO") {
+        badge.innerText = "FINALIZADO (BLOQUEADO)";
+        badge.className = "badge bg-success";
+        btnFin.classList.add("d-none");
+      } else {
+        badge.innerText = "APROBADO (BLOQUEADO)";
+        badge.className = "badge bg-info text-dark";
+        btnFin.classList.remove("d-none");
+      }
+
       if (usuarioSesion && usuarioSesion.rol === "GERENTE") {
         btnDesbloq.classList.remove("d-none");
       } else {
@@ -1643,13 +1789,23 @@
       }
     } else {
       banner.classList.add("d-none");
-      btnRev.classList.remove("d-none");
-      btnFin.classList.remove("d-none");
       btnDesbloq.classList.add("d-none");
-      badge.innerText = plan.estado.replace('_', ' ');
-      if (plan.estado === "BORRADOR") badge.className = "badge bg-secondary";
-      else if (plan.estado === "REVISADO") badge.className = "badge bg-warning text-dark";
-      else badge.className = "badge bg-success";
+      btnFin.classList.add("d-none");
+
+      if (plan.estado === "BORRADOR") {
+        badge.innerText = "BORRADOR";
+        badge.className = "badge bg-secondary";
+        btnRev.classList.remove("d-none");
+        btnApr.classList.remove("d-none");
+      } else if (plan.estado === "REVISADO") {
+        badge.innerText = "REVISADO";
+        badge.className = "badge bg-warning text-dark";
+        btnRev.classList.add("d-none");
+        btnApr.classList.remove("d-none");
+      } else {
+        badge.innerText = plan.estado;
+        badge.className = "badge bg-info text-dark";
+      }
     }
   }
 
@@ -1723,33 +1879,6 @@
     sincronizarPlanEnCloud(plan);
     bootstrap.Modal.getInstance(document.getElementById('modalAccion5W2H')).hide();
     renderizarDocumentoOficialPaginado(plan);
-  }
-
-  function registrarRevisionPlan() {
-    if (!usuarioSesion) return;
-    const plan = baseDatos[indiceActual];
-    if (plan.bloqueado) return;
-    const fechaHoy = new Date().toLocaleDateString('es-AR');
-    plan.revisadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
-    plan.fechaRevision = fechaHoy;
-    plan.estado = "REVISADO";
-    sincronizarPlanEnCloud(plan);
-    cargarPDCA(indiceActual);
-  }
-
-  function obtenerSiguienteNumeroPDCA(anio) {
-    let maximo = 83;
-    baseDatos.forEach(plan => {
-      if (plan.numPdca && plan.numPdca.includes('/')) {
-        const partes = plan.numPdca.split('/');
-        const num = parseInt(partes[0], 10);
-        const y = parseInt(partes[1], 10);
-        if (!isNaN(num) && y === anio) {
-          if (num > maximo) maximo = num;
-        }
-      }
-    });
-    return String(maximo + 1).padStart(4, '0') + '/' + anio;
   }
 
   function abrirModalNuevoPDCA() {
