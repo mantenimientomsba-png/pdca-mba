@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión PDCA - Misión Buenos Aires</title>
+  
+  <!-- BOOTSTRAP 5 (CSS Y JS EN HEAD PARA GARANTIZAR FUNCIONAMIENTO) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- SDK FIREBASE COMPAT -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      background-color: #f1f3f5;
+      font-family: Calibri, 'Segoe UI', Arial, sans-serif;
+      font-size: 11pt;
+      color: #212529;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* BARRA SUPERIOR FIJA CON LOGO INSTITUCIONAL */
+    .top-navbar-mba {
+      background-color: #ffffff;
+      border-bottom: 2px solid #005f73;
+      padding: 6px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .brand-logo-img {
+      max-height: 48px;
+      max-width: 170px;
+      object-fit: contain;
+    }
+
+    /* TARJETAS DE INDICADORES (KPIs DASHBOARD) */
+    .kpi-card {
+      border-radius: 8px;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: transform 0.15s ease-in-out;
+    }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+    }
+    .kpi-numero {
+      font-size: 2.1rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    /* HOJA FORMAL TIPO WORD */
+    .documento-hoja {
+      background-color: #fff;
+      max-width: 1020px;
+      margin: 15px auto 40px auto;
+      padding: 30px 40px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+      border-radius: 2px;
+      position: relative;
+    }
+
+    /* ENCABEZADO OFICIAL REGLAMENTARIO */
+    .tabla-encabezado-oficial {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1.5px solid #000;
+      margin-bottom: 18px;
+    }
+    .tabla-encabezado-oficial td {
+      border: 1px solid #000;
+      padding: 4px 8px;
+      vertical-align: middle;
+    }
+
+    .celda-logo-doc {
+      width: 30%;
+      text-align: center;
+      padding: 6px !important;
+      background-color: #fff;
+    }
+    .celda-logo-doc img {
+      max-width: 210px;
+      max-height: 65px;
+      object-fit: contain;
+    }
+
+    .celda-titulo-pdca {
+      width: 42%;
+      text-align: center;
+      font-weight: bold;
+      font-size: 14pt;
+      letter-spacing: 0.5px;
+      color: #222;
+    }
+
+    .celda-subtitulo-plan {
+      text-align: center;
+      font-weight: bold;
+      font-size: 10.5pt;
+      color: #222;
+    }
+
+    .celda-meta-derecha {
+      width: 28%;
+      font-size: 8.5pt;
+      color: #111;
+      padding: 3px 6px !important;
+      white-space: nowrap;
+    }
+
+    .doc-linea {
+      margin-bottom: 5px;
+      line-height: 1.35;
+    }
+    .doc-label {
+      font-weight: bold;
+    }
+
+    /* TABLA 5W2H CON BORDES FINOS */
+    .table-doc {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 9pt;
+    }
+    .table-doc th, .table-doc td {
+      border: 1px solid #000;
+      padding: 5px 6px;
+      vertical-align: top;
+      line-height: 1.25;
+    }
+    .table-doc th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+      text-align: left;
+    }
+    .table-doc td.text-center, .table-doc th.text-center {
+      text-align: center;
+    }
+
+    .col-como {
+      white-space: pre-line;
+    }
+
+    /* PIE DE PÁGINA REGLAMENTARIO */
+    .texto-leyenda-pie {
+      font-weight: bold;
+      font-size: 9pt;
+      color: #444;
+      margin-top: 25px;
+      margin-bottom: 4px;
+    }
+
+    .tabla-pie-oficial {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #000;
+    }
+    .tabla-pie-oficial td {
+      border: 1px solid #000;
+      padding: 6px 8px;
+      width: 25%;
+      height: 52px;
+      vertical-align: top;
+      font-size: 9pt;
+      background-color: #fff;
+    }
+    .celda-pie-label {
+      font-weight: bold;
+      color: #333;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .celda-pie-valor {
+      display: block;
+      color: #000;
+      font-size: 9.5pt;
+      min-height: 18px;
+    }
+
+    .cursor-pointer { cursor: pointer; }
+
+    /* ESTILOS DE IMPRESIÓN OFICIAL */
+    @media print {
+      @page {
+        size: landscape;
+        margin: 8mm 10mm;
+      }
+      body {
+        background-color: #fff !important;
+        font-size: 9.5pt !important;
+      }
+      .no-print, .top-navbar-mba, #seccionLogin, #seccionDashboard {
+        display: none !important;
+      }
+      #seccionDocumento {
+        display: block !important;
+      }
+      .documento-hoja {
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+      .tabla-encabezado-oficial {
+        border: 1.5px solid #000 !important;
+        margin-bottom: 12px !important;
+      }
+      .tabla-encabezado-oficial td, .tabla-pie-oficial td {
+        border: 1px solid #000 !important;
+      }
+      .table-doc {
+        font-size: 8.5pt !important;
+      }
+      .table-doc th {
+        background-color: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- BARRA DE CABECERA PERMANENTE CON LOGO EN TODAS LAS VISTAS -->
+<nav class="top-navbar-mba no-print d-flex justify-content-between align-items-center">
+  <div class="d-flex align-items-center gap-3">
+    <div onclick="document.getElementById('inputLogoFile').click()" title="Hacé clic para cambiar la imagen del logo" class="cursor-pointer">
+      <img id="logoBarraFija" src="logo.png" alt="Misión Buenos Aires" class="brand-logo-img" onerror="aplicarLogoFalso(this)">
+    </div>
+    <div class="vr my-1 d-none d-md-block"></div>
+    <div>
+      <span class="fw-bold text-dark d-block lh-1 small">SISTEMA INTEGRADO DE GESTIÓN DE CALIDAD</span>
+      <span class="text-muted" style="font-size: 7.5pt;">Misión Buenos Aires / La Central de Vicente López S.A.C.</span>
+    </div>
+  </div>
+
+  <div class="d-flex align-items-center gap-2">
+    <span id="badgeCloudStatus" class="badge bg-secondary" style="font-size: 7.5pt;">Iniciando...</span>
+    <div id="usuarioInfoNavbar" class="d-none align-items-center gap-2">
+      <span class="small text-dark fw-semibold" id="txtNavbarUsuario"></span>
+      <button class="btn btn-sm btn-outline-danger py-0 px-2 small" onclick="cerrarSesion()">Salir</button>
+    </div>
+  </div>
+</nav>
+
+<input type="file" id="inputLogoFile" accept="image/*" class="d-none" onchange="procesarArchivoLogo(event)">
+
+<!-- ======================================================== -->
+<!-- 1. PANTALLA DE ACCESO (LOGIN POR LEGAJO)                -->
+<!-- ======================================================== -->
+<div id="seccionLogin" class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+      <div class="card shadow-sm border-0 rounded-3 mt-3">
+        <div class="card-body p-4 text-center">
+          <img id="logoCardLogin" src="logo.png" alt="Misión Buenos Aires" class="brand-logo-img mb-3" style="max-height: 55px;" onerror="aplicarLogoFalso(this)">
+          <h5 class="fw-bold text-dark mb-1">Acceso al Sistema PDCA</h5>
+          <p class="text-muted small mb-4">Ingrese su legajo institucional y contraseña</p>
+
+          <form id="formLogin" onsubmit="ejecutarLogin(event)" class="text-start">
+            <div class="mb-3">
+              <label class="form-label small fw-bold mb-1">N° de Legajo:</label>
+              <input type="text" class="form-control" id="loginLegajo" placeholder="ej: 9001 o 2045" required autofocus>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold mb-1">Contraseña:</label>
+              <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">Ingresar al Panel</button>
+          </form>
+
+          <div class="alert alert-light border small text-muted text-start mt-4 mb-0 py-2">
+            <strong>Legajos habilitados:</strong><br>
+            • <strong>9001</strong> (Gerente Mantenimiento - clave: 1234)<br>
+            • <strong>3110</strong> (Favio Graciette / Revisor - clave: 1234)<br>
+            • <strong>2045</strong> (Omar Funes / Monitor - clave: 1234)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- 2. PANTALLA DASHBOARD / RESUMEN DE PLANES POR USUARIO   -->
+<!-- ======================================================== -->
+<div id="seccionDashboard" class="container py-4 d-none">
+
+  <!-- ENCABEZADO DEL DASHBOARD -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h4 class="fw-bold m-0 text-dark" id="dashSaludoUsuario">Bienvenido</h4>
+      <p class="text-muted small m-0">Panel de control de planes de mejora continua e indicadores de avance</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-info btn-sm fw-semibold" onclick="abrirConfigGemini()">⚙ Configurar Gemini API</button>
+      <button class="btn btn-primary btn-sm fw-semibold" onclick="abrirModalNuevoPDCA()">+ Nuevo Plan PDCA</button>
+    </div>
+  </div>
+
+  <!-- TARJETAS DE INDICADORES (MÉTRICAS DEL USUARIO) -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="card kpi-card p-3 bg-white border-start border-4 border-primary">
+        <span class="text-muted small text-uppercase fw-bold">Planes Activos</span>
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <span class="kpi-numero text-dark" id="kpiTotalPlanes">0</span>
+          <span class="badge bg-primary-subtle text-primary">Total Sistema</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card kpi-card p-3 bg-white border-start border-4 border-warning">
+        <span class="text-muted small text-uppercase fw-bold">En Proceso / Borradores</span>
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <span class="kpi-numero text-warning" id="kpiEnProceso">0</span>
+          <span class="badge bg-warning-subtle text-warning">Abiertos</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card kpi-card p-3 bg-white border-start border-4 border-success">
+        <span class="text-muted small text-uppercase fw-bold">Finalizados (Aprobados)</span>
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <span class="kpi-numero text-success" id="kpiFinalizados">0</span>
+          <span class="badge bg-success-subtle text-success">Oficiales</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card kpi-card p-3 bg-white border-start border-4 border-info">
+        <span class="text-muted small text-uppercase fw-bold">Mis Tareas 5W2H</span>
+        <div class="d-flex justify-content-between align-items-center mt-2">
+          <span class="kpi-numero text-info" id="kpiMisTareas">0</span>
+          <span class="badge bg-info-subtle text-info" id="kpiMisTareasDetalle">0 comp.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BANDEJA DE PLANES DE TRABAJO -->
+  <div class="card shadow-sm border-0 rounded-3 mb-5">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <h6 class="fw-bold m-0 text-dark">Planes PDCA Registrados</h6>
+      <div class="d-flex gap-2">
+        <select class="form-select form-select-sm" id="filtroEstadoDashboard" style="width: 170px;" onchange="renderizarTablaDashboard()">
+          <option value="TODOS">Todos los estados</option>
+          <option value="BORRADOR">Borrador / Evaluación</option>
+          <option value="APROBADO">Aprobados (Oficiales)</option>
+        </select>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0" style="font-size: 9.5pt;">
+        <thead class="table-light">
+          <tr>
+            <th style="width: 13%;">Correlativo</th>
+            <th style="width: 32%;">Título / Objeto del Plan</th>
+            <th style="width: 16%;">Responsable</th>
+            <th style="width: 14%;">Fecha Límite</th>
+            <th style="width: 12%;" class="text-center">Estado</th>
+            <th style="width: 13%;" class="text-end">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="tablaDashboardBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======================================================== -->
+<!-- 3. PANTALLA DEL DOCUMENTO PDCA (FORMATO OFICIAL WORD)   -->
+<!-- ======================================================== -->
+<div id="seccionDocumento" class="d-none">
+
+  <!-- BARRA DE NAVEGACIÓN Y HERRAMIENTAS DEL DOCUMENTO -->
+  <div class="container-fluid no-print py-2 bg-white border-bottom shadow-sm">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 px-md-3">
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-dark fw-semibold" onclick="cambiarVista('dashboard')">⬅ Volver al Panel</button>
+        <span class="text-muted">|</span>
+        <label class="small fw-bold text-dark m-0">Plan:</label>
+        <select id="pdcaSelect" class="form-select form-select-sm" style="min-width: 250px; max-width: 380px;" onchange="seleccionarPDCA(this.value)"></select>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirModalAuditoriaIA('plan')">✨ Auditar con Gemini</button>
+        <span id="badgeEstadoPantalla" class="badge bg-secondary">BORRADOR</span>
+        <button class="btn btn-sm btn-outline-warning" id="btnRevisarPlan" onclick="registrarRevisionPlan()">Registrar Revisión</button>
+        <button class="btn btn-sm btn-success fw-semibold" id="btnAprobarGerencia" onclick="aprobarPlanGerencia()">Aprobar (Gerencia)</button>
+        <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanGerente()">🔓 Autorizar Modificación</button>
+        <button class="btn btn-sm btn-dark fw-semibold" onclick="window.print()">Imprimir / Guardar PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid py-3">
+    <!-- AVISO DE BLOQUEO POR GERENCIA -->
+    <div id="bannerBloqueo" class="alert alert-danger py-2 mb-2 no-print d-none align-items-center justify-content-between" style="max-width: 1020px; margin: auto;">
+      <div>
+        <strong>🔒 DOCUMENTO OFICIAL BLOQUEADO POR GERENCIA:</strong> Este plan ha sido aprobado y formalizado. No admite modificaciones salvo autorización directa de la Gerencia.
+      </div>
+    </div>
+
+    <!-- HOJA FORMAL DEL DOCUMENTO -->
+    <div class="documento-hoja">
+
+      <table class="tabla-encabezado-oficial">
+        <tr>
+          <td rowspan="3" class="celda-logo-doc cursor-pointer" onclick="document.getElementById('inputLogoFile').click()" title="Hacé clic para cambiar la imagen del logo">
+            <img id="imgLogoOficial" src="logo.png" alt="Misión Buenos Aires" onerror="aplicarLogoFalso(this)">
+          </td>
+          <td rowspan="2" class="celda-titulo-pdca">
+            PDCA
+          </td>
+          <td class="celda-meta-derecha">
+            <strong>CÓD:</strong> <span id="lblCodDoc">01-9999-99-99-99-9999-PD-00-01-02</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="celda-meta-derecha">
+            <strong>PDCA:</strong> <span id="lblNumPdca" class="fw-bold text-primary">----/2026</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="celda-subtitulo-plan">
+            <span id="headerSubtituloPlan">Puesta en Marcha Unidad 837</span>
+          </td>
+          <td class="celda-meta-derecha">
+            <span id="lblPaginaDoc">Página 1 de 2</span>
+          </td>
+        </tr>
+      </table>
+
+      <div class="doc-linea cursor-pointer" onclick="abrirModalCambiarPolitica()" title="Clic para cambiar la Política">
+        <span class="doc-label">Política:</span> <span id="lblPolitica" class="text-primary text-decoration-underline-hover"></span>
+        <span class="badge bg-light text-muted border small ms-1 no-print">✎ Elegir Política</span>
+      </div>
+      <div class="doc-linea"><span class="doc-label">Objetivo:</span> <span id="lblObjetivo"></span></div>
+      <div class="doc-linea"><span class="doc-label">Meta:</span> <span id="lblMeta"></span></div>
+      <div class="doc-linea"><span class="doc-label">Efecto Esperado:</span> <span id="lblEfecto"></span></div>
+      <div class="doc-linea"><span class="doc-label">Responsable:</span> <span id="lblResponsable"></span></div>
+      <div class="doc-linea"><span class="doc-label">Dead Line:</span> <span id="lblDeadline"></span></div>
+      <div class="doc-linea mt-2 mb-2 d-flex justify-content-between align-items-center">
+        <div><span class="doc-label">Método:</span></div>
+        <button class="btn btn-xs btn-outline-primary no-print py-0 px-2 small" id="btnAgregarAccion" onclick="abrirModalAccion(-1)">+ Agregar Renglón al 5W2H</button>
+      </div>
+
+      <!-- TABLA 5W2H -->
+      <table class="table-doc">
+        <thead>
+          <tr>
+            <th style="width: 4%;" class="text-center">Orden</th>
+            <th style="width: 17%;">¿Qué?</th>
+            <th style="width: 15%;">¿Por qué?</th>
+            <th style="width: 30%;">¿Cómo?</th>
+            <th style="width: 6%;" class="text-center">¿Cuánto?</th>
+            <th style="width: 10%;">¿Quién?</th>
+            <th style="width: 7%;">¿Dónde?</th>
+            <th style="width: 8%;">¿Cuándo?</th>
+            <th style="width: 13%;" class="text-center no-print">Gestión</th>
+          </tr>
+        </thead>
+        <tbody id="tablaAccionesBody"></tbody>
+      </table>
+
+      <!-- PIE DE PÁGINA REGLAMENTARIO -->
+      <div class="texto-leyenda-pie">
+        *Quien proponga el PDCA debe asegurar su cumplimiento como quien lo aprueba.
+      </div>
+      <table class="tabla-pie-oficial">
+        <tr>
+          <td onclick="editarCampoPie('fechaRevision', 'Fecha de Revisión (dd/mm/aaaa):')">
+            <span class="celda-pie-label">Fecha de Revisión:</span>
+            <span class="celda-pie-valor" id="lblFechaRevision"></span>
+          </td>
+          <td onclick="editarCampoPie('revisadoPor', 'Nombre del Revisor:')">
+            <span class="celda-pie-label">Revisado por:</span>
+            <span class="celda-pie-valor" id="lblRevisadoPor"></span>
+          </td>
+          <td onclick="editarCampoPie('fechaAprobacion', 'Fecha de Aprobación (dd/mm/aaaa):')">
+            <span class="celda-pie-label">Fecha de Aprobación:</span>
+            <span class="celda-pie-valor" id="lblFechaAprobacion"></span>
+          </td>
+          <td onclick="editarCampoPie('aprobadoPor', 'Nombre del Aprobador (*):')">
+            <span class="celda-pie-label">Aprobado por (*):</span>
+            <span class="celda-pie-valor" id="lblAprobadoPor"></span>
+          </td>
+        </tr>
+      </table>
+
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODALES DEL SISTEMA                                      -->
+<!-- ======================================================== -->
+
+<!-- MODAL AUDITORÍA GEMINI (PLAN O ACCIÓN) -->
+<div class="modal fade" id="modalRespuestaGemini" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">✨ Auditoría de Calidad y Metas - Gemini IA</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="bg-light p-2 rounded border mb-3">
+          <div class="row align-items-center g-2">
+            <div class="col-md-4">
+              <label class="form-label small fw-bold m-0 text-dark">Alcance del análisis:</label>
+            </div>
+            <div class="col-md-8">
+              <select class="form-select form-select-sm" id="selectAmbitoAuditoria" onchange="ejecutarAnalisisDesdeSelector(this.value)"></select>
+            </div>
+          </div>
+        </div>
+        <div id="geminiSpinner" class="text-center py-4">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="small text-muted mt-2" id="geminiSpinnerText">Analizando coherencia del plan con Gemini...</p>
+        </div>
+        <div id="geminiContenido" class="small lh-base" style="white-space: pre-line; max-height: 55vh; overflow-y: auto;"></div>
+      </div>
+      <div class="modal-footer py-1">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-sm btn-outline-primary" onclick="navigator.clipboard.writeText(document.getElementById('geminiContenido').innerText); alert('Informe copiado.');">Copiar Informe</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIGURACIÓN API KEY GEMINI -->
+<div class="modal fade" id="modalConfigGemini" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">API Key de Gemini</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-2">
+        <label class="form-label small fw-bold mb-1">Ingresá tu API Key:</label>
+        <input type="password" class="form-control form-control-sm" id="inputApiKeyGemini" placeholder="AIzaSy...">
+        <div class="small text-muted mt-2 fst-italic">
+          Se almacena en el navegador para consultas de auditoría.
+        </div>
+      </div>
+      <div class="modal-footer py-1">
+        <button type="button" class="btn btn-sm btn-primary w-100 fw-bold" onclick="guardarApiKeyGemini()">Guardar Clave</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CAMBIAR POLÍTICA -->
+<div class="modal fade" id="modalPoliticaActiva" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">Seleccionar Política Institucional 2026</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-3">
+        <label class="form-label small fw-bold mb-1">Políticas 2026 (Misión Buenos Aires):</label>
+        <select class="form-select form-select-sm" id="selectPoliticaActiva"></select>
+      </div>
+      <div class="modal-footer py-1">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-sm btn-primary fw-bold" onclick="guardarCambioPolitica()">Aplicar Política</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ACCIÓN 5W2H -->
+<div class="modal fade" id="modalAccion5W2H" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white py-2">
+        <h6 class="modal-title m-0 fw-bold" id="modalAccionTitulo">Editar Acción 5W2H</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formAccion5W2H" onsubmit="guardarAccion5W2H(event)">
+        <input type="hidden" id="accEditIndex" value="-1">
+        <div class="modal-body py-2">
+          <div class="row g-2">
+            <div class="col-md-12">
+              <label class="form-label small fw-bold mb-1">¿Qué? (Acción o Tarea):</label>
+              <textarea class="form-control form-control-sm" id="accQue" rows="2" placeholder="Describir la tarea específica..." required></textarea>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label small fw-bold mb-1">¿Por qué? (Justificación):</label>
+              <textarea class="form-control form-control-sm" id="accPorQue" rows="2" placeholder="Motivo o necesidad..." required></textarea>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label small fw-bold mb-1">¿Cómo? (Procedimiento y pasos):</label>
+              <textarea class="form-control form-control-sm" id="accComo" rows="4" placeholder="Pasos detallados..." required></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold mb-1">¿Quién? (Responsable de la acción):</label>
+              <input type="text" class="form-control form-control-sm" id="accQuien" placeholder="Nombre y Apellido / Cargo" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-bold mb-1">¿Cuánto? (Alcance cuantitativo):</label>
+              <input type="text" class="form-control form-control-sm" id="accCuanto" placeholder="ej: 100% de la flota / 1 conjunto">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold mb-1">¿Dónde? (Predio o Base):</label>
+              <input type="text" class="form-control form-control-sm" id="accDonde" placeholder="ej: Itatí / Barracas" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold mb-1">¿Cuándo? (Plazo / Fecha):</label>
+              <input type="text" class="form-control form-control-sm" id="accCuando" placeholder="ej: Diariamente a partir del 01/10/2026" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold mb-1">Estado actual:</label>
+              <select class="form-select form-select-sm" id="accEstado">
+                <option value="PENDIENTE">PENDIENTE</option>
+                <option value="EN_PROCESO">EN PROCESO</option>
+                <option value="COMPLETADA">COMPLETADA</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer py-1">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-sm btn-success fw-bold">Guardar Acción</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO PDCA -->
+<div class="modal fade" id="modalNuevoPDCA" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">Nuevo Plan PDCA (Borrador)</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formNuevoPDCA" onsubmit="guardarNuevoPDCA(event)">
+        <div class="modal-body py-2">
+          <div class="row g-2">
+            <div class="col-md-5">
+              <label class="form-label fw-bold small mb-1">CÓD. Documental:</label>
+              <input type="text" class="form-control form-control-sm" id="newCodDoc" value="01-9999-99-99-99-9999-PD-00-01-02" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-bold small mb-1">PDCA N° (Correlativo):</label>
+              <input type="text" class="form-control form-control-sm bg-light" id="newNumPdca" value="Se asignará al aprobar" readonly>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-bold small mb-1">Página:</label>
+              <input type="text" class="form-control form-control-sm" id="newPaginaDoc" value="Página 1 de 2" required>
+            </div>
+
+            <div class="col-md-12">
+              <label class="form-label fw-bold small mb-1">Subtítulo / Objeto del Plan (Centrado en Encabezado):</label>
+              <input type="text" class="form-control form-control-sm" id="newTitulo" placeholder="ej: Reducción de Consumo y Ralentí - Línea 148" required>
+            </div>
+
+            <div class="col-md-12">
+              <label class="form-label fw-bold small mb-1 text-primary">Política Institucional (Catálogo 2026):</label>
+              <select class="form-select form-select-sm" id="newPolitica" required></select>
+            </div>
+
+            <div class="col-md-12">
+              <label class="form-label fw-bold small mb-1">Objetivo:</label>
+              <textarea class="form-control form-control-sm" id="newObjetivo" rows="2" required></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold small mb-1">Meta:</label>
+              <input type="text" class="form-control form-control-sm" id="newMeta" placeholder="ej: Mejorar el rendimiento de combustible en un 5 %" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold small mb-1">Efecto Esperado:</label>
+              <input type="text" class="form-control form-control-sm" id="newEfecto" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold small mb-1">Responsable:</label>
+              <input type="text" class="form-control form-control-sm" id="newResponsable" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold small mb-1">Dead Line:</label>
+              <input type="text" class="form-control form-control-sm" id="newDeadline" placeholder="ej: 31/10/2026" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer py-1">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-sm btn-success fw-semibold">Guardar y Abrir Plan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==========================================
+  // CONFIGURACIÓN FIREBASE FIRESTORE
+  // ==========================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyDeyYbcazMTgUk217e8afabEV9GY0HlT6g",
+    authDomain: "pdca-mision-buenos-aires.firebaseapp.com",
+    projectId: "pdca-mision-buenos-aires",
+    storageBucket: "pdca-mision-buenos-aires.firebasestorage.app",
+    messagingSenderId: "1039757562571",
+    appId: "1:1039757562571:web:f35d50ac39fdacfedd814e",
+    measurementId: "G-1Y4VSBRQ3Z"
+  };
+
+  let db = null;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+  } catch (err) {
+    console.warn("Inicialización Firebase local fallback:", err);
+  }
+
+  const POLITICAS_2026 = [
+    "Política 1: Optimizar el uso de los recursos.",
+    "Política 2: Asegurar la limpieza y la imagen de la flota.",
+    "Política 3: Mantener el orden y el cuidado ambiental.",
+    "Política 4: Medir y evaluar el desempeño de la gestión con base en indicadores (en los niveles estratégico, táctico y operativo).",
+    "Política 5: Adecuar la infraestructura interna a la operación.",
+    "Política 6: Prevenir conflictos y reducir riesgos legales.",
+    "Política 7: Fortalecer la comunicación institucional."
+  ];
+
+  const usuariosSistema = [
+    { legajo: "9001", clave: "1234", nombre: "Gerente de Mantenimiento", rol: "GERENTE" },
+    { legajo: "3110", clave: "1234", nombre: "Favio Graciette", rol: "REVISOR" },
+    { legajo: "2045", clave: "1234", nombre: "Omar Funes", rol: "MONITOR" }
+  ];
+
+  // INICIALIZACIÓN INMEDIATA (LOCAL-FIRST) PARA EVITAR ESPERAS
+  const datosIniciales = [
+    {
+      codDoc: "01-9999-99-99-99-9999-PD-00-01-02",
+      numPdca: "", 
+      paginaDoc: "Página 1 de 2",
+      titulo: "Reducción de Ralentí y Rendimiento de Combustible",
+      politica: "Política 1: Optimizar el uso de los recursos.",
+      objetivo: "Reducir los tiempos improductivos de ralentí en cabeceras y predios, optimizar el rendimiento de combustible interviniendo activamente sobre la conducta de los choferes mediante acompañamiento técnico a los desvíos e incentivos al desempeño eficiente.",
+      meta: "Mejor el rendimiento de combustible en un 5 %",
+      efecto: "Disminuir el costo operativo de gasoil y consolidar un estándar de conducción económica en la flota.",
+      responsable: "Favio Graciette",
+      deadline: "31/10/2026",
+      estado: "BORRADOR",
+      bloqueado: false,
+      fechaRevision: "",
+      revisadoPor: "",
+      fechaAprobacion: "",
+      aprobadoPor: "",
+      acciones: [
+        { orden: 1, que: "Auditoría diaria y ajuste de kilometraje.", porQue: "Para garantizar que no existan km no computados que distorsionen los mantenimientos ni el consumo.", como: "1.1. Verificar que km GPS > 0 en toda la flota activa.\n1.2. Validar la condición km GPS > Km SUBE\n1.3. En casos donde km GPS ≤ Km SUBE, aplicar la formula Km Asignado = Km SUBE x 1,05, dar aviso a sistema para su revisión.", cuanto: "", quien: "Omar Funes", donde: "Itatí", cuando: "Diariamente a partir del: 01/10/2026", estado: "EN_PROCESO" },
+        { orden: 2, que: "Reducción y control de ralentí en cabeceras, lavadero y predio.", porQue: "Porque al estar en situación de ralentí se consume combustible innecesariamente.", como: "Supervisión diaria con planilleros y extracción de eventos telemáticos superiores a 5 minutos.", cuanto: "", quien: "Favio Graciette", donde: "Itatí", cuando: "Semanalmente", estado: "EN_PROCESO" },
+        { orden: 3, que: "Intervención y charla técnica con los 10 conductores críticos.", porQue: "Para corregir malos hábitos de manejo y exceso de ralentí.", como: "Citar al chofer, analizar odolitro y seguimiento semanal en telemetría.", cuanto: "", quien: "Monitor Itatí", donde: "Itatí", cuando: "Semanalmente", estado: "PENDIENTE" }
+      ]
+    },
+    {
+      codDoc: "01-9999-99-99-99-9999-PD-00-01-02",
+      numPdca: "0079/2026",
+      paginaDoc: "Página 1 de 2",
+      titulo: "Puesta en Marcha Unidad 837",
+      politica: "Política 5: Adecuar la infraestructura interna a la operación.",
+      objetivo: "Montaje, puesta en marcha y habilitación de conjunto mecánico para reincorporar la unidad 837 a la operación activa.",
+      meta: "100% de tareas completadas y habilitación técnica en 10 días.",
+      efecto: "Aumento de disponibilidad de flota operativa y reducción de unidades paradas.",
+      responsable: "Jefatura de Taller Barracas",
+      deadline: "20/10/2026",
+      estado: "APROBADO",
+      bloqueado: true,
+      fechaRevision: "15/09/2026",
+      revisadoPor: "Jefatura de Operaciones",
+      fechaAprobacion: "02/10/2026",
+      aprobadoPor: "Gerencia de Mantenimiento",
+      acciones: [
+        { orden: 1, que: "Montaje mecánico y conexiones", porQue: "Fijar mecánica al chasis.", como: "Izar motor, acoplar transmisión a cardán, mangueras e intercooler.", cuanto: "1 unidad", quien: "Mecánicos Barracas", donde: "Barracas", cuando: "Días 1-3", estado: "COMPLETADA" },
+        { orden: 2, que: "Fluidos y puesta en marcha en fosa", porQue: "Verificar presiones y estanqueidad.", como: "Cargar aceite, refrigerante, purgar inyección y prueba estática.", cuanto: "100% OK", quien: "Motorista", donde: "Barracas", cuando: "Día 4", estado: "COMPLETADA" },
+        { orden: 3, que: "Prueba de rodaje y enlace Spider", porQue: "Validar tracción y odometría.", como: "Rodaje de 20 km en calle y verificación de pulsos en plataforma Spider.", cuanto: "1 prueba", quien: "Jefe de Taller", donde: "Circuito urbano", cuando: "Días 5-6", estado: "COMPLETADA" }
+      ]
+    }
+  ];
+
+  let usuarioSesion = JSON.parse(localStorage.getItem("pdca_sesion_activa")) || null;
+  let baseDatos = JSON.parse(localStorage.getItem("planes_pdca_oficial_mba_local")) || datosIniciales;
+  let indiceActual = 0;
+
+  function guardarLocal() {
+    localStorage.setItem("planes_pdca_oficial_mba_local", JSON.stringify(baseDatos));
+  }
+
+  // ==========================================
+  // NAVEGACIÓN Y CAMBIO DE VISTAS
+  // ==========================================
+  function cambiarVista(vista) {
+    const sLogin = document.getElementById("seccionLogin");
+    const sDash = document.getElementById("seccionDashboard");
+    const sDoc = document.getElementById("seccionDocumento");
+    const navUser = document.getElementById("usuarioInfoNavbar");
+
+    sLogin.classList.add("d-none");
+    sDash.classList.add("d-none");
+    sDoc.classList.add("d-none");
+
+    if (vista === "login") {
+      sLogin.classList.remove("d-none");
+      navUser.classList.add("d-none");
+    } else if (vista === "dashboard") {
+      sDash.classList.remove("d-none");
+      navUser.classList.remove("d-none");
+      actualizarDashboard();
+    } else if (vista === "documento") {
+      sDoc.classList.remove("d-none");
+      navUser.classList.remove("d-none");
+      cargarPDCA(indiceActual);
+    }
+  }
+
+  // ==========================================
+  // AUTENTICACIÓN POR LEGAJO
+  // ==========================================
+  function ejecutarLogin(e) {
+    e.preventDefault();
+    const leg = document.getElementById("loginLegajo").value.trim();
+    const pass = document.getElementById("loginPassword").value.trim();
+
+    const usuario = usuariosSistema.find(u => u.legajo === leg && u.clave === pass);
+    if (!usuario) {
+      alert("Legajo o contraseña incorrectos.");
+      return;
+    }
+
+    usuarioSesion = usuario;
+    localStorage.setItem("pdca_sesion_activa", JSON.stringify(usuarioSesion));
+    document.getElementById("formLogin").reset();
+    actualizarDatosUsuarioSesion();
+    cambiarVista("dashboard");
+  }
+
+  function cerrarSesion() {
+    usuarioSesion = null;
+    localStorage.removeItem("pdca_sesion_activa");
+    cambiarVista("login");
+  }
+
+  function actualizarDatosUsuarioSesion() {
+    if (!usuarioSesion) return;
+    document.getElementById("txtNavbarUsuario").innerHTML = `👤 Legajo <strong>${usuarioSesion.legajo}</strong> (${usuarioSesion.rol})`;
+    document.getElementById("dashSaludoUsuario").innerText = `Hola, ${usuarioSesion.nombre}`;
+  }
+
+  // ==========================================
+  // DASHBOARD Y CÁLCULO DE INDICADORES
+  // ==========================================
+  function actualizarDashboard() {
+    actualizarDatosUsuarioSesion();
+
+    let totalPlanes = baseDatos.length;
+    let enProceso = 0;
+    let finalizados = 0;
+    let misTareasTotal = 0;
+    let misTareasCompletadas = 0;
+
+    const nombreUsuario = usuarioSesion ? usuarioSesion.nombre.toLowerCase() : "";
+
+    baseDatos.forEach(plan => {
+      if (plan.estado === "APROBADO") {
+        finalizados++;
+      } else {
+        enProceso++;
+      }
+
+      if (plan.acciones && Array.isArray(plan.acciones)) {
+        plan.acciones.forEach(acc => {
+          if (nombreUsuario && acc.quien && acc.quien.toLowerCase().includes(nombreUsuario)) {
+            misTareasTotal++;
+            if (acc.estado === "COMPLETADA") misTareasCompletadas++;
+          }
+        });
+      }
+    });
+
+    document.getElementById("kpiTotalPlanes").innerText = totalPlanes;
+    document.getElementById("kpiEnProceso").innerText = enProceso;
+    document.getElementById("kpiFinalizados").innerText = finalizados;
+    document.getElementById("kpiMisTareas").innerText = misTareasTotal;
+    document.getElementById("kpiMisTareasDetalle").innerText = `${misTareasCompletadas} completadas`;
+
+    renderizarTablaDashboard();
+  }
+
+  function renderizarTablaDashboard() {
+    const tbody = document.getElementById("tablaDashboardBody");
+    tbody.innerHTML = "";
+
+    const filtro = document.getElementById("filtroEstadoDashboard").value;
+
+    baseDatos.forEach((plan, i) => {
+      if (filtro === "APROBADO" && plan.estado !== "APROBADO") return;
+      if (filtro === "BORRADOR" && plan.estado === "APROBADO") return;
+
+      let badgeEstado = '<span class="badge bg-secondary">Borrador</span>';
+      if (plan.estado === "REVISADO") badgeEstado = '<span class="badge bg-warning text-dark">Revisado</span>';
+      if (plan.estado === "APROBADO") badgeEstado = '<span class="badge bg-success">Aprobado 🔒</span>';
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="fw-bold text-dark">${plan.numPdca || '<span class="text-muted fst-italic">Pendiente</span>'}</td>
+        <td>
+          <strong>${plan.titulo}</strong><br>
+          <span class="text-muted small">${plan.politica || ''}</span>
+        </td>
+        <td>${plan.responsable}</td>
+        <td>${plan.deadline}</td>
+        <td class="text-center">${badgeEstado}</td>
+        <td class="text-end">
+          <button class="btn btn-sm btn-outline-primary fw-semibold" onclick="abrirPlanDesdeDashboard(${i})">
+            Abrir PDCA ➔
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    if (tbody.innerHTML === "") {
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">No se encontraron planes con el filtro seleccionado.</td></tr>`;
+    }
+  }
+
+  function abrirPlanDesdeDashboard(index) {
+    indiceActual = index;
+    actualizarSelectDocumento(index);
+    cambiarVista("documento");
+  }
+
+  // ==========================================
+  // CONEXIÓN ASÍNCRONA ROBUSTA CON FIRESTORE
+  // ==========================================
+  function conectarCloudFirestore() {
+    const badge = document.getElementById("badgeCloudStatus");
+    if (!db) {
+      badge.className = "badge bg-warning text-dark";
+      badge.innerText = "🟡 Modo Local";
+      return;
+    }
+
+    badge.className = "badge bg-secondary";
+    badge.innerText = "Sincronizando...";
+
+    // Escuchar cambios sin bloquear la interfaz
+    db.collection("planes_pdca").onSnapshot((snapshot) => {
+      badge.className = "badge bg-success";
+      badge.innerText = "🟢 Cloud Activo";
+
+      if (snapshot.empty) {
+        // Subir los datos iniciales a Firestore en segundo plano
+        baseDatos.forEach(p => db.collection("planes_pdca").add(p));
+        return;
+      }
+
+      const listaRemota = [];
+      snapshot.forEach(doc => {
+        listaRemota.push({ id: doc.id, ...doc.data() });
+      });
+
+      if (listaRemota.length > 0) {
+        baseDatos = listaRemota;
+        baseDatos.sort((a, b) => (a.numPdca || "ZZZZ").localeCompare(b.numPdca || "ZZZZ"));
+        guardarLocal();
+        actualizarSelectDocumento(indiceActual < baseDatos.length ? indiceActual : 0);
+        actualizarDashboard();
+        if (!document.getElementById("seccionDocumento").classList.contains("d-none")) {
+          cargarPDCA(indiceActual);
+        }
+      }
+    }, (error) => {
+      console.warn("Firestore error:", error);
+      badge.className = "badge bg-warning text-dark";
+      badge.innerText = "🟡 Modo Local";
+    });
+  }
+
+  function sincronizarPlanEnCloud(plan) {
+    guardarLocal(); // Guardar localmente siempre primero
+    if (!db) return;
+    try {
+      if (plan.id) {
+        db.collection("planes_pdca").doc(plan.id).set(plan).catch(e => console.warn(e));
+      } else {
+        db.collection("planes_pdca").add(plan).then(docRef => plan.id = docRef.id).catch(e => console.warn(e));
+      }
+    } catch (e) {
+      console.warn("Sync cloud error:", e);
+    }
+  }
+
+  // ==========================================
+  // LOGO FIJO Y PERSISTENCIA
+  // ==========================================
+  function procesarArchivoLogo(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const base64 = evt.target.result;
+      localStorage.setItem("pdca_logo_mba", base64);
+      aplicarLogoATodos(base64);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function aplicarLogoATodos(src) {
+    document.getElementById("logoBarraFija").src = src;
+    document.getElementById("logoCardLogin").src = src;
+    document.getElementById("imgLogoOficial").src = src;
+  }
+
+  function aplicarLogoFalso(imgEl) {
+    imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50'><text x='50%' y='65%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='16' fill='%23005f73'>Misión Buenos Aires</text></svg>";
+  }
+
+  // ==========================================
+  // GESTIÓN DEL DOCUMENTO PDCA
+  // ==========================================
+  function actualizarSelectDocumento(indice = 0) {
+    const select = document.getElementById("pdcaSelect");
+    select.innerHTML = "";
+    baseDatos.forEach((p, i) => {
+      const opt = document.createElement("option");
+      opt.value = i;
+      const numLabel = p.numPdca ? `[PDCA ${p.numPdca}]` : '[BORRADOR]';
+      const lockLabel = p.bloqueado ? ' 🔒' : '';
+      opt.innerText = `${numLabel} ${p.titulo}${lockLabel}`;
+      select.appendChild(opt);
+    });
+    select.value = indice;
+  }
+
+  function seleccionarPDCA(val) {
+    indiceActual = parseInt(val);
+    cargarPDCA(indiceActual);
+  }
+
+  function cargarPDCA(index) {
+    if (baseDatos.length === 0) return;
+    indiceActual = parseInt(index);
+    const plan = baseDatos[indiceActual];
+
+    document.getElementById("lblCodDoc").innerText = plan.codDoc || "01-9999-99-99-99-9999-PD-00-01-02";
+    const numDisplay = document.getElementById("lblNumPdca");
+    if (plan.numPdca && plan.numPdca.trim() !== "") {
+      numDisplay.innerText = plan.numPdca;
+      numDisplay.className = "fw-bold text-dark";
+    } else {
+      numDisplay.innerText = "----/2026 (Pendiente de Aprobación)";
+      numDisplay.className = "text-muted fst-italic";
+    }
+
+    document.getElementById("lblPaginaDoc").innerText = plan.paginaDoc || "Página 1 de 2";
+    document.getElementById("headerSubtituloPlan").innerText = plan.titulo;
+
+    document.getElementById("lblPolitica").innerText = plan.politica;
+    document.getElementById("lblObjetivo").innerText = plan.objetivo;
+    document.getElementById("lblMeta").innerText = plan.meta;
+    document.getElementById("lblEfecto").innerText = plan.efecto;
+    document.getElementById("lblResponsable").innerText = plan.responsable;
+    document.getElementById("lblDeadline").innerText = plan.deadline;
+
+    document.getElementById("lblFechaRevision").innerText = plan.fechaRevision || "";
+    document.getElementById("lblRevisadoPor").innerText = plan.revisadoPor || "";
+    document.getElementById("lblFechaAprobacion").innerText = plan.fechaAprobacion || "";
+    document.getElementById("lblAprobadoPor").innerText = plan.aprobadoPor || "";
+
+    gestionarEstadoBloqueoUI(plan);
+    renderizarAcciones(plan.acciones, plan.bloqueado);
+  }
+
+  function gestionarEstadoBloqueoUI(plan) {
+    const banner = document.getElementById("bannerBloqueo");
+    const badge = document.getElementById("badgeEstadoPantalla");
+    const btnAgregar = document.getElementById("btnAgregarAccion");
+    const btnRev = document.getElementById("btnRevisarPlan");
+    const btnApr = document.getElementById("btnAprobarGerencia");
+    const btnDesbloq = document.getElementById("btnDesbloquearPlan");
+
+    if (plan.bloqueado) {
+      banner.classList.remove("d-none");
+      badge.innerText = "APROBADO (BLOQUEADO)";
+      badge.className = "badge bg-danger";
+      btnAgregar.classList.add("d-none");
+      btnRev.classList.add("d-none");
+      btnApr.classList.add("d-none");
+      if (usuarioSesion && usuarioSesion.rol === "GERENTE") {
+        btnDesbloq.classList.remove("d-none");
+      } else {
+        btnDesbloq.classList.add("d-none");
+      }
+    } else {
+      banner.classList.add("d-none");
+      btnAgregar.classList.remove("d-none");
+      btnRev.classList.remove("d-none");
+      btnApr.classList.remove("d-none");
+      btnDesbloq.classList.add("d-none");
+      badge.innerText = plan.estado.replace('_', ' ');
+      if (plan.estado === "BORRADOR") badge.className = "badge bg-secondary";
+      else if (plan.estado === "REVISADO") badge.className = "badge bg-warning text-dark";
+      else badge.className = "badge bg-success";
+    }
+  }
+
+  function renderizarAcciones(acciones, estaBloqueado) {
+    const tbody = document.getElementById("tablaAccionesBody");
+    tbody.innerHTML = "";
+
+    acciones.forEach((acc, i) => {
+      let badgeColor = "bg-secondary";
+      if (acc.estado === "EN_PROCESO") badgeColor = "bg-warning text-dark";
+      if (acc.estado === "COMPLETADA") badgeColor = "bg-success";
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="text-center fw-bold">${acc.orden}</td>
+        <td><strong>${acc.que}</strong></td>
+        <td>${acc.porQue}</td>
+        <td class="col-como">${acc.como}</td>
+        <td class="text-center">${acc.cuanto || ''}</td>
+        <td><strong>${acc.quien}</strong></td>
+        <td>${acc.donde}</td>
+        <td>${acc.cuando}</td>
+        <td class="text-center no-print">
+          <div class="d-flex flex-column gap-1 align-items-center">
+            <span class="badge ${badgeColor} ${estaBloqueado ? '' : 'cursor-pointer'} small" 
+                  onclick="${estaBloqueado ? '' : `rotarEstadoAccion(${i})`}" 
+                  title="${estaBloqueado ? 'Plan bloqueado' : 'Clic para cambiar avance'}">
+              ${acc.estado.replace('_', ' ')}
+            </span>
+            ${!estaBloqueado ? `
+              <button class="btn btn-xs btn-outline-primary py-0 px-1 mt-1 small" onclick="abrirModalAccion(${i})" title="Editar respuestas y responsable">
+                ✏ Editar
+              </button>
+            ` : ''}
+            <button class="btn btn-xs btn-outline-info py-0 px-1 mt-1 small fw-bold" onclick="abrirModalAuditoriaIA('accion', ${i})" title="Auditar esta acción específica con IA">
+              ✨ IA Acción
+            </button>
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function rotarEstadoAccion(i) {
+    if (!usuarioSesion) {
+      alert("Inicie sesión con su Legajo.");
+      return;
+    }
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) {
+      alert("Plan bloqueado por Gerencia.");
+      return;
+    }
+    const acc = plan.acciones[i];
+    if (acc.estado === "PENDIENTE") acc.estado = "EN_PROCESO";
+    else if (acc.estado === "EN_PROCESO") acc.estado = "COMPLETADA";
+    else acc.estado = "PENDIENTE";
+
+    sincronizarPlanEnCloud(plan);
+    renderizarAcciones(plan.acciones, plan.bloqueado);
+  }
+
+  function abrirModalAccion(index) {
+    if (!usuarioSesion) return;
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) {
+      alert("El plan se encuentra bloqueado por Gerencia.");
+      return;
+    }
+
+    const modalTitulo = document.getElementById("modalAccionTitulo");
+    const editIndexField = document.getElementById("accEditIndex");
+
+    if (index >= 0) {
+      const acc = plan.acciones[index];
+      modalTitulo.innerText = `Editar Acción N° ${acc.orden}`;
+      editIndexField.value = index;
+      document.getElementById("accQue").value = acc.que;
+      document.getElementById("accPorQue").value = acc.porQue;
+      document.getElementById("accComo").value = acc.como;
+      document.getElementById("accQuien").value = acc.quien;
+      document.getElementById("accCuanto").value = acc.cuanto || "";
+      document.getElementById("accDonde").value = acc.donde;
+      document.getElementById("accCuando").value = acc.cuando;
+      document.getElementById("accEstado").value = acc.estado;
+    } else {
+      modalTitulo.innerText = "Nueva Acción 5W2H";
+      editIndexField.value = "-1";
+      document.getElementById("formAccion5W2H").reset();
+      document.getElementById("accQuien").value = usuarioSesion.nombre;
+      document.getElementById("accDonde").value = "Itatí";
+      document.getElementById("accCuando").value = "A partir de hoy";
+    }
+    new bootstrap.Modal(document.getElementById('modalAccion5W2H')).show();
+  }
+
+  function guardarAccion5W2H(e) {
+    e.preventDefault();
+    const plan = baseDatos[indiceActual];
+    const index = parseInt(document.getElementById("accEditIndex").value);
+
+    const accionData = {
+      orden: index >= 0 ? plan.acciones[index].orden : plan.acciones.length + 1,
+      que: document.getElementById("accQue").value.trim(),
+      porQue: document.getElementById("accPorQue").value.trim(),
+      como: document.getElementById("accComo").value.trim(),
+      quien: document.getElementById("accQuien").value.trim(),
+      cuanto: document.getElementById("accCuanto").value.trim(),
+      donde: document.getElementById("accDonde").value.trim(),
+      cuando: document.getElementById("accCuando").value.trim(),
+      estado: document.getElementById("accEstado").value
+    };
+
+    if (index >= 0) {
+      plan.acciones[index] = accionData;
+    } else {
+      plan.acciones.push(accionData);
+    }
+
+    sincronizarPlanEnCloud(plan);
+    bootstrap.Modal.getInstance(document.getElementById('modalAccion5W2H')).hide();
+    renderizarAcciones(plan.acciones, plan.bloqueado);
+  }
+
+  function registrarRevisionPlan() {
+    if (!usuarioSesion) return;
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) {
+      alert("Plan bloqueado. No admite revisiones.");
+      return;
+    }
+    const fechaHoy = new Date().toLocaleDateString('es-AR');
+    plan.revisadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
+    plan.fechaRevision = fechaHoy;
+    plan.estado = "REVISADO";
+
+    sincronizarPlanEnCloud(plan);
+    cargarPDCA(indiceActual);
+  }
+
+  function aprobarPlanGerencia() {
+    if (!usuarioSesion) return;
+    if (usuarioSesion.rol !== "GERENTE") {
+      alert("PERMISO DENEGADO: La aprobación oficial es potestad exclusiva del Gerente.");
+      return;
+    }
+    const plan = baseDatos[indiceActual];
+    const confirmar = confirm(`¿Confirma la aprobación formal del plan?\n\nAl confirmar:\n1. Se asignará el número correlativo consecutivo.\n2. Se registrará la firma del Gerente.\n3. El plan quedará BLOQUEADO en Cloud.`);
+    if (!confirmar) return;
+
+    const fechaHoy = new Date().toLocaleDateString('es-AR');
+    plan.aprobadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
+    plan.fechaAprobacion = fechaHoy;
+    plan.estado = "APROBADO";
+    plan.bloqueado = true;
+
+    if (!plan.numPdca || plan.numPdca.trim() === "" || plan.numPdca.startsWith("----")) {
+      const anioActual = new Date().getFullYear();
+      plan.numPdca = obtenerSiguienteNumeroPDCA(anioActual);
+    }
+
+    sincronizarPlanEnCloud(plan);
+    alert(`¡PLAN OFICIALIZADO!\n\nCorrelativo asignado: PDCA ${plan.numPdca}\nAprobado por: ${plan.aprobadoPor}\nFecha: ${fechaHoy}`);
+    cargarPDCA(indiceActual);
+  }
+
+  function obtenerSiguienteNumeroPDCA(anio) {
+    let maximo = 79;
+    baseDatos.forEach(plan => {
+      if (plan.numPdca && plan.numPdca.includes('/')) {
+        const partes = plan.numPdca.split('/');
+        const num = parseInt(partes[0], 10);
+        const y = parseInt(partes[1], 10);
+        if (!isNaN(num) && y === anio) {
+          if (num > maximo) maximo = num;
+        }
+      }
+    });
+    return String(maximo + 1).padStart(4, '0') + '/' + anio;
+  }
+
+  function desbloquearPlanGerente() {
+    if (!usuarioSesion || usuarioSesion.rol !== "GERENTE") {
+      alert("Solo el Gerente puede desbloquear un plan oficial.");
+      return;
+    }
+    const motivo = prompt("Ingrese el motivo de la modificación técnica del PDCA:");
+    if (!motivo) return;
+
+    const plan = baseDatos[indiceActual];
+    plan.bloqueado = false;
+    plan.estado = "REABIERTO_EDICION";
+
+    sincronizarPlanEnCloud(plan);
+    alert("Plan desbloqueado para modificaciones.");
+    cargarPDCA(indiceActual);
+  }
+
+  function abrirModalNuevoPDCA() {
+    if (!usuarioSesion) {
+      alert("Debe iniciar sesión para crear nuevos planes.");
+      return;
+    }
+    new bootstrap.Modal(document.getElementById('modalNuevoPDCA')).show();
+  }
+
+  function guardarNuevoPDCA(e) {
+    e.preventDefault();
+    const nuevo = {
+      codDoc: document.getElementById("newCodDoc").value.trim(),
+      numPdca: "", 
+      paginaDoc: document.getElementById("newPaginaDoc").value.trim(),
+      titulo: document.getElementById("newTitulo").value.trim(),
+      politica: document.getElementById("newPolitica").value,
+      objetivo: document.getElementById("newObjetivo").value.trim(),
+      meta: document.getElementById("newMeta").value.trim(),
+      efecto: document.getElementById("newEfecto").value.trim(),
+      responsable: document.getElementById("newResponsable").value.trim(),
+      deadline: document.getElementById("newDeadline").value.trim(),
+      estado: "BORRADOR",
+      bloqueado: false,
+      fechaRevision: "",
+      revisadoPor: "",
+      fechaAprobacion: "",
+      aprobadoPor: "",
+      acciones: []
+    };
+
+    baseDatos.push(nuevo);
+    sincronizarPlanEnCloud(nuevo);
+
+    bootstrap.Modal.getInstance(document.getElementById('modalNuevoPDCA')).hide();
+    document.getElementById("formNuevoPDCA").reset();
+    
+    indiceActual = baseDatos.length - 1;
+    actualizarSelectDocumento(indiceActual);
+    cambiarVista("documento");
+  }
+
+  function abrirModalCambiarPolitica() {
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) {
+      alert("El plan se encuentra bloqueado por Gerencia.");
+      return;
+    }
+    document.getElementById("selectPoliticaActiva").value = plan.politica;
+    new bootstrap.Modal(document.getElementById('modalPoliticaActiva')).show();
+  }
+
+  function guardarCambioPolitica() {
+    const plan = baseDatos[indiceActual];
+    plan.politica = document.getElementById("selectPoliticaActiva").value;
+    sincronizarPlanEnCloud(plan);
+    bootstrap.Modal.getInstance(document.getElementById('modalPoliticaActiva')).hide();
+    document.getElementById("lblPolitica").innerText = plan.politica;
+  }
+
+  function editarCampoPie(campo, mensaje) {
+    if (!usuarioSesion) return;
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) {
+      alert("El plan está formalmente cerrado y bloqueado por Gerencia.");
+      return;
+    }
+    const valorActual = plan[campo] || "";
+    const nuevoValor = prompt(mensaje, valorActual);
+    if (nuevoValor !== null) {
+      plan[campo] = nuevoValor.trim();
+      sincronizarPlanEnCloud(plan);
+      cargarPDCA(indiceActual);
+    }
+  }
+
+  // ==========================================
+  // AUDITORÍA INTELIGENTE CON GEMINI
+  // ==========================================
+  function abrirConfigGemini() {
+    const keyActual = localStorage.getItem("gemini_api_key") || "";
+    document.getElementById("inputApiKeyGemini").value = keyActual;
+    new bootstrap.Modal(document.getElementById('modalConfigGemini')).show();
+  }
+
+  function guardarApiKeyGemini() {
+    const key = document.getElementById("inputApiKeyGemini").value.trim();
+    if (!key) return;
+    localStorage.setItem("gemini_api_key", key);
+    bootstrap.Modal.getInstance(document.getElementById('modalConfigGemini')).hide();
+    alert("API Key guardada.");
+  }
+
+  function abrirModalAuditoriaIA(tipo = 'plan', indexAccion = -1) {
+    let apiKey = localStorage.getItem("gemini_api_key");
+    if (!apiKey) {
+      abrirConfigGemini();
+      return;
+    }
+    if (baseDatos.length === 0) return;
+
+    const plan = baseDatos[indiceActual];
+    const select = document.getElementById("selectAmbitoAuditoria");
+    select.innerHTML = "";
+
+    const optPlan = document.createElement("option");
+    optPlan.value = "plan";
+    optPlan.innerText = `Plan Completo: ${plan.titulo}`;
+    select.appendChild(optPlan);
+
+    plan.acciones.forEach((acc, i) => {
+      const optAcc = document.createElement("option");
+      optAcc.value = `accion_${i}`;
+      optAcc.innerText = `Acción #${acc.orden}: ${acc.que.substring(0, 40)}...`;
+      select.appendChild(optAcc);
+    });
+
+    if (tipo === 'accion' && indexAccion >= 0) {
+      select.value = `accion_${indexAccion}`;
+      ejecutarAnalisisIA('accion', indexAccion);
+    } else {
+      select.value = "plan";
+      ejecutarAnalisisIA('plan', -1);
+    }
+
+    new bootstrap.Modal(document.getElementById('modalRespuestaGemini')).show();
+  }
+
+  function ejecutarAnalisisDesdeSelector(valor) {
+    if (valor === "plan") {
+      ejecutarAnalisisIA('plan', -1);
+    } else if (valor.startsWith("accion_")) {
+      const idx = parseInt(valor.replace("accion_", ""));
+      ejecutarAnalisisIA('accion', idx);
+    }
+  }
+
+  async function ejecutarAnalisisIA(ambito, accionIdx) {
+    let apiKey = localStorage.getItem("gemini_api_key");
+    if (!apiKey) return;
+
+    const plan = baseDatos[indiceActual];
+    document.getElementById("geminiSpinner").style.display = "block";
+    document.getElementById("geminiContenido").innerText = "";
+
+    let promptAuditoria = "";
+
+    if (ambito === 'plan') {
+      document.getElementById("geminiSpinnerText").innerText = "Analizando el plan completo con Gemini...";
+      let accionesTexto = plan.acciones.map(a => 
+        `• Orden ${a.orden}: ¿Qué?: ${a.que} | ¿Por qué?: ${a.porQue} | ¿Cómo?: ${a.como} | Responsable: ${a.quien} | Plazo: ${a.cuando} | Estado: ${a.estado}`
+      ).join("\n");
+
+      promptAuditoria = `
+Actúa como un Auditor Senior en Calidad y Operaciones de Transporte de Pasajeros por Automotor (IRAM 3810 / ISO 9001).
+Analiza el siguiente Plan PDCA de Misión Buenos Aires:
+- TÍTULO: ${plan.titulo}
+- POLÍTICA: ${plan.politica}
+- OBJETIVO: ${plan.objetivo}
+- META: ${plan.meta}
+- EFECTO ESPERADO: ${plan.efecto}
+- RESPONSABLE: ${plan.responsable}
+- ACCIONES (5W2H):
+${accionesTexto}
+
+Estructura tu dictamen en:
+1. CONGRUENCIA ENTRE META, OBJETIVO Y ACCIONES
+2. RIESGOS OPERACIONALES EN PREDIO O CALLE
+3. PROPUESTA DE 2 O 3 ACCIONES 5W2H ADICIONALES
+`;
+    } else {
+      const acc = plan.acciones[accionIdx];
+      document.getElementById("geminiSpinnerText").innerText = `Analizando Acción #${acc.orden}...`;
+
+      promptAuditoria = `
+Actúa como un Auditor Senior en Calidad de Transporte Automotor (IRAM 3810 / ISO 9001).
+Realiza una auditoría técnica individual sobre esta ACCIÓN del Plan PDCA "${plan.titulo}":
+[MARCO DEL PLAN]
+- OBJETIVO: ${plan.objetivo}
+- META: ${plan.meta}
+- EFECTO ESPERADO: ${plan.efecto}
+
+[ACCIÓN ESPECÍFICA (#${acc.orden})]
+- ¿QUÉ?: ${acc.que}
+- ¿POR QUÉ?: ${acc.porQue}
+- ¿CÓMO?: ${acc.como}
+- ¿QUIÉN?: ${acc.quien}
+- ¿DÓNDE?: ${acc.donde}
+- ¿CUÁNDO?: ${acc.cuando}
+- ESTADO: ${acc.estado}
+
+Dictamen:
+1. ALINEACIÓN CON LA META Y EFECTO ESPERADO
+2. EVALUACIÓN TÉCNICA DEL ¿CÓMO? Y DEL ¿QUIÉN?
+3. RIESGOS EN LA OPERACIÓN DIARIA
+4. MEJORA DE REDACCIÓN RECOMENDADA
+`;
+    }
+
+    const modelos = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"];
+    let exito = false;
+    let errDetalle = "";
+
+    for (const mod of modelos) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${mod}:generateContent?key=${apiKey}`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: promptAuditoria }] }] })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => null);
+          errDetalle = errData?.error?.message || `HTTP ${res.status}`;
+          continue;
+        }
+        const data = await res.json();
+        const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (texto) {
+          document.getElementById("geminiSpinner").style.display = "none";
+          document.getElementById("geminiContenido").innerText = `[Auditoría generada con: ${mod}]\n\n` + texto;
+          exito = true;
+          break;
+        }
+      } catch (err) {
+        errDetalle = err.message;
+      }
+    }
+
+    if (!exito) {
+      document.getElementById("geminiSpinner").style.display = "none";
+      document.getElementById("geminiContenido").innerText = `⚠️ Error al consultar Gemini: ${errDetalle}`;
+    }
+  }
+
+  // ==========================================
+  // INICIALIZACIÓN
+  // ==========================================
+  window.onload = function() {
+    // 1. Cargar selectores de políticas
+    const selNuevo = document.getElementById("newPolitica");
+    const selActiva = document.getElementById("selectPoliticaActiva");
+    selNuevo.innerHTML = "";
+    selActiva.innerHTML = "";
+    POLITICAS_2026.forEach(pol => {
+      const opt1 = document.createElement("option"); opt1.value = pol; opt1.innerText = pol; selNuevo.appendChild(opt1);
+      const opt2 = document.createElement("option"); opt2.value = pol; opt2.innerText = pol; selActiva.appendChild(opt2);
+    });
+
+    // 2. Restaurar Logo si existe en memoria
+    const logoGuardado = localStorage.getItem("pdca_logo_mba");
+    if (logoGuardado) aplicarLogoATodos(logoGuardado);
+
+    // 3. Renderizar Dashboard inmediatamente con los datos locales
+    if (usuarioSesion) {
+      cambiarVista("dashboard");
+    } else {
+      cambiarVista("login");
+    }
+
+    // 4. Conectar a Firestore en segundo plano
+    conectarCloudFirestore();
+  };
+</script>
+
+</body>
+</html>
