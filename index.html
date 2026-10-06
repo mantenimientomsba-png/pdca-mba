@@ -110,7 +110,6 @@
       height: 28px;
     }
 
-    /* NOMBRE DEL PDCA UBICADO EXACTAMENTE DEBAJO DE "PDCA" */
     .celda-subtitulo-plan {
       text-align: center;
       font-weight: bold;
@@ -143,7 +142,7 @@
       color: #000;
     }
 
-    /* TABLA 5W2H - 8 COLUMNAS EXACTAS */
+    /* TABLA 5W2H - 8 COLUMNAS EXACTAS A WORD */
     .tabla-contenedor-inner {
       width: 100%;
       margin-top: 3px;
@@ -298,6 +297,7 @@
     <span id="badgeCloudStatus" class="badge bg-secondary" style="font-size: 7.5pt;">Iniciando...</span>
     <div id="usuarioInfoNavbar" class="d-none align-items-center gap-2">
       <span class="small text-dark fw-semibold d-none d-md-inline" id="txtNavbarUsuario"></span>
+      <button class="btn btn-sm btn-outline-primary py-0 px-2 small d-none" id="btnAdminUsuariosNavbar" onclick="abrirModalGestionUsuarios()">👥 Usuarios</button>
       <button class="btn btn-sm btn-outline-danger py-0 px-2 small" onclick="cerrarSesion()">Salir</button>
     </div>
   </div>
@@ -314,7 +314,9 @@
 <input type="file" id="inputLogoFile" accept="image/*" class="d-none" onchange="procesarArchivoLogo(event)">
 <input type="file" id="inputImportWord" accept=".docx" class="d-none" onchange="procesarArchivoWord(event)">
 
-<!-- 1. PANTALLA LOGIN -->
+<!-- ======================================================== -->
+<!-- 1. PANTALLA LOGIN Y REGISTRO                            -->
+<!-- ======================================================== -->
 <div id="seccionLogin" class="container py-4 py-md-5">
   <div class="row justify-content-center">
     <div class="col-12 col-sm-8 col-md-5 col-lg-4">
@@ -322,25 +324,34 @@
         <div class="card-body p-4 text-center">
           <img id="logoCardLogin" src="logo.png" alt="Misión Buenos Aires" class="brand-logo-img mb-3" style="max-height: 50px;" onerror="aplicarLogoFalso(this)">
           <h5 class="fw-bold text-dark mb-1">Acceso al Sistema PDCA</h5>
-          <p class="text-muted small mb-4">Ingrese su legajo institucional y contraseña</p>
+          <p class="text-muted small mb-3">Ingrese con su Legajo o Correo Electrónico</p>
 
+          <!-- FORMULARIO DE INICIO DE SESIÓN -->
           <form id="formLogin" onsubmit="ejecutarLogin(event)" class="text-start">
             <div class="mb-3">
-              <label class="form-label small fw-bold mb-1">N° de Legajo:</label>
-              <input type="text" class="form-control" id="loginLegajo" placeholder="ej: 9001 o 2045" required autofocus>
+              <label class="form-label small fw-bold mb-1">Legajo o Email:</label>
+              <input type="text" class="form-control" id="loginIdentificador" placeholder="ej: 3110 o usuario@misionba.com.ar" required autofocus>
             </div>
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Contraseña:</label>
               <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">Ingresar al Panel</button>
+            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">Ingresar al Sistema</button>
           </form>
 
-          <div class="alert alert-light border small text-muted text-start mt-4 mb-0 py-2" style="font-size: 8pt;">
-            <strong>Legajos y Roles habilitados:</strong><br>
-            • <strong>9001</strong> (Gerente Mantenimiento - clave: 1234) ➔ <em>Aprueba y asigna N° oficial</em><br>
-            • <strong>3110</strong> (Favio Graciette / Revisor - clave: 1234) ➔ <em>Valida y revisa</em><br>
-            • <strong>2045</strong> (Omar Funes / Monitor - clave: 1234) ➔ <em>Carga y seguimiento</em>
+          <hr class="my-3">
+
+          <div class="text-center">
+            <button class="btn btn-sm btn-outline-success w-100 fw-bold" onclick="abrirModalRegistro()">
+              + Registrar Nuevo Usuario
+            </button>
+          </div>
+
+          <div class="alert alert-light border small text-muted text-start mt-3 mb-0 py-2" style="font-size: 7.5pt;">
+            <strong>Jerarquía de Permisos:</strong><br>
+            • <strong>Facilitador</strong>: Revisa, Aprueba (asigna N° PDCA) y Finaliza.<br>
+            • <strong>Gerente</strong>: Revisa formalmente, audita y gestiona accesos.<br>
+            • <strong>Monitor</strong>: Carga tareas y actualiza avances 5W2H.
           </div>
         </div>
       </div>
@@ -348,15 +359,20 @@
   </div>
 </div>
 
-<!-- 2. PANTALLA DASHBOARD -->
+<!-- ======================================================== -->
+<!-- 2. PANTALLA DASHBOARD                                    -->
+<!-- ======================================================== -->
 <div id="seccionDashboard" class="container-fluid container-md py-3 py-md-4 d-none">
 
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <div>
       <h5 class="fw-bold m-0 text-dark" id="dashSaludoUsuario">Bienvenido</h5>
-      <p class="text-muted small m-0">Panel de control de planes e indicadores de avance</p>
+      <p class="text-muted small m-0" id="dashSubtituloRol">Panel de control de planes e indicadores de avance</p>
     </div>
     <div class="d-flex gap-2 flex-wrap">
+      <button class="btn btn-outline-secondary btn-sm fw-semibold d-none" id="btnAdminUsuariosDash" onclick="abrirModalGestionUsuarios()">
+        👥 Usuarios y Permisos
+      </button>
       <button class="btn btn-outline-success btn-sm fw-semibold" onclick="document.getElementById('inputImportWord').click()" title="Adjuntar archivo Word .docx con plantilla PDCA">
         📎 Importar Word (.docx)
       </button>
@@ -430,7 +446,9 @@
 
 </div>
 
-<!-- 3. PANTALLA DOCUMENTO FORMAL -->
+<!-- ======================================================== -->
+<!-- 3. PANTALLA DOCUMENTO FORMAL                            -->
+<!-- ======================================================== -->
 <div id="seccionDocumento" class="d-none">
 
   <div class="container-fluid no-print py-2 bg-white border-bottom shadow-sm">
@@ -444,11 +462,11 @@
         <button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirModalAuditoriaIA('plan')">✨ Auditar IA</button>
         <span id="badgeEstadoPantalla" class="badge bg-secondary">BORRADOR</span>
         
-        <!-- BOTONES DE FLUJO Y JERARQUÍA -->
+        <!-- BOTONES DE FLUJO ADAPTADOS AL PERFIL -->
         <button class="btn btn-sm btn-outline-warning fw-semibold" id="btnRevisarPlan" onclick="registrarRevisionPlan()">📝 Revisar Plan</button>
-        <button class="btn btn-sm btn-success fw-semibold" id="btnAprobarPlan" onclick="aprobarPlanGerencia()">✔ Aprobar y Asignar N° (Gerente)</button>
-        <button class="btn btn-sm btn-outline-success fw-semibold d-none" id="btnMarcarFinalizado" onclick="forzarFinalizacionPlan()">🏁 Finalizar Plan</button>
-        <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanGerente()">🔓 Reabrir Edición</button>
+        <button class="btn btn-sm btn-success fw-semibold" id="btnAprobarPlan" onclick="aprobarPlanFacilitador()">✔ Aprobar y Asignar N° (Facilitador)</button>
+        <button class="btn btn-sm btn-outline-success fw-semibold d-none" id="btnMarcarFinalizado" onclick="finalizarPlanPDCA()">🏁 Finalizar Plan</button>
+        <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanAutorizado()">🔓 Reabrir Edición</button>
         
         <button class="btn btn-sm btn-primary fw-semibold" onclick="guardarPDFenBaseDeDatos()" title="Archiva el PDF en Cloud Firestore">
           ☁ Guardar PDF en Base de Datos
@@ -468,11 +486,87 @@
 
   <div class="container-fluid px-1 px-md-3 py-3">
     <div id="bannerBloqueo" class="alert alert-danger py-2 mb-2 no-print d-none" style="max-width: 210mm; margin: auto; font-size: 8.5pt;">
-      <strong>🔒 PLAN OFICIAL BLOQUEADO:</strong> Aprobado y formalizado por Gerencia para asegurar trazabilidad.
+      <strong>🔒 PLAN OFICIAL BLOQUEADO:</strong> Aprobado y formalizado por Facilitador / Calidad para asegurar trazabilidad.
     </div>
 
     <!-- CONTENEDOR DE HOJAS A4 -->
     <div class="contenedor-hojas-trabajo" id="contenedorHojasImpresion"></div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODALES DEL SISTEMA                                      -->
+<!-- ======================================================== -->
+
+<!-- MODAL REGISTRO DE USUARIOS -->
+<div class="modal fade" id="modalRegistroUsuario" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">Registro de Personal - Sistema PDCA</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formRegistroUsuario" onsubmit="ejecutarRegistroUsuario(event)">
+        <div class="modal-body py-3">
+          <div class="mb-2">
+            <label class="form-label small fw-bold mb-1">Nombre y Apellido:</label>
+            <input type="text" class="form-control form-control-sm" id="regNombre" placeholder="ej: Juan Araujo" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-bold mb-1">Correo Electrónico:</label>
+            <input type="email" class="form-control form-control-sm" id="regEmail" placeholder="ej: jaraujo@misionba.com.ar" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-bold mb-1">N° de Legajo:</label>
+            <input type="text" class="form-control form-control-sm" id="regLegajo" placeholder="ej: 4055" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-bold mb-1">Contraseña:</label>
+            <input type="password" class="form-control form-control-sm" id="regClave" placeholder="Mínimo 4 caracteres" required>
+          </div>
+          <div class="alert alert-info py-2 small mb-0" style="font-size: 7.5pt;">
+            * Los nuevos usuarios se crean inicialmente con perfil <strong>MONITOR</strong>. El Facilitador o Gerente puede elevar el perfil a <strong>FACILITADOR</strong> o <strong>GERENTE</strong> desde el panel de control.
+          </div>
+        </div>
+        <div class="modal-footer py-1">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-sm btn-success fw-bold">Completar Registro</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GESTIÓN DE USUARIOS Y PERMISOS (SOLO FACILITADOR / GERENTE) -->
+<div class="modal fade" id="modalGestionUsuarios" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">👥 Administración de Usuarios y Permisos Cloud</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-2">
+        <p class="text-muted small mb-2">Base de datos de personas habilitadas para operar, revisar o aprobar en Firestore:</p>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover align-middle mb-0" style="font-size: 8.5pt;">
+            <thead class="table-light">
+              <tr>
+                <th>Legajo</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol / Permiso</th>
+                <th>Estado</th>
+                <th class="text-end">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tablaUsuariosBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer py-1">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -691,11 +785,11 @@
     "Política 7: Fortalecer la comunicación institucional."
   ];
 
-  // USUARIOS CON ROLES Y JERARQUÍAS
-  const usuariosSistema = [
-    { legajo: "9001", clave: "1234", nombre: "Gerente de Mantenimiento", rol: "GERENTE" },
-    { legajo: "3110", clave: "1234", nombre: "Favio Graciette", rol: "REVISOR" },
-    { legajo: "2045", clave: "1234", nombre: "Omar Funes", rol: "MONITOR" }
+  // USUARIOS SEMILLA (SI LA COLECCIÓN ESTÁ VACÍA)
+  const usuariosSemilla = [
+    { legajo: "9001", clave: "1234", nombre: "Gerente de Mantenimiento", email: "gerencia@misionba.com.ar", rol: "GERENTE", estado: "ACTIVO" },
+    { legajo: "3110", clave: "1234", nombre: "Favio Graciette", email: "fgraciette@misionba.com.ar", rol: "FACILITADOR", estado: "ACTIVO" },
+    { legajo: "2045", clave: "1234", nombre: "Omar Funes", email: "ofunes@misionba.com.ar", rol: "MONITOR", estado: "ACTIVO" }
   ];
 
   const datosIniciales = [
@@ -713,9 +807,9 @@
       estado: "APROBADO",
       bloqueado: true,
       fechaRevision: "28/09/2026",
-      revisadoPor: "Favio Graciette (Leg. 3110)",
+      revisadoPor: "Favio Graciette (Facilitador)",
       fechaAprobacion: "01/10/2026",
-      aprobadoPor: "Gerente de Mantenimiento (Leg. 9001)",
+      aprobadoPor: "Favio Graciette (Facilitador)",
       pdfBase64: null,
       acciones: [
         { 
@@ -745,11 +839,220 @@
   ];
 
   let usuarioSesion = JSON.parse(localStorage.getItem("pdca_sesion_activa")) || null;
+  let baseUsuarios = JSON.parse(localStorage.getItem("usuarios_pdca_local")) || usuariosSemilla;
   let baseDatos = JSON.parse(localStorage.getItem("planes_pdca_oficial_mba_local")) || datosIniciales;
   let indiceActual = 0;
 
   function guardarLocal() {
     localStorage.setItem("planes_pdca_oficial_mba_local", JSON.stringify(baseDatos));
+    localStorage.setItem("usuarios_pdca_local", JSON.stringify(baseUsuarios));
+  }
+
+  // ==========================================
+  // SINCRONIZACIÓN CLOUD DE USUARIOS
+  // ==========================================
+  function conectarColeccionUsuarios() {
+    if (!db) return;
+    db.collection("usuarios_pdca").onSnapshot((snapshot) => {
+      if (snapshot.empty) {
+        // Inicializar usuarios semilla en Firestore si es la primera vez
+        usuariosSemilla.forEach(u => db.collection("usuarios_pdca").add(u));
+        return;
+      }
+
+      const lista = [];
+      snapshot.forEach(doc => {
+        lista.push({ id: doc.id, ...doc.data() });
+      });
+
+      if (lista.length > 0) {
+        baseUsuarios = lista;
+        guardarLocal();
+        // Si el usuario actual está logueado, actualizar sus permisos por si cambiaron
+        if (usuarioSesion) {
+          const uActualizado = baseUsuarios.find(u => u.legajo === usuarioSesion.legajo || u.email === usuarioSesion.email);
+          if (uActualizado) {
+            usuarioSesion = uActualizado;
+            localStorage.setItem("pdca_sesion_activa", JSON.stringify(usuarioSesion));
+            actualizarDatosUsuarioSesion();
+          }
+        }
+      }
+    }, (err) => console.warn("Error leyendo usuarios en Cloud:", err));
+  }
+
+  function guardarUsuarioEnCloud(usuario) {
+    guardarLocal();
+    if (!db) return;
+    try {
+      if (usuario.id) {
+        db.collection("usuarios_pdca").doc(usuario.id).set(usuario).catch(e => console.warn(e));
+      } else {
+        db.collection("usuarios_pdca").add(usuario).then(docRef => usuario.id = docRef.id).catch(e => console.warn(e));
+      }
+    } catch (e) {
+      console.warn("Error sync usuario:", e);
+    }
+  }
+
+  // ==========================================
+  // REGISTRO Y LOGIN DE USUARIOS
+  // ==========================================
+  function abrirModalRegistro() {
+    document.getElementById("formRegistroUsuario").reset();
+    new bootstrap.Modal(document.getElementById('modalRegistroUsuario')).show();
+  }
+
+  function ejecutarRegistroUsuario(e) {
+    e.preventDefault();
+    const nombre = document.getElementById("regNombre").value.trim();
+    const email = document.getElementById("regEmail").value.trim().toLowerCase();
+    const legajo = document.getElementById("regLegajo").value.trim();
+    const clave = document.getElementById("regClave").value.trim();
+
+    // Validar si ya existe
+    const existe = baseUsuarios.find(u => u.legajo === legajo || u.email.toLowerCase() === email);
+    if (existe) {
+      alert("ATENCIÓN: Ya existe un usuario registrado con ese N° de Legajo o Correo Electrónico.");
+      return;
+    }
+
+    const nuevoUsuario = {
+      nombre: nombre,
+      email: email,
+      legajo: legajo,
+      clave: clave,
+      rol: "MONITOR", // Rol operativo inicial
+      estado: "ACTIVO",
+      fechaRegistro: new Date().toLocaleDateString('es-AR')
+    };
+
+    baseUsuarios.push(nuevoUsuario);
+    guardarUsuarioEnCloud(nuevoUsuario);
+
+    bootstrap.Modal.getInstance(document.getElementById('modalRegistroUsuario')).hide();
+    alert(`¡REGISTRO EXITOSO!\n\nUsuario: ${nombre}\nLegajo: ${legajo}\nPerfil asignado: MONITOR\n\nYa puede ingresar con su legajo o correo.`);
+    document.getElementById("loginIdentificador").value = legajo;
+  }
+
+  function ejecutarLogin(e) {
+    e.preventDefault();
+    const id = document.getElementById("loginIdentificador").value.trim().toLowerCase();
+    const pass = document.getElementById("loginPassword").value.trim();
+
+    const usuario = baseUsuarios.find(u => 
+      (u.legajo.toLowerCase() === id || (u.email && u.email.toLowerCase() === id)) && 
+      u.clave === pass
+    );
+
+    if (!usuario) {
+      alert("Credenciales incorrectas. Verifique su legajo/email y contraseña.");
+      return;
+    }
+
+    if (usuario.estado === "BLOQUEADO") {
+      alert("Su cuenta se encuentra inhabilitada. Consulte con el Facilitador o Gerente.");
+      return;
+    }
+
+    usuarioSesion = usuario;
+    localStorage.setItem("pdca_sesion_activa", JSON.stringify(usuarioSesion));
+    document.getElementById("formLogin").reset();
+    actualizarDatosUsuarioSesion();
+    cambiarVista("dashboard");
+  }
+
+  function cerrarSesion() {
+    usuarioSesion = null;
+    localStorage.removeItem("pdca_sesion_activa");
+    cambiarVista("login");
+  }
+
+  function actualizarDatosUsuarioSesion() {
+    if (!usuarioSesion) return;
+    const esAutorizado = (usuarioSesion.rol === "FACILITADOR" || usuarioSesion.rol === "GERENTE");
+
+    document.getElementById("txtNavbarUsuario").innerHTML = `👤 <strong>${usuarioSesion.nombre}</strong> <span class="badge bg-secondary">${usuarioSesion.rol}</span>`;
+    document.getElementById("dashSaludoUsuario").innerText = `Hola, ${usuarioSesion.nombre}`;
+    document.getElementById("dashSubtituloRol").innerText = `Rol: ${usuarioSesion.rol} (Legajo: ${usuarioSesion.legajo})`;
+
+    const btnNavAdmin = document.getElementById("btnAdminUsuariosNavbar");
+    const btnDashAdmin = document.getElementById("btnAdminUsuariosDash");
+
+    if (esAutorizado) {
+      btnNavAdmin.classList.remove("d-none");
+      btnDashAdmin.classList.remove("d-none");
+    } else {
+      btnNavAdmin.classList.add("d-none");
+      btnDashAdmin.classList.add("d-none");
+    }
+  }
+
+  // ==========================================
+  // PANEL DE ADMINISTRACIÓN DE USUARIOS
+  // ==========================================
+  function abrirModalGestionUsuarios() {
+    if (!usuarioSesion || (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE")) {
+      alert("Acceso exclusivo para Facilitadores y Gerencia.");
+      return;
+    }
+    renderizarTablaUsuarios();
+    new bootstrap.Modal(document.getElementById('modalGestionUsuarios')).show();
+  }
+
+  function renderizarTablaUsuarios() {
+    const tbody = document.getElementById("tablaUsuariosBody");
+    tbody.innerHTML = "";
+
+    baseUsuarios.forEach((u, index) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="fw-bold">${u.legajo}</td>
+        <td><strong>${u.nombre}</strong></td>
+        <td>${u.email || '<span class="text-muted">Sin email</span>'}</td>
+        <td>
+          <select class="form-select form-select-sm py-0" onchange="cambiarRolUsuario(${index}, this.value)">
+            <option value="MONITOR" ${u.rol === 'MONITOR' ? 'selected' : ''}>MONITOR (Carga y avances)</option>
+            <option value="GERENTE" ${u.rol === 'GERENTE' ? 'selected' : ''}>GERENTE (Revisión y auditoría)</option>
+            <option value="FACILITADOR" ${u.rol === 'FACILITADOR' ? 'selected' : ''}>FACILITADOR (Revisa, Aprueba y Finaliza)</option>
+          </select>
+        </td>
+        <td>
+          <span class="badge ${u.estado === 'ACTIVO' ? 'bg-success' : 'bg-danger'}">${u.estado || 'ACTIVO'}</span>
+        </td>
+        <td class="text-end">
+          <button class="btn btn-xs btn-outline-warning py-0 px-1 me-1" onclick="cambiarClaveUsuario(${index})" title="Cambiar Contraseña">🔑</button>
+          <button class="btn btn-xs btn-outline-danger py-0 px-1" onclick="alternarEstadoUsuario(${index})" title="Habilitar/Bloquear">
+            ${u.estado === 'BLOQUEADO' ? '✔' : '🚫'}
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function cambiarRolUsuario(index, nuevoRol) {
+    const u = baseUsuarios[index];
+    u.rol = nuevoRol;
+    guardarUsuarioEnCloud(u);
+    alert(`Rol actualizado: ${u.nombre} ahora tiene perfil ${nuevoRol}.`);
+  }
+
+  function alternarEstadoUsuario(index) {
+    const u = baseUsuarios[index];
+    u.estado = u.estado === "BLOQUEADO" ? "ACTIVO" : "BLOQUEADO";
+    guardarUsuarioEnCloud(u);
+    renderizarTablaUsuarios();
+  }
+
+  function cambiarClaveUsuario(index) {
+    const u = baseUsuarios[index];
+    const nueva = prompt(`Asignar nueva contraseña para ${u.nombre}:`);
+    if (nueva && nueva.trim().length >= 4) {
+      u.clave = nueva.trim();
+      guardarUsuarioEnCloud(u);
+      alert("Contraseña actualizada exitosamente.");
+    }
   }
 
   // ==========================================
@@ -779,7 +1082,6 @@
       return plan.estado;
     }
 
-    // Si ya está aprobado o finalizado, evaluamos el Dead Line con la fecha actual
     if (plan.deadline) {
       const fDeadLine = parsearFecha(plan.deadline);
       if (fDeadLine) {
@@ -905,7 +1207,6 @@
       const hojaDiv = document.createElement("div");
       hojaDiv.className = `hoja-a4 pagina-${p.num}`;
 
-      // ENCABEZADO REGLAMENTARIO EXACTO: "PDCA" ARRIBA Y EL NOMBRE DEBAJO (ROWSPAN 2)
       let headerHTML = `
         <table class="tabla-encabezado-oficial">
           <tr>
@@ -1027,7 +1328,7 @@
                   <span class="celda-pie-label">Fecha de Revisión:</span>
                   <span class="celda-pie-valor">${plan.fechaRevision || ''}</span>
                 </td>
-                <td onclick="editarCampoPie('revisadoPor', 'Nombre del Revisor:')">
+                <td onclick="editarCampoPie('revisadoPor', 'Nombre del Revisor / Facilitador:')">
                   <span class="celda-pie-label">Revisado por:</span>
                   <span class="celda-pie-valor">${plan.revisadoPor || ''}</span>
                 </td>
@@ -1035,7 +1336,7 @@
                   <span class="celda-pie-label">Fecha de Aprobación:</span>
                   <span class="celda-pie-valor">${plan.fechaAprobacion || ''}</span>
                 </td>
-                <td onclick="editarCampoPie('aprobadoPor', 'Nombre del Aprobador (*):')">
+                <td onclick="editarCampoPie('aprobadoPor', 'Nombre del Facilitador (*):')">
                   <span class="celda-pie-label">Aprobado por (*):</span>
                   <span class="celda-pie-valor">${plan.aprobadoPor || ''}</span>
                 </td>
@@ -1053,7 +1354,7 @@
   }
 
   // ==========================================
-  // PARSER DE WORD ROBUSTO (NO TOMA "ORDEN")
+  // PARSER DE WORD CON EXTRACCIÓN DEL TÍTULO
   // ==========================================
   async function procesarArchivoWord(event) {
     const file = event.target.files[0];
@@ -1085,7 +1386,6 @@
 
         const tablas = Array.from(parserDiv.querySelectorAll("table"));
 
-        // 1. Identificar cuál es la tabla 5W2H para aislarla
         let tabla5w2h = null;
         for (let t of tablas) {
           const tText = t.textContent.toLowerCase();
@@ -1097,10 +1397,9 @@
         }
         if (!tabla5w2h && tablas.length > 0) tabla5w2h = tablas[tablas.length - 1];
 
-        // 2. Extraer el nombre del PDCA desde la tabla de cabecera oficial
         let tituloExtraido = "";
         for (let t of tablas) {
-          if (t === tabla5w2h) continue; // NUNCA BUSCAR EN LA TABLA 5W2H
+          if (t === tabla5w2h) continue;
           const celdas = Array.from(t.querySelectorAll("td, th"));
           for (let c of celdas) {
             const txt = c.textContent.replace(/[\t\r\n]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
@@ -1123,7 +1422,6 @@
         parserDiv.querySelectorAll('p, tr, div, li, td, th').forEach(el => el.insertAdjacentHTML('beforeend', '\n'));
         const textoPlano = parserDiv.innerText || parserDiv.textContent;
 
-        // Fallback de texto si el encabezado no vino en tabla de Word
         if (!tituloExtraido || tituloExtraido.toLowerCase() === "orden") {
           const m = textoPlano.match(/PDCA\s*\n+([\s\S]*?)(?=\n\s*(?:Pol[ií]tica|Objetivo|Meta|CÓD|PDCA:))/i);
           if (m && m[1]) {
@@ -1165,7 +1463,6 @@
         const mPdcaNum = textoPlano.match(/PDCA\s*:\s*(\d{3,4}\/\d{4})/i);
         const numPdcaExtraido = mPdcaNum ? mPdcaNum[1] : "";
 
-        // Extracción de tareas 5W2H
         const accionesExtraidas = [];
         if (tabla5w2h) {
           const filas = Array.from(tabla5w2h.querySelectorAll("tr"));
@@ -1238,7 +1535,6 @@
           });
         }
 
-        // Determinación de estado según correlativo oficial existente y fecha Dead Line
         let estadoCalculado = "BORRADOR";
         let estaBloqueado = false;
 
@@ -1267,7 +1563,7 @@
           fechaRevision: "",
           revisadoPor: "",
           fechaAprobacion: numPdcaExtraido ? "01/10/2026" : "",
-          aprobadoPor: numPdcaExtraido ? "Gerencia de Mantenimiento" : "",
+          aprobadoPor: numPdcaExtraido ? "Favio Graciette (Facilitador)" : "",
           pdfBase64: null,
           acciones: accionesExtraidas.length > 0 ? accionesExtraidas : [
             { orden: 1, que: "Revisión técnica de flota", porQue: "Carga inicial", como: "Auditoría", cuanto: "", quien: responsableExtraido, donde: "La Plata", cuando: deadlineExtraido, estado: "PENDIENTE" }
@@ -1293,47 +1589,59 @@
   }
 
   // ==========================================
-  // FLUJO DE ESTADOS: REVISIÓN, APROBACIÓN Y FINALIZACIÓN
+  // FLUJO DE ESTADOS Y PERMISOS ACTUALIZADOS:
+  // - GERENTE: Puede Revisar
+  // - FACILITADOR: Puede Revisar, Aprobar (Asigna N°) y Finalizar
   // ==========================================
   function registrarRevisionPlan() {
     if (!usuarioSesion) return;
     const plan = baseDatos[indiceActual];
     if (plan.bloqueado) {
-      alert("El plan ya se encuentra formalizado y cerrado.");
+      alert("El plan ya se encuentra formalizado.");
       return;
     }
+
+    // Permitido para Facilitador y Gerente
+    if (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE") {
+      alert("PERMISO DENEGADO: La revisión técnica requiere rol de Facilitador o Gerente.");
+      return;
+    }
+
     const fechaHoy = new Date().toLocaleDateString('es-AR');
-    plan.revisadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
+    plan.revisadoPor = `${usuarioSesion.nombre} (${usuarioSesion.rol})`;
     plan.fechaRevision = fechaHoy;
     plan.estado = "REVISADO";
 
     sincronizarPlanEnCloud(plan);
-    alert(`PLAN REVISADO:\n\nRevisado por: ${plan.revisadoPor}\nFecha: ${fechaHoy}\nEstado: REVISADO.\nQueda listo para aprobación oficial de Gerencia.`);
+    alert(`PLAN REVISADO:\n\nRevisado por: ${plan.revisadoPor}\nFecha: ${fechaHoy}\nEstado: REVISADO.\nQueda listo para aprobación del Facilitador.`);
     cargarPDCA(indiceActual);
   }
 
-  function aprobarPlanGerencia() {
+  function aprobarPlanFacilitador() {
     if (!usuarioSesion) return;
-    if (usuarioSesion.rol !== "GERENTE") {
-      alert("PERMISO DENEGADO: La aprobación oficial y asignación de número es potestad exclusiva del Gerente de Mantenimiento.");
+
+    // Aprobación exclusiva de FACILITADOR
+    if (usuarioSesion.rol !== "FACILITADOR") {
+      alert("PERMISO DENEGADO: La aprobación formal y asignación de número oficial de trazabilidad es potestad exclusiva del FACILITADOR.");
       return;
     }
+
     const plan = baseDatos[indiceActual];
 
     if (plan.estado === "BORRADOR" && !plan.revisadoPor) {
-      const resp = confirm("ATENCIÓN: Este plan aún no fue revisado por el auditor/revisor. ¿Desea aprobarlo y asignarle número oficial de todos modos?");
+      const resp = confirm("ATENCIÓN: Este plan aún no fue registrado como 'Revisado'. ¿Desea aprobarlo y asignarle número oficial de todos modos?");
       if (!resp) return;
     }
 
-    const confirmar = confirm(`¿Confirma la aprobación formal del plan?\n\nAl confirmar:\n1. Se asignará número correlativo consecutivo oficial.\n2. Se registrará la firma del Gerente.\n3. El plan quedará BLOQUEADO en la base de datos.`);
+    const confirmar = confirm(`¿Confirma la aprobación formal del plan como Facilitador?\n\nAl confirmar:\n1. Se asignará número correlativo consecutivo oficial.\n2. Se registrará la firma del Facilitador.\n3. El plan quedará BLOQUEADO en la base de datos.`);
     if (!confirmar) return;
 
     const fechaHoy = new Date().toLocaleDateString('es-AR');
-    plan.aprobadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
+    plan.aprobadoPor = `${usuarioSesion.nombre} (Facilitador - Leg. ${usuarioSesion.legajo})`;
     plan.fechaAprobacion = fechaHoy;
     plan.bloqueado = true;
 
-    // Asignación de correlativo oficial consecutivo para trazabilidad
+    // Asignación de correlativo oficial consecutivo
     if (!plan.numPdca || plan.numPdca.trim() === "" || plan.numPdca.startsWith("----")) {
       const anioActual = new Date().getFullYear();
       plan.numPdca = obtenerSiguienteNumeroPDCA(anioActual);
@@ -1345,18 +1653,21 @@
     }
 
     sincronizarPlanEnCloud(plan);
-    alert(`¡PLAN OFICIALIZADO!\n\nCorrelativo asignado: PDCA ${plan.numPdca}\nAprobado por: ${plan.aprobadoPor}\nEstado: ${plan.estado}`);
+    alert(`¡PLAN APROBADO Y OFICIALIZADO!\n\nCorrelativo asignado: PDCA ${plan.numPdca}\nAprobado por: ${plan.aprobadoPor}\nEstado: ${plan.estado}`);
     cargarPDCA(indiceActual);
   }
 
-  function forzarFinalizacionPlan() {
+  function finalizarPlanPDCA() {
     if (!usuarioSesion) return;
-    if (usuarioSesion.rol !== "GERENTE") {
-      alert("Solo el Gerente puede marcar un plan como Finalizado anticipadamente.");
+
+    // Finalización formal exclusiva del FACILITADOR
+    if (usuarioSesion.rol !== "FACILITADOR") {
+      alert("PERMISO DENEGADO: El cierre formal y finalización anticipada del PDCA es potestad del FACILITADOR.");
       return;
     }
+
     const plan = baseDatos[indiceActual];
-    const confirmar = confirm(`¿Confirma la finalización del plan "${plan.titulo}"?\n\nEl plan pasará formalmente a estado FINALIZADO.`);
+    const confirmar = confirm(`¿Confirma la finalización y cierre del plan "${plan.titulo}"?\n\nEl plan pasará formalmente a estado FINALIZADO.`);
     if (!confirmar) return;
 
     plan.estado = "FINALIZADO";
@@ -1364,12 +1675,15 @@
     plan.cierreManual = true;
 
     sincronizarPlanEnCloud(plan);
-    alert("El plan ha sido marcado como FINALIZADO.");
+    alert("¡PLAN FINALIZADO!\n\nEl ciclo PDCA se ha cerrado y registrado en la base de datos.");
     cargarPDCA(indiceActual);
   }
 
-  function desbloquearPlanGerente() {
-    if (!usuarioSesion || usuarioSesion.rol !== "GERENTE") return;
+  function desbloquearPlanAutorizado() {
+    if (!usuarioSesion || (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE")) {
+      alert("Solo el Facilitador o Gerente pueden reabrir un plan bloqueado.");
+      return;
+    }
     const motivo = prompt("Ingrese el motivo técnico de la reapertura:");
     if (!motivo) return;
     const plan = baseDatos[indiceActual];
@@ -1440,8 +1754,8 @@
   function editarTituloPlan() {
     if (!usuarioSesion) return;
     const plan = baseDatos[indiceActual];
-    if (plan.bloqueado && usuarioSesion.rol !== "GERENTE") {
-      alert("El plan está formalizado. Solo el Gerente puede modificarlo.");
+    if (plan.bloqueado && (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE")) {
+      alert("El plan está formalizado. Solo el Facilitador o Gerente pueden modificarlo.");
       return;
     }
     const nuevo = prompt("Modificar Nombre / Objeto del PDCA (Cabecera):", plan.titulo);
@@ -1543,34 +1857,6 @@
       navUser.classList.remove("d-none");
       cargarPDCA(indiceActual);
     }
-  }
-
-  function ejecutarLogin(e) {
-    e.preventDefault();
-    const leg = document.getElementById("loginLegajo").value.trim();
-    const pass = document.getElementById("loginPassword").value.trim();
-    const usuario = usuariosSistema.find(u => u.legajo === leg && u.clave === pass);
-    if (!usuario) {
-      alert("Legajo o contraseña incorrectos.");
-      return;
-    }
-    usuarioSesion = usuario;
-    localStorage.setItem("pdca_sesion_activa", JSON.stringify(usuarioSesion));
-    document.getElementById("formLogin").reset();
-    actualizarDatosUsuarioSesion();
-    cambiarVista("dashboard");
-  }
-
-  function cerrarSesion() {
-    usuarioSesion = null;
-    localStorage.removeItem("pdca_sesion_activa");
-    cambiarVista("login");
-  }
-
-  function actualizarDatosUsuarioSesion() {
-    if (!usuarioSesion) return;
-    document.getElementById("txtNavbarUsuario").innerHTML = `👤 Legajo <strong>${usuarioSesion.legajo}</strong> (${usuarioSesion.rol})`;
-    document.getElementById("dashSaludoUsuario").innerText = `Hola, ${usuarioSesion.nombre}`;
   }
 
   function actualizarDashboard() {
@@ -1752,6 +2038,9 @@
     renderizarDocumentoOficialPaginado(plan);
   }
 
+  // ==========================================
+  // GESTIÓN DE BOTONES SEGÚN EL ROL
+  // ==========================================
   function gestionarEstadoBloqueoUI(plan) {
     const banner = document.getElementById("bannerBloqueo");
     const badge = document.getElementById("badgeEstadoPantalla");
@@ -1767,6 +2056,9 @@
       btnVerPdf.classList.add("d-none");
     }
 
+    const esFacilitador = usuarioSesion && usuarioSesion.rol === "FACILITADOR";
+    const esGerente = usuarioSesion && usuarioSesion.rol === "GERENTE";
+
     if (plan.bloqueado) {
       banner.classList.remove("d-none");
       btnRev.classList.add("d-none");
@@ -1779,10 +2071,11 @@
       } else {
         badge.innerText = "APROBADO (BLOQUEADO)";
         badge.className = "badge bg-info text-dark";
-        btnFin.classList.remove("d-none");
+        if (esFacilitador) btnFin.classList.remove("d-none");
+        else btnFin.classList.add("d-none");
       }
 
-      if (usuarioSesion && usuarioSesion.rol === "GERENTE") {
+      if (esFacilitador || esGerente) {
         btnDesbloq.classList.remove("d-none");
       } else {
         btnDesbloq.classList.add("d-none");
@@ -1795,13 +2088,22 @@
       if (plan.estado === "BORRADOR") {
         badge.innerText = "BORRADOR";
         badge.className = "badge bg-secondary";
-        btnRev.classList.remove("d-none");
-        btnApr.classList.remove("d-none");
+        
+        // Gerente o Facilitador pueden revisar
+        if (esFacilitador || esGerente) btnRev.classList.remove("d-none");
+        else btnRev.classList.add("d-none");
+
+        // Facilitador puede aprobar
+        if (esFacilitador) btnApr.classList.remove("d-none");
+        else btnApr.classList.add("d-none");
+
       } else if (plan.estado === "REVISADO") {
         badge.innerText = "REVISADO";
         badge.className = "badge bg-warning text-dark";
         btnRev.classList.add("d-none");
-        btnApr.classList.remove("d-none");
+
+        if (esFacilitador) btnApr.classList.remove("d-none");
+        else btnApr.classList.add("d-none");
       } else {
         badge.innerText = plan.estado;
         badge.className = "badge bg-info text-dark";
@@ -2066,10 +2368,11 @@
     const logoGuardado = localStorage.getItem("pdca_logo_mba");
     if (logoGuardado) aplicarLogoATodos(logoGuardado);
 
+    conectarColeccionUsuarios();
+    conectarCloudFirestore();
+
     if (usuarioSesion) cambiarVista("dashboard");
     else cambiarVista("login");
-
-    conectarCloudFirestore();
   };
 </script>
 
