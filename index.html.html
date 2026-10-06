@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sistema de Gestión PDCA - Misión Buenos Aires</title>
+  
+  <!-- BOOTSTRAP 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- SDK FIREBASE COMPAT -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <!-- GENERADOR DE PDF Y PARSER DE WORD (.DOCX) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
+  <style>
+    body {
+      background-color: #dcdfe3;
+      font-family: Calibri, Arial, Helvetica, sans-serif;
+      font-size: 10pt;
+      color: #000;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* BARRA SUPERIOR FIJA */
+    .top-navbar-mba {
+      background-color: #ffffff;
+      border-bottom: 2px solid #005f73;
+      padding: 6px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .brand-logo-img {
+      max-height: 42px;
+      max-width: 150px;
+      object-fit: contain;
+    }
+
+    /* DASHBOARD */
+    .kpi-card {
+      border-radius: 8px;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .kpi-numero {
+      font-size: 1.9rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    /* CONTENEDOR Y HOJAS A4 VERTICALES */
+    .contenedor-hojas-trabajo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 50px;
+    }
+
+    .hoja-a4 {
+      background-color: #ffffff;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 12mm 15mm 12mm 15mm;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+      box-sizing: border-box;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    /* ENCABEZADO INSTITUCIONAL OFICIAL */
+    .tabla-encabezado-oficial {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1.5px solid #000;
+      margin-bottom: 10px;
+    }
+    .tabla-encabezado-oficial td {
+      border: 1px solid #000;
+      padding: 4px 6px;
+      vertical-align: middle;
+    }
+
+    .celda-logo-doc {
+      width: 28%;
+      text-align: center;
+      padding: 4px !important;
+      background-color: #fff;
+    }
+    .celda-logo-doc img {
+      max-width: 175px;
+      max-height: 50px;
+      object-fit: contain;
+      display: inline-block;
+    }
+
+    .celda-titulo-pdca {
+      width: 44%;
+      text-align: center;
+      font-weight: bold;
+      font-size: 13.5pt;
+      letter-spacing: 0.5px;
+      color: #000;
+    }
+
+    .celda-subtitulo-plan {
+      text-align: center;
+      font-weight: bold;
+      font-size: 10pt;
+      color: #000;
+      line-height: 1.25;
+    }
+
+    .celda-meta-derecha {
+      width: 28%;
+      font-size: 8pt;
+      color: #000;
+      padding: 2px 5px !important;
+      white-space: nowrap;
+    }
+
+    /* METADATOS DEL PLAN */
+    .bloque-metadatos-plan {
+      margin-bottom: 6px;
+    }
+    .doc-linea {
+      margin-bottom: 4px;
+      line-height: 1.28;
+      font-size: 9pt;
+      color: #000;
+    }
+    .doc-label {
+      font-weight: bold;
+      color: #000;
+    }
+
+    /* TABLA 5W2H - 8 COLUMNAS EXACTAS A WORD */
+    .tabla-contenedor-inner {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .table-doc {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8pt;
+      border: 1.5px solid #000;
+      table-layout: fixed;
+    }
+    .table-doc th, .table-doc td {
+      border: 1px solid #000;
+      padding: 4px 4px;
+      vertical-align: top;
+      line-height: 1.22;
+      color: #000;
+      word-wrap: break-word;
+    }
+    .table-doc th {
+      background-color: #f2f2f2 !important;
+      font-weight: bold;
+      text-align: center;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .table-doc td.text-center, .table-doc th.text-center {
+      text-align: center;
+    }
+    .col-como {
+      white-space: pre-line;
+    }
+
+    /* PIE DE PÁGINA REGLAMENTARIO DE FIRMAS */
+    .bloque-pie-reglamentario {
+      margin-top: auto;
+      padding-top: 10px;
+      width: 100%;
+    }
+    .texto-leyenda-pie {
+      font-weight: bold;
+      font-size: 8pt;
+      color: #111;
+      margin-bottom: 3px;
+    }
+
+    .tabla-pie-oficial {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1.5px solid #000;
+    }
+    .tabla-pie-oficial td {
+      border: 1px solid #000;
+      padding: 4px 6px;
+      width: 25%;
+      height: 44px;
+      vertical-align: top;
+      font-size: 7.8pt;
+      background-color: #fff;
+    }
+    .celda-pie-label {
+      font-weight: bold;
+      color: #111;
+      display: block;
+      margin-bottom: 2px;
+      font-size: 7.5pt;
+    }
+    .celda-pie-valor {
+      display: block;
+      color: #000;
+      font-size: 8.5pt;
+      min-height: 16px;
+    }
+
+    .cursor-pointer { cursor: pointer; }
+
+    /* IMPRESIÓN LIMPIA */
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 10mm 12mm 10mm 12mm;
+      }
+      body {
+        background: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .no-print, .top-navbar-mba, #seccionLogin, #seccionDashboard {
+        display: none !important;
+      }
+      #seccionDocumento {
+        display: block !important;
+      }
+      .contenedor-hojas-trabajo {
+        gap: 0 !important;
+        margin: 0 !important;
+      }
+      .hoja-a4 {
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        min-height: auto !important;
+        height: auto !important;
+        page-break-after: always !important;
+        break-after: page !important;
+      }
+      .hoja-a4:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+      .table-doc th {
+        background-color: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hoja-a4 {
+        width: 100% !important;
+        min-height: auto !important;
+        padding: 10px 8px !important;
+        box-shadow: none !important;
+      }
+      .tabla-contenedor-inner {
+        overflow-x: auto;
+      }
+      .table-doc {
+        min-width: 680px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- BARRA INSTITUCIONAL FIJA -->
+<nav class="top-navbar-mba no-print d-flex justify-content-between align-items-center">
+  <div class="d-flex align-items-center gap-2">
+    <div onclick="document.getElementById('inputLogoFile').click()" title="Cambiar logo" class="cursor-pointer">
+      <img id="logoBarraFija" src="logo.png" alt="Misión Buenos Aires" class="brand-logo-img" onerror="aplicarLogoFalso(this)">
+    </div>
+    <div class="vr my-1 d-none d-md-block"></div>
+    <div class="d-none d-sm-block">
+      <span class="fw-bold text-dark d-block lh-1 small">GESTIÓN INTEGRADA DE CALIDAD</span>
+      <span class="text-muted" style="font-size: 7pt;">Misión Buenos Aires / La Central de Vicente López S.A.C.</span>
+    </div>
+  </div>
+
+  <div class="d-flex align-items-center gap-2">
+    <span id="badgeCloudStatus" class="badge bg-secondary" style="font-size: 7.5pt;">Iniciando...</span>
+    <div id="usuarioInfoNavbar" class="d-none align-items-center gap-2">
+      <span class="small text-dark fw-semibold d-none d-md-inline" id="txtNavbarUsuario"></span>
+      <button class="btn btn-sm btn-outline-danger py-0 px-2 small" onclick="cerrarSesion()">Salir</button>
+    </div>
+  </div>
+</nav>
+
+<input type="file" id="inputLogoFile" accept="image/*" class="d-none" onchange="procesarArchivoLogo(event)">
+<input type="file" id="inputImportWord" accept=".docx" class="d-none" onchange="procesarArchivoWord(event)">
+
+<!-- 1. PANTALLA LOGIN -->
+<div id="seccionLogin" class="container py-4 py-md-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-sm-8 col-md-5 col-lg-4">
+      <div class="card shadow-sm border-0 rounded-3 mt-2 mt-md-3">
+        <div class="card-body p-4 text-center">
+          <img id="logoCardLogin" src="logo.png" alt="Misión Buenos Aires" class="brand-logo-img mb-3" style="max-height: 50px;" onerror="aplicarLogoFalso(this)">
+          <h5 class="fw-bold text-dark mb-1">Acceso al Sistema PDCA</h5>
+          <p class="text-muted small mb-4">Ingrese su legajo institucional y contraseña</p>
+
+          <form id="formLogin" onsubmit="ejecutarLogin(event)" class="text-start">
+            <div class="mb-3">
+              <label class="form-label small fw-bold mb-1">N° de Legajo:</label>
+              <input type="text" class="form-control" id="loginLegajo" placeholder="ej: 9001 o 2045" required autofocus>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-bold mb-1">Contraseña:</label>
+              <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">Ingresar al Panel</button>
+          </form>
+
+          <div class="alert alert-light border small text-muted text-start mt-4 mb-0 py-2" style="font-size: 8pt;">
+            <strong>Legajos habilitados:</strong><br>
+            • <strong>9001</strong> (Gerente - clave: 1234)<br>
+            • <strong>3110</strong> (Revisor - clave: 1234)<br>
+            • <strong>2045</strong> (Monitor - clave: 1234)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. PANTALLA DASHBOARD -->
+<div id="seccionDashboard" class="container-fluid container-md py-3 py-md-4 d-none">
+
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+      <h5 class="fw-bold m-0 text-dark" id="dashSaludoUsuario">Bienvenido</h5>
+      <p class="text-muted small m-0">Panel de control de planes e indicadores de avance</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn btn-outline-success btn-sm fw-semibold" onclick="document.getElementById('inputImportWord').click()" title="Adjuntar archivo Word .docx con plantilla PDCA">
+        📎 Importar Word (.docx)
+      </button>
+      <button class="btn btn-outline-info btn-sm fw-semibold" onclick="abrirConfigGemini()">⚙ API IA</button>
+      <button class="btn btn-primary btn-sm fw-semibold" onclick="abrirModalNuevoPDCA()">+ Nuevo PDCA</button>
+    </div>
+  </div>
+
+  <div class="row g-2 g-md-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-primary">
+        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Planes Activos</span>
+        <div class="d-flex justify-content-between align-items-center mt-1">
+          <span class="kpi-numero text-dark" id="kpiTotalPlanes">0</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-warning">
+        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">En Proceso</span>
+        <div class="d-flex justify-content-between align-items-center mt-1">
+          <span class="kpi-numero text-warning" id="kpiEnProceso">0</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-success">
+        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Aprobados</span>
+        <div class="d-flex justify-content-between align-items-center mt-1">
+          <span class="kpi-numero text-success" id="kpiFinalizados">0</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-info">
+        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Mis Tareas</span>
+        <div class="d-flex justify-content-between align-items-center mt-1">
+          <span class="kpi-numero text-info" id="kpiMisTareas">0</span>
+          <span class="badge bg-info-subtle text-info small" style="font-size: 7pt;" id="kpiMisTareasDetalle">0 comp.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 rounded-3 mb-4">
+    <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <h6 class="fw-bold m-0 text-dark">Planes Registrados</h6>
+      <select class="form-select form-select-sm" id="filtroEstadoDashboard" style="width: 160px;" onchange="renderizarTablaDashboard()">
+        <option value="TODOS">Todos</option>
+        <option value="BORRADOR">Borradores</option>
+        <option value="APROBADO">Aprobados</option>
+      </select>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0" style="font-size: 9pt;">
+        <thead class="table-light">
+          <tr>
+            <th>PDCA</th>
+            <th>Título del Plan</th>
+            <th class="d-none d-md-table-cell">Responsable</th>
+            <th class="text-center">PDF Cloud</th>
+            <th class="text-center">Estado</th>
+            <th class="text-end">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="tablaDashboardBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- 3. DOCUMENTO FORMAL (PAGINADO EXACTO A WORD) -->
+<div id="seccionDocumento" class="d-none">
+
+  <div class="container-fluid no-print py-2 bg-white border-bottom shadow-sm">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 px-md-2">
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-outline-dark fw-semibold" onclick="cambiarVista('dashboard')">⬅ Volver</button>
+        <select id="pdcaSelect" class="form-select form-select-sm" style="max-width: 280px;" onchange="seleccionarPDCA(this.value)"></select>
+      </div>
+      <div class="d-flex align-items-center gap-1 flex-wrap">
+        <button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirModalAuditoriaIA('plan')">✨ Auditar IA</button>
+        <span id="badgeEstadoPantalla" class="badge bg-secondary">BORRADOR</span>
+        <button class="btn btn-sm btn-outline-warning" id="btnRevisarPlan" onclick="registrarRevisionPlan()">Revisar</button>
+        <button class="btn btn-sm btn-success fw-semibold" id="btnAprobarGerencia" onclick="aprobarPlanGerencia()">Aprobar</button>
+        <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanGerente()">🔓 Desbloquear</button>
+        
+        <button class="btn btn-sm btn-primary fw-semibold" onclick="guardarPDFenBaseDeDatos()" title="Archiva el PDF en Cloud Firestore">
+          ☁ Guardar PDF en Base de Datos
+        </button>
+        <button class="btn btn-sm btn-outline-dark fw-semibold d-none" id="btnVerPdfCloud" onclick="abrirPdfDesdeBaseDeDatos()" title="Abrir PDF guardado en la nube">
+          📄 Ver PDF Cloud
+        </button>
+        <button class="btn btn-sm btn-dark fw-semibold" onclick="descargarPDFVertical()" title="Descargar copia PDF">
+          📥 Descargar PDF
+        </button>
+        <button class="btn btn-sm btn-secondary" onclick="window.print()" title="Imprimir directo">
+          🖨️ Imprimir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid px-1 px-md-3 py-3">
+    <div id="bannerBloqueo" class="alert alert-danger py-2 mb-2 no-print d-none" style="max-width: 210mm; margin: auto; font-size: 8.5pt;">
+      <strong>🔒 PLAN OFICIAL BLOQUEADO:</strong> Aprobado y formalizado por Gerencia.
+    </div>
+
+    <!-- CONTENEDOR DE HOJAS A4 -->
+    <div class="contenedor-hojas-trabajo" id="contenedorHojasImpresion"></div>
+  </div>
+</div>
+
+<!-- MODAL AUDITORÍA GEMINI -->
+<div class="modal fade" id="modalRespuestaGemini" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">✨ Auditoría con IA - Gemini</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="bg-light p-2 rounded border mb-2">
+          <label class="form-label small fw-bold m-0 text-dark">Alcance del análisis:</label>
+          <select class="form-select form-select-sm mt-1" id="selectAmbitoAuditoria" onchange="ejecutarAnalisisDesdeSelector(this.value)"></select>
+        </div>
+        <div id="geminiSpinner" class="text-center py-3">
+          <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+          <p class="small text-muted mt-2" id="geminiSpinnerText">Analizando...</p>
+        </div>
+        <div id="geminiContenido" class="small lh-base" style="white-space: pre-line; max-height: 50vh; overflow-y: auto;"></div>
+      </div>
+      <div class="modal-footer py-1">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-sm btn-outline-primary" onclick="navigator.clipboard.writeText(document.getElementById('geminiContenido').innerText); alert('Copiado.');">Copiar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL API KEY GEMINI -->
+<div class="modal fade" id="modalConfigGemini" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">API Key de Gemini</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-2">
+        <input type="password" class="form-control form-control-sm" id="inputApiKeyGemini" placeholder="AIzaSy...">
+      </div>
+      <div class="modal-footer py-1">
+        <button type="button" class="btn btn-sm btn-primary w-100 fw-bold" onclick="guardarApiKeyGemini()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CAMBIAR POLÍTICA -->
+<div class="modal fade" id="modalPoliticaActiva" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">Seleccionar Política 2026</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-2">
+        <select class="form-select form-select-sm" id="selectPoliticaActiva"></select>
+      </div>
+      <div class="modal-footer py-1">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-sm btn-primary fw-bold" onclick="guardarCambioPolitica()">Aplicar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ACCIÓN 5W2H -->
+<div class="modal fade" id="modalAccion5W2H" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white py-2">
+        <h6 class="modal-title m-0 fw-bold" id="modalAccionTitulo">Editar Acción 5W2H</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formAccion5W2H" onsubmit="guardarAccion5W2H(event)">
+        <input type="hidden" id="accEditIndex" value="-1">
+        <div class="modal-body py-2">
+          <div class="row g-2">
+            <div class="col-12">
+              <label class="form-label small fw-bold mb-1">¿Qué? (Tarea):</label>
+              <textarea class="form-control form-control-sm" id="accQue" rows="2" required></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold mb-1">¿Por qué?:</label>
+              <textarea class="form-control form-control-sm" id="accPorQue" rows="2" required></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-bold mb-1">¿Cómo? (Procedimiento):</label>
+              <textarea class="form-control form-control-sm" id="accComo" rows="4" required></textarea>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-bold mb-1">¿Quién? (Responsable):</label>
+              <input type="text" class="form-control form-control-sm" id="accQuien" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label small fw-bold mb-1">¿Cuánto?:</label>
+              <input type="text" class="form-control form-control-sm" id="accCuanto">
+            </div>
+            <div class="col-6 col-md-4">
+              <label class="form-label small fw-bold mb-1">¿Dónde?:</label>
+              <input type="text" class="form-control form-control-sm" id="accDonde" required>
+            </div>
+            <div class="col-6 col-md-4">
+              <label class="form-label small fw-bold mb-1">¿Cuándo?:</label>
+              <input type="text" class="form-control form-control-sm" id="accCuando" required>
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label small fw-bold mb-1">Estado:</label>
+              <select class="form-select form-select-sm" id="accEstado">
+                <option value="PENDIENTE">PENDIENTE</option>
+                <option value="EN_PROCESO">EN PROCESO</option>
+                <option value="COMPLETADA">COMPLETADA</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer py-1">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-sm btn-success fw-bold">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO PDCA -->
+<div class="modal fade" id="modalNuevoPDCA" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">Nuevo Plan PDCA</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formNuevoPDCA" onsubmit="guardarNuevoPDCA(event)">
+        <div class="modal-body py-2">
+          <div class="row g-2">
+            <div class="col-6 col-md-5">
+              <label class="form-label fw-bold small mb-1">CÓD.:</label>
+              <input type="text" class="form-control form-control-sm" id="newCodDoc" value="01-9999-99-99-99-9999-PD-00-01-02" required>
+            </div>
+            <div class="col-6 col-md-4">
+              <label class="form-label fw-bold small mb-1">PDCA N°:</label>
+              <input type="text" class="form-control form-control-sm bg-light" id="newNumPdca" value="Se asignará al aprobar" readonly>
+            </div>
+            <div class="col-12 col-md-3">
+              <label class="form-label fw-bold small mb-1">Página:</label>
+              <input type="text" class="form-control form-control-sm" id="newPaginaDoc" value="Página 1 de 2" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-bold small mb-1">Objeto / Título:</label>
+              <input type="text" class="form-control form-control-sm" id="newTitulo" placeholder="ej: Optimización de Línea 129" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-bold small mb-1 text-primary">Política 2026:</label>
+              <select class="form-select form-select-sm" id="newPolitica" required></select>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-bold small mb-1">Objetivo:</label>
+              <textarea class="form-control form-control-sm" id="newObjetivo" rows="2" required></textarea>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-bold small mb-1">Meta:</label>
+              <input type="text" class="form-control form-control-sm" id="newMeta" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-bold small mb-1">Efecto Esperado:</label>
+              <input type="text" class="form-control form-control-sm" id="newEfecto" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-bold small mb-1">Responsable:</label>
+              <input type="text" class="form-control form-control-sm" id="newResponsable" required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-bold small mb-1">Dead Line:</label>
+              <input type="text" class="form-control form-control-sm" id="newDeadline" placeholder="31/10/2026" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer py-1">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-sm btn-success fw-semibold">Guardar y Abrir Plan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // CONFIGURACIÓN OFICIAL FIREBASE
+  const firebaseConfig = {
+    apiKey: "AIzaSyDeyYbcazMTgUk217e8afabEV9GY0HlT6g",
+    authDomain: "pdca-mision-buenos-aires.firebaseapp.com",
+    projectId: "pdca-mision-buenos-aires",
+    storageBucket: "pdca-mision-buenos-aires.firebasestorage.app",
+    messagingSenderId: "1039757562571",
+    appId: "1:1039757562571:web:f35d50ac39fdacfedd814e",
+    measurementId: "G-1Y4VSBRQ3Z"
+  };
+
+  let db = null;
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+  } catch (err) {
+    console.warn("Firebase local fallback:", err);
+  }
+
+  const POLITICAS_2026 = [
+    "Política 1: Optimizar el uso de los recursos.",
+    "Política 2: Asegurar la limpieza y la imagen de la flota.",
+    "Política 3: Mantener el orden y el cuidado ambiental.",
+    "Política 4: Medir y evaluar el desempeño de la gestión con base en indicadores (en los niveles estratégico, táctico y operativo).",
+    "Política 5: Adecuar la infraestructura interna a la operación.",
+    "Política 6: Prevenir conflictos y reducir riesgos legales.",
+    "Política 7: Fortalecer la comunicación institucional."
+  ];
+
+  const usuariosSistema = [
+    { legajo: "9001", clave: "1234", nombre: "Gerente de Mantenimiento", rol: "GERENTE" },
+    { legajo: "3110", clave: "1234", nombre: "Favio Graciette", rol: "REVISOR" },
+    { legajo: "2045", clave: "1234", nombre: "Omar Funes", rol: "MONITOR" }
+  ];
+
+  const datosIniciales = [
+    {
+      codDoc: "01-9999-99-99-99-9999-PD-00-01-02",
+      numPdca: "0083/2026", 
+      paginaDoc: "Página 1 de 2",
+      titulo: "Optimizar el uso del combustible. Línea 129",
+      politica: "Política 1: Optimizar el uso de los recursos.",
+      objetivo: "Reducir los tiempos improductivos de ralentí en cabeceras y predios, optimizar el rendimiento de combustible interviniendo activamente sobre la conducta de los choferes mediante acompañamiento técnico a los desvíos e incentivos al desempeño eficiente.",
+      meta: "Mejor el rendimiento de combustible en un 5 %",
+      efecto: "Disminuir el costo operativo de gasoil y consolidar un estándar de conducción económica en la flota.",
+      responsable: "Gabriel Monzón",
+      deadline: "31/10/2026",
+      estado: "APROBADO",
+      bloqueado: true,
+      fechaRevision: "28/09/2026",
+      revisadoPor: "Favio Graciette",
+      fechaAprobacion: "01/10/2026",
+      aprobadoPor: "Gerencia de Mantenimiento",
+      pdfBase64: null,
+      acciones: [
+        { 
+          orden: 1, 
+          que: "Asegurar la correcta asignación ID y número de serie del controlador de eventos", 
+          porQue: "Sistemas informó que hay controladores de eventos que no corresponden a la unidad, no detallando que casos siendo que desde el Garage se realizó la correcta asignación es necesario auditar los ID en que coches se encuentran.", 
+          como: "Realizando un relevamiento de la flota donde se identifique:\n(se quitarán cinta 3M para visualizar y remplazo con cinta doble faz nuevamente)\n\n• Interno\n• Numero ID controlador de eventos.\n• Numero ID sensor desde Utrack (administración-Dispositivos)\n• Montado en: tablero o fusilera.\n• Estado de encendido: Encendido/ Apagado\n\nComunicar a sistemas los resultados de la auditoría interna", 
+          cuanto: "", 
+          quien: "Juan Araujo", 
+          donde: "La Plata", 
+          cuando: "03/10/2026", 
+          estado: "EN_PROCESO" 
+        },
+        { 
+          orden: 2, 
+          que: "Auditoría diaria y ajuste de kilometraje.", 
+          porQue: "Para garantizar que no existan km no computados que distorsionen los mantenimientos ni el consumo.", 
+          como: "1.1. Verificar que km Controlador de eventos > 0 en toda la flota activa.\n\n1.2. Validar la condición km Controlador de eventos > Km SUBE\n\n1.3. En casos donde km GPS ≤ Km SUBE, aplicar la formula Km Asignado = Km SUBE x 1,05, dar aviso a sistema para su revisión.", 
+          cuanto: "", 
+          quien: "Héctor Nannero", 
+          donde: "La Plata", 
+          cuando: "Diariamente a partir del: 02/10/2026", 
+          estado: "EN_PROCESO" 
+        }
+      ]
+    }
+  ];
+
+  let usuarioSesion = JSON.parse(localStorage.getItem("pdca_sesion_activa")) || null;
+  let baseDatos = JSON.parse(localStorage.getItem("planes_pdca_oficial_mba_local")) || datosIniciales;
+  let indiceActual = 0;
+
+  function guardarLocal() {
+    localStorage.setItem("planes_pdca_oficial_mba_local", JSON.stringify(baseDatos));
+  }
+
+  // ==========================================
+  // MOTOR DE PAGINACIÓN DINÁMICO (A4 VERTICAL)
+  // ==========================================
+  function calcularDistribucionPaginas(plan) {
+    function estimarPesoAccion(a) {
+      let lComo = (a.como || "").split('\n').reduce((s, l) => s + Math.max(1, Math.ceil(l.length / 36)), 0);
+      let lQue = Math.ceil((a.que || "").length / 22);
+      let lPorQue = Math.ceil((a.porQue || "").length / 20);
+      return Math.max(lComo, lQue, lPorQue, 2) + 1;
+    }
+
+    const paginas = [];
+    let accionesRestantes = plan.acciones.map((a, i) => ({ ...a, idx: i }));
+    let esPrimeraPagina = true;
+
+    while (accionesRestantes.length > 0) {
+      let capDisponible = esPrimeraPagina ? 25 : 32;
+      let pesoAcumulado = 0;
+      let accionesDeEstaPagina = [];
+
+      while (accionesRestantes.length > 0) {
+        let p = estimarPesoAccion(accionesRestantes[0]);
+        if (accionesDeEstaPagina.length >= 1 && (pesoAcumulado + p > capDisponible)) {
+          break;
+        }
+        accionesDeEstaPagina.push(accionesRestantes.shift());
+        pesoAcumulado += p;
+        if (pesoAcumulado >= capDisponible) break;
+      }
+
+      paginas.push({
+        acciones: accionesDeEstaPagina,
+        tieneMetadatos: esPrimeraPagina,
+        tienePie: false
+      });
+
+      esPrimeraPagina = false;
+    }
+
+    if (paginas.length === 0) {
+      paginas.push({ acciones: [], tieneMetadatos: true, tienePie: true });
+    } else {
+      paginas[paginas.length - 1].tienePie = true;
+    }
+
+    paginas.forEach((p, idx) => {
+      p.num = idx + 1;
+      p.total = paginas.length;
+    });
+
+    return paginas;
+  }
+
+  function renderizarDocumentoOficialPaginado(plan) {
+    const contenedor = document.getElementById("contenedorHojasImpresion");
+    contenedor.innerHTML = "";
+
+    const paginas = calcularDistribucionPaginas(plan);
+    const estaBloqueado = plan.bloqueado;
+    const logoSrc = localStorage.getItem("pdca_logo_mba") || "logo.png";
+
+    paginas.forEach(p => {
+      const hojaDiv = document.createElement("div");
+      hojaDiv.className = `hoja-a4 pagina-${p.num}`;
+
+      let headerHTML = `
+        <table class="tabla-encabezado-oficial">
+          <tr>
+            <td rowspan="3" class="celda-logo-doc cursor-pointer" onclick="document.getElementById('inputLogoFile').click()" title="Cambiar logo">
+              <img src="${logoSrc}" alt="Misión Buenos Aires" onerror="aplicarLogoFalso(this)">
+            </td>
+            <td rowspan="2" class="celda-titulo-pdca">PDCA</td>
+            <td class="celda-meta-derecha">
+              <strong>CÓD:</strong> <span>${plan.codDoc || "01-9999-99-99-99-9999-PD-00-01-02"}</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="celda-meta-derecha">
+              <strong>PDCA:</strong> <span class="fw-bold ${plan.numPdca ? 'text-dark' : 'text-primary'}">${plan.numPdca || '----/2026'}</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="celda-subtitulo-plan">
+              <span>${plan.titulo}</span>
+            </td>
+            <td class="celda-meta-derecha">
+              <span>Página ${p.num} de ${p.total}</span>
+            </td>
+          </tr>
+        </table>
+      `;
+
+      let metadatosHTML = "";
+      if (p.tieneMetadatos) {
+        metadatosHTML = `
+          <div class="bloque-metadatos-plan">
+            <div class="doc-linea cursor-pointer" onclick="abrirModalCambiarPolitica()">
+              <span class="doc-label">Política:</span> <span class="text-primary">${plan.politica}</span>
+              <span class="badge bg-light text-muted border small ms-1 no-print">✎</span>
+            </div>
+            <div class="doc-linea"><span class="doc-label">Objetivo:</span> <span>${plan.objetivo}</span></div>
+            <div class="doc-linea"><span class="doc-label">Meta:</span> <span>${plan.meta}</span></div>
+            <div class="doc-linea"><span class="doc-label">Efecto Esperado:</span> <span>${plan.efecto}</span></div>
+            <div class="doc-linea"><span class="doc-label">Responsable:</span> <span>${plan.responsable}</span></div>
+            <div class="doc-linea"><span class="doc-label">Dead Line:</span> <span>${plan.deadline}</span></div>
+            <div class="doc-linea mt-2 mb-1 d-flex justify-content-between align-items-center">
+              <div><span class="doc-label">Método:</span></div>
+              <button class="btn btn-xs btn-outline-primary no-print py-0 px-2 small" onclick="abrirModalAccion(-1)">+ Agregar Renglón 5W2H</button>
+            </div>
+          </div>
+        `;
+      } else {
+        metadatosHTML = `
+          <div class="doc-linea mb-1 text-muted small fst-italic">
+            [Continuación del Método 5W2H - ${plan.titulo}]
+          </div>
+        `;
+      }
+
+      let filasHTML = "";
+      p.acciones.forEach(acc => {
+        let badgeColor = "bg-secondary";
+        if (acc.estado === "EN_PROCESO") badgeColor = "bg-warning text-dark";
+        if (acc.estado === "COMPLETADA") badgeColor = "bg-success";
+
+        filasHTML += `
+          <tr>
+            <td class="text-center align-top" style="width: 5%;">
+              <div class="fw-bold">${acc.orden}</div>
+              <div class="no-print mt-1 d-flex flex-column align-items-center gap-1">
+                <span class="badge ${badgeColor} ${estaBloqueado ? '' : 'cursor-pointer'} small" 
+                      style="font-size: 6.5pt; padding: 2px 3px;"
+                      onclick="${estaBloqueado ? '' : `rotarEstadoAccion(${acc.idx})`}"
+                      title="Cambiar estado">
+                  ${acc.estado.replace('_', ' ')}
+                </span>
+                ${!estaBloqueado ? `
+                  <button class="btn btn-xs btn-outline-primary py-0 px-1" style="font-size: 7pt;" onclick="abrirModalAccion(${acc.idx})" title="Editar">✏</button>
+                ` : ''}
+                <button class="btn btn-xs btn-outline-info py-0 px-1 fw-bold" style="font-size: 7pt;" onclick="abrirModalAuditoriaIA('accion', ${acc.idx})" title="Auditar con IA">✨</button>
+              </div>
+            </td>
+            <td style="width: 15%;"><strong>${acc.que}</strong></td>
+            <td style="width: 16%;">${acc.porQue}</td>
+            <td class="col-como" style="width: 32%;">${acc.como}</td>
+            <td class="text-center" style="width: 6%;">${acc.cuanto || ''}</td>
+            <td class="text-center" style="width: 10%;"><strong>${acc.quien}</strong></td>
+            <td class="text-center" style="width: 7%;">${acc.donde}</td>
+            <td class="text-center" style="width: 9%;">${acc.cuando}</td>
+          </tr>
+        `;
+      });
+
+      let tablaHTML = `
+        <div class="tabla-contenedor-inner">
+          <table class="table-doc">
+            <thead>
+              <tr>
+                <th style="width: 5%;">Orden</th>
+                <th style="width: 15%;">¿Qué?</th>
+                <th style="width: 16%;">¿Por qué?</th>
+                <th style="width: 32%;">¿Cómo?</th>
+                <th style="width: 6%;">¿Cuánto?</th>
+                <th style="width: 10%;">¿Quién?</th>
+                <th style="width: 7%;">¿Dónde?</th>
+                <th style="width: 9%;">¿Cuándo?</th>
+              </tr>
+            </thead>
+            <tbody>${filasHTML}</tbody>
+          </table>
+        </div>
+      `;
+
+      let pieHTML = "";
+      if (p.tienePie) {
+        pieHTML = `
+          <div class="bloque-pie-reglamentario">
+            <div class="texto-leyenda-pie">
+              *Quien proponga el PDCA debe asegurar su cumplimiento como quien lo aprueba.
+            </div>
+            <table class="tabla-pie-oficial">
+              <tr>
+                <td onclick="editarCampoPie('fechaRevision', 'Fecha de Revisión:')">
+                  <span class="celda-pie-label">Fecha de Revisión:</span>
+                  <span class="celda-pie-valor">${plan.fechaRevision || ''}</span>
+                </td>
+                <td onclick="editarCampoPie('revisadoPor', 'Nombre del Revisor:')">
+                  <span class="celda-pie-label">Revisado por:</span>
+                  <span class="celda-pie-valor">${plan.revisadoPor || ''}</span>
+                </td>
+                <td onclick="editarCampoPie('fechaAprobacion', 'Fecha de Aprobación:')">
+                  <span class="celda-pie-label">Fecha de Aprobación:</span>
+                  <span class="celda-pie-valor">${plan.fechaAprobacion || ''}</span>
+                </td>
+                <td onclick="editarCampoPie('aprobadoPor', 'Nombre del Aprobador (*):')">
+                  <span class="celda-pie-label">Aprobado por (*):</span>
+                  <span class="celda-pie-valor">${plan.aprobadoPor || ''}</span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        `;
+      }
+
+      hojaDiv.innerHTML = headerHTML + metadatosHTML + tablaHTML + pieHTML;
+      contenedor.appendChild(hojaDiv);
+    });
+
+    gestionarEstadoBloqueoUI(plan);
+  }
+
+  // ==========================================
+  // PARSER DE ARCHIVOS WORD (.DOCX) REFORZADO
+  // ==========================================
+  async function procesarArchivoWord(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!usuarioSesion) {
+      alert("Debe iniciar sesión para importar archivos Word.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const arrayBuffer = e.target.result;
+      try {
+        const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+        const html = result.value;
+        const parserDiv = document.createElement("div");
+        parserDiv.innerHTML = html;
+
+        function limpiarTextoCelda(celda) {
+          if (!celda) return "";
+          const clone = celda.cloneNode(true);
+          clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+          clone.querySelectorAll('li').forEach(li => li.prepend('• '));
+          clone.querySelectorAll('p, li, tr, div').forEach(el => el.insertAdjacentText('beforeend', '\n'));
+          let txt = clone.textContent || clone.innerText || "";
+          return txt.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+        }
+
+        parserDiv.querySelectorAll('p, tr, div, li').forEach(el => el.insertAdjacentHTML('beforeend', '\n'));
+        const textoPlano = parserDiv.innerText || parserDiv.textContent;
+
+        function extraerCampoDelimitado(texto, clave) {
+          const otras = [
+            'política', 'politica',
+            'objetivo',
+            'meta',
+            'efecto esperado', 'efecto',
+            'responsable',
+            'dead line', 'deadline',
+            'método', 'metodo',
+            'orden', '¿qué\\?'
+          ].filter(item => !item.startsWith(clave.toLowerCase()))
+           .map(item => item.replace(/\s+/g, '\\s*'))
+           .join('|');
+
+          const reg = new RegExp(`(?:${clave})\\s*:\\s*([\\s\\S]*?)(?=(?:${otras})\\s*:|$)`, 'i');
+          const m = texto.match(reg);
+          if (m && m[1]) {
+            return m[1].replace(/[\t\r\n]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+          }
+          return '';
+        }
+
+        const politicaExtraida = extraerCampoDelimitado(textoPlano, 'Política|Politica') || "Política 1: Optimizar el uso de los recursos.";
+        const objetivoExtraido = extraerCampoDelimitado(textoPlano, 'Objetivo') || "Objetivo importado desde plantilla Word";
+        const metaExtraida = extraerCampoDelimitado(textoPlano, 'Meta') || "Cumplimiento de meta al 100%";
+        const efectoExtraido = extraerCampoDelimitado(textoPlano, 'Efecto(?:\\s+Esperado)?') || "Mejora continua en el sector";
+        const responsableExtraido = extraerCampoDelimitado(textoPlano, 'Responsable') || usuarioSesion.nombre;
+        const deadlineExtraido = extraerCampoDelimitado(textoPlano, 'Dead\\s*Line|Deadline') || "31/10/2026";
+        
+        const mPdcaNum = textoPlano.match(/PDCA\s*:\s*(\d{3,4}\/\d{4})/i);
+        const numPdcaExtraido = mPdcaNum ? mPdcaNum[1] : "";
+
+        let tituloExtraido = "";
+        const mTit = textoPlano.match(/(?:PDCA\s*\n+|Subtítulo\s*:?\s*)([^\n\r]+)/i);
+        if (mTit && mTit[1] && !mTit[1].includes("01-") && !mTit[1].includes("CÓD") && !mTit[1].toLowerCase().includes("página")) {
+          tituloExtraido = mTit[1].trim();
+        } else {
+          tituloExtraido = file.name.replace(/\.docx$/i, '').trim();
+        }
+
+        // EXTRACCIÓN EXACTA DE FILAS Y ACCIONES DEL 5W2H
+        const accionesExtraidas = [];
+        const tablas = Array.from(parserDiv.querySelectorAll("table"));
+
+        let tabla5w2h = null;
+        for (let t of tablas) {
+          const tText = t.textContent.toLowerCase();
+          if ((tText.includes("qué") || tText.includes("que")) && 
+              (tText.includes("cómo") || tText.includes("como") || tText.includes("por qué") || tText.includes("porque"))) {
+            tabla5w2h = t;
+            break;
+          }
+        }
+        if (!tabla5w2h && tablas.length > 0) tabla5w2h = tablas[tablas.length - 1];
+
+        if (tabla5w2h) {
+          const filas = Array.from(tabla5w2h.querySelectorAll("tr"));
+          let colMap = { ord: -1, que: -1, porQue: -1, como: -1, cuanto: -1, quien: -1, donde: -1, cuando: -1 };
+          let headerRowIdx = -1;
+
+          // Localizar únicamente la fila de encabezados
+          for (let rIdx = 0; rIdx < filas.length; rIdx++) {
+            const celdas = filas[rIdx].querySelectorAll("td, th");
+            let foundQue = -1, foundComo = -1, foundPorQue = -1;
+
+            celdas.forEach((c, cIdx) => {
+              const txt = c.textContent.trim().toLowerCase();
+              if (txt.includes("qué") || txt === "¿qué?") foundQue = cIdx;
+              if (txt.includes("cómo") || txt === "¿cómo?") foundComo = cIdx;
+              if (txt.includes("por qué") || txt.includes("por que") || txt.includes("porque")) foundPorQue = cIdx;
+            });
+
+            if (foundQue !== -1 && (foundComo !== -1 || foundPorQue !== -1)) {
+              headerRowIdx = rIdx;
+              celdas.forEach((c, cIdx) => {
+                const txt = c.textContent.trim().toLowerCase();
+                if (txt.includes("orden") || txt === "ord") colMap.ord = cIdx;
+                else if (txt.includes("por qué") || txt.includes("por que") || txt.includes("porque")) colMap.porQue = cIdx;
+                else if (txt.includes("qué") || txt.includes("que")) colMap.que = cIdx;
+                else if (txt.includes("cómo") || txt.includes("como")) colMap.como = cIdx;
+                else if (txt.includes("cuánto") || txt.includes("cuanto")) colMap.cuanto = cIdx;
+                else if (txt.includes("quién") || txt.includes("quien")) colMap.quien = cIdx;
+                else if (txt.includes("dónde") || txt.includes("donde")) colMap.donde = cIdx;
+                else if (txt.includes("cuándo") || txt.includes("cuando")) colMap.cuando = cIdx;
+              });
+              break; // DETENER: no continuar para no sobreescribir con las filas de datos
+            }
+          }
+
+          // Extraer cada acción real
+          filas.forEach((tr, rIdx) => {
+            if (rIdx <= headerRowIdx) return;
+            const celdas = tr.querySelectorAll("td, th");
+            if (celdas.length < 4) return;
+
+            const primerTexto = celdas[0]?.textContent.trim().toLowerCase() || "";
+            if (primerTexto.includes("orden") || primerTexto.includes("revisado por") || primerTexto.includes("quien proponga")) return;
+
+            let queVal = colMap.que !== -1 ? limpiarTextoCelda(celdas[colMap.que]) : limpiarTextoCelda(celdas[1]);
+            let comoVal = colMap.como !== -1 ? limpiarTextoCelda(celdas[colMap.como]) : limpiarTextoCelda(celdas[3]);
+
+            if (!queVal && !comoVal) return;
+            if (queVal.toLowerCase().includes("¿qué?") || queVal.toLowerCase().includes("qué")) return;
+
+            let ordVal = colMap.ord !== -1 ? parseInt(limpiarTextoCelda(celdas[colMap.ord])) : parseInt(primerTexto);
+            if (isNaN(ordVal)) ordVal = accionesExtraidas.length + 1;
+
+            let porQueVal = colMap.porQue !== -1 ? limpiarTextoCelda(celdas[colMap.porQue]) : limpiarTextoCelda(celdas[2]);
+            let cuantoVal = colMap.cuanto !== -1 ? limpiarTextoCelda(celdas[colMap.cuanto]) : "";
+            
+            let quienVal = colMap.quien !== -1 ? limpiarTextoCelda(celdas[colMap.quien]) : (limpiarTextoCelda(celdas[celdas.length >= 8 ? 5 : 4]) || usuarioSesion.nombre);
+            let dondeVal = colMap.donde !== -1 ? limpiarTextoCelda(celdas[colMap.donde]) : (limpiarTextoCelda(celdas[celdas.length >= 8 ? 6 : 5]) || "La Plata");
+            let cuandoVal = colMap.cuando !== -1 ? limpiarTextoCelda(celdas[colMap.cuando]) : (limpiarTextoCelda(celdas[celdas.length >= 8 ? 7 : 6]) || "Inmediato");
+
+            accionesExtraidas.push({
+              orden: ordVal,
+              que: queVal,
+              porQue: porQueVal,
+              como: comoVal,
+              cuanto: cuantoVal,
+              quien: quienVal || usuarioSesion.nombre,
+              donde: dondeVal || "La Plata",
+              cuando: cuandoVal || "Inmediato",
+              estado: "EN_PROCESO"
+            });
+          });
+        }
+
+        const nuevoPlan = {
+          codDoc: "01-9999-99-99-99-9999-PD-00-01-02",
+          numPdca: numPdcaExtraido,
+          paginaDoc: "Página 1 de 2",
+          titulo: tituloExtraido || "Plan Importado de Word",
+          politica: politicaExtraida,
+          objetivo: objetivoExtraido,
+          meta: metaExtraida,
+          efecto: efectoExtraido,
+          responsable: responsableExtraido,
+          deadline: deadlineExtraido,
+          estado: numPdcaExtraido ? "APROBADO" : "BORRADOR",
+          bloqueado: !!numPdcaExtraido,
+          fechaRevision: "",
+          revisadoPor: "",
+          fechaAprobacion: "",
+          aprobadoPor: "",
+          pdfBase64: null,
+          acciones: accionesExtraidas.length > 0 ? accionesExtraidas : [
+            { orden: 1, que: "Revisión técnica de flota", porQue: "Carga inicial", como: "Auditoría", cuanto: "", quien: responsableExtraido, donde: "La Plata", cuando: deadlineExtraido, estado: "PENDIENTE" }
+          ]
+        };
+
+        baseDatos.push(nuevoPlan);
+        sincronizarPlanEnCloud(nuevoPlan);
+        
+        indiceActual = baseDatos.length - 1;
+        actualizarSelectDocumento(indiceActual);
+        actualizarDashboard();
+        cambiarVista("documento");
+
+        alert(`¡DOCUMENTO RECONOCIDO CON ÉXITO!\n\nTítulo: ${nuevoPlan.titulo}\nAcciones 5W2H importadas: ${nuevoPlan.acciones.length}\nTodas las tareas se cargaron con viñetas, saltos y responsables en el formato idéntico a Word.`);
+
+      } catch (err) {
+        alert("Error al procesar Word: " + err.message);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    event.target.value = "";
+  }
+
+  // ==========================================
+  // COMPILACIÓN Y DESCARGA DE PDF
+  // ==========================================
+  async function guardarPDFenBaseDeDatos() {
+    const plan = baseDatos[indiceActual];
+    const contenedor = document.getElementById("contenedorHojasImpresion");
+    const nombre = (plan.numPdca ? `PDCA_${plan.numPdca.replace('/', '_')}` : 'PDCA_Borrador') + '.pdf';
+
+    const opciones = {
+      margin:       0,
+      filename:     nombre,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:    { mode: ['css', 'legacy'], after: '.hoja-a4' }
+    };
+
+    alert("Compilando documento en PDF vertical y almacenando en Cloud Firestore...");
+
+    try {
+      const pdfBlob = await html2pdf().set(opciones).from(contenedor).outputPdf('blob');
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        const base64data = reader.result;
+        plan.pdfBase64 = base64data;
+        sincronizarPlanEnCloud(plan);
+        gestionarEstadoBloqueoUI(plan);
+        alert("¡PDF GUARDADO EN LA BASE DE DATOS!\n\nAmbas hojas con el formato exacto quedaron almacenadas en Cloud Firestore.");
+      };
+      reader.readAsDataURL(pdfBlob);
+    } catch (e) {
+      alert("Error al compilar PDF: " + e.message);
+    }
+  }
+
+  function abrirPdfDesdeBaseDeDatos() {
+    const plan = baseDatos[indiceActual];
+    if (!plan.pdfBase64) {
+      alert("No hay un PDF archivado aún para este plan. Presioná '☁️ Guardar PDF en Base de Datos'.");
+      return;
+    }
+    const win = window.open();
+    win.document.write(`
+      <iframe src="${plan.pdfBase64}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>
+    `);
+  }
+
+  function descargarPDFVertical() {
+    const plan = baseDatos[indiceActual];
+    const contenedor = document.getElementById("contenedorHojasImpresion");
+    const nombre = (plan.numPdca ? `PDCA_${plan.numPdca.replace('/', '_')}` : 'PDCA_Borrador') + '.pdf';
+
+    const opciones = {
+      margin:       0,
+      filename:     nombre,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:    { mode: ['css', 'legacy'], after: '.hoja-a4' }
+    };
+
+    html2pdf().set(opciones).from(contenedor).save();
+  }
+
+  // ==========================================
+  // NAVEGACIÓN Y SESIÓN
+  // ==========================================
+  function cambiarVista(vista) {
+    const sLogin = document.getElementById("seccionLogin");
+    const sDash = document.getElementById("seccionDashboard");
+    const sDoc = document.getElementById("seccionDocumento");
+    const navUser = document.getElementById("usuarioInfoNavbar");
+
+    sLogin.classList.add("d-none");
+    sDash.classList.add("d-none");
+    sDoc.classList.add("d-none");
+
+    if (vista === "login") {
+      sLogin.classList.remove("d-none");
+      navUser.classList.add("d-none");
+    } else if (vista === "dashboard") {
+      sDash.classList.remove("d-none");
+      navUser.classList.remove("d-none");
+      actualizarDashboard();
+    } else if (vista === "documento") {
+      sDoc.classList.remove("d-none");
+      navUser.classList.remove("d-none");
+      cargarPDCA(indiceActual);
+    }
+  }
+
+  function ejecutarLogin(e) {
+    e.preventDefault();
+    const leg = document.getElementById("loginLegajo").value.trim();
+    const pass = document.getElementById("loginPassword").value.trim();
+    const usuario = usuariosSistema.find(u => u.legajo === leg && u.clave === pass);
+    if (!usuario) {
+      alert("Legajo o contraseña incorrectos.");
+      return;
+    }
+    usuarioSesion = usuario;
+    localStorage.setItem("pdca_sesion_activa", JSON.stringify(usuarioSesion));
+    document.getElementById("formLogin").reset();
+    actualizarDatosUsuarioSesion();
+    cambiarVista("dashboard");
+  }
+
+  function cerrarSesion() {
+    usuarioSesion = null;
+    localStorage.removeItem("pdca_sesion_activa");
+    cambiarVista("login");
+  }
+
+  function actualizarDatosUsuarioSesion() {
+    if (!usuarioSesion) return;
+    document.getElementById("txtNavbarUsuario").innerHTML = `👤 Legajo <strong>${usuarioSesion.legajo}</strong>`;
+    document.getElementById("dashSaludoUsuario").innerText = `Hola, ${usuarioSesion.nombre}`;
+  }
+
+  function actualizarDashboard() {
+    actualizarDatosUsuarioSesion();
+    let totalPlanes = baseDatos.length;
+    let enProceso = 0;
+    let finalizados = 0;
+    let misTareasTotal = 0;
+    let misTareasCompletadas = 0;
+
+    const nombreUsuario = usuarioSesion ? usuarioSesion.nombre.toLowerCase() : "";
+
+    baseDatos.forEach(plan => {
+      if (plan.estado === "APROBADO") finalizados++;
+      else enProceso++;
+
+      if (plan.acciones && Array.isArray(plan.acciones)) {
+        plan.acciones.forEach(acc => {
+          if (nombreUsuario && acc.quien && acc.quien.toLowerCase().includes(nombreUsuario)) {
+            misTareasTotal++;
+            if (acc.estado === "COMPLETADA") misTareasCompletadas++;
+          }
+        });
+      }
+    });
+
+    document.getElementById("kpiTotalPlanes").innerText = totalPlanes;
+    document.getElementById("kpiEnProceso").innerText = enProceso;
+    document.getElementById("kpiFinalizados").innerText = finalizados;
+    document.getElementById("kpiMisTareas").innerText = misTareasTotal;
+    document.getElementById("kpiMisTareasDetalle").innerText = `${misTareasCompletadas} comp.`;
+
+    renderizarTablaDashboard();
+  }
+
+  function renderizarTablaDashboard() {
+    const tbody = document.getElementById("tablaDashboardBody");
+    tbody.innerHTML = "";
+    const filtro = document.getElementById("filtroEstadoDashboard").value;
+
+    baseDatos.forEach((plan, i) => {
+      if (filtro === "APROBADO" && plan.estado !== "APROBADO") return;
+      if (filtro === "BORRADOR" && plan.estado === "APROBADO") return;
+
+      let badgeEstado = '<span class="badge bg-secondary">Borrador</span>';
+      if (plan.estado === "REVISADO") badgeEstado = '<span class="badge bg-warning text-dark">Revisado</span>';
+      if (plan.estado === "APROBADO") badgeEstado = '<span class="badge bg-success">Aprobado 🔒</span>';
+
+      const badgePdf = plan.pdfBase64 
+        ? '<span class="badge bg-primary">☁️ PDF Listo</span>' 
+        : '<span class="badge bg-light text-muted border">Sin PDF</span>';
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="fw-bold">${plan.numPdca || '<span class="text-muted">Pend.</span>'}</td>
+        <td><strong>${plan.titulo}</strong></td>
+        <td class="d-none d-md-table-cell">${plan.responsable}</td>
+        <td class="text-center">${badgePdf}</td>
+        <td class="text-center">${badgeEstado}</td>
+        <td class="text-end">
+          <button class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" onclick="abrirPlanDesdeDashboard(${i})">
+            Abrir ➔
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function abrirPlanDesdeDashboard(index) {
+    indiceActual = index;
+    actualizarSelectDocumento(index);
+    cambiarVista("documento");
+  }
+
+  function conectarCloudFirestore() {
+    const badge = document.getElementById("badgeCloudStatus");
+    if (!db) {
+      badge.className = "badge bg-warning text-dark";
+      badge.innerText = "🟡 Modo Local";
+      return;
+    }
+
+    db.collection("planes_pdca").onSnapshot((snapshot) => {
+      badge.className = "badge bg-success";
+      badge.innerText = "🟢 Cloud Activo";
+
+      if (snapshot.empty) {
+        baseDatos.forEach(p => db.collection("planes_pdca").add(p));
+        return;
+      }
+
+      const listaRemota = [];
+      snapshot.forEach(doc => {
+        listaRemota.push({ id: doc.id, ...doc.data() });
+      });
+
+      if (listaRemota.length > 0) {
+        baseDatos = listaRemota;
+        baseDatos.sort((a, b) => (a.numPdca || "ZZZZ").localeCompare(b.numPdca || "ZZZZ"));
+        guardarLocal();
+        actualizarSelectDocumento(indiceActual < baseDatos.length ? indiceActual : 0);
+        actualizarDashboard();
+        if (!document.getElementById("seccionDocumento").classList.contains("d-none")) {
+          cargarPDCA(indiceActual);
+        }
+      }
+    }, (error) => {
+      badge.className = "badge bg-warning text-dark";
+      badge.innerText = "🟡 Modo Local";
+    });
+  }
+
+  function sincronizarPlanEnCloud(plan) {
+    guardarLocal();
+    if (!db) return;
+    try {
+      if (plan.id) {
+        db.collection("planes_pdca").doc(plan.id).set(plan).catch(e => console.warn(e));
+      } else {
+        db.collection("planes_pdca").add(plan).then(docRef => plan.id = docRef.id).catch(e => console.warn(e));
+      }
+    } catch (e) {
+      console.warn("Sync error:", e);
+    }
+  }
+
+  function procesarArchivoLogo(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const base64 = evt.target.result;
+      localStorage.setItem("pdca_logo_mba", base64);
+      aplicarLogoATodos(base64);
+      cargarPDCA(indiceActual);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function aplicarLogoATodos(src) {
+    document.getElementById("logoBarraFija").src = src;
+    document.getElementById("logoCardLogin").src = src;
+  }
+
+  function aplicarLogoFalso(imgEl) {
+    imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50'><text x='50%' y='65%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='16' fill='%23005f73'>Misión Buenos Aires</text></svg>";
+  }
+
+  function actualizarSelectDocumento(indice = 0) {
+    const select = document.getElementById("pdcaSelect");
+    select.innerHTML = "";
+    baseDatos.forEach((p, i) => {
+      const opt = document.createElement("option");
+      opt.value = i;
+      const numLabel = p.numPdca ? `[PDCA ${p.numPdca}]` : '[BORRADOR]';
+      const lockLabel = p.bloqueado ? ' 🔒' : '';
+      opt.innerText = `${numLabel} ${p.titulo}${lockLabel}`;
+      select.appendChild(opt);
+    });
+    select.value = indice;
+  }
+
+  function seleccionarPDCA(val) {
+    indiceActual = parseInt(val);
+    cargarPDCA(indiceActual);
+  }
+
+  function cargarPDCA(index) {
+    if (baseDatos.length === 0) return;
+    indiceActual = parseInt(index);
+    const plan = baseDatos[indiceActual];
+    renderizarDocumentoOficialPaginado(plan);
+  }
+
+  function gestionarEstadoBloqueoUI(plan) {
+    const banner = document.getElementById("bannerBloqueo");
+    const badge = document.getElementById("badgeEstadoPantalla");
+    const btnRev = document.getElementById("btnRevisarPlan");
+    const btnApr = document.getElementById("btnAprobarGerencia");
+    const btnDesbloq = document.getElementById("btnDesbloquearPlan");
+    const btnVerPdf = document.getElementById("btnVerPdfCloud");
+
+    if (plan.pdfBase64) {
+      btnVerPdf.classList.remove("d-none");
+    } else {
+      btnVerPdf.classList.add("d-none");
+    }
+
+    if (plan.bloqueado) {
+      banner.classList.remove("d-none");
+      badge.innerText = "APROBADO (BLOQUEADO)";
+      badge.className = "badge bg-danger";
+      btnRev.classList.add("d-none");
+      btnApr.classList.add("d-none");
+      if (usuarioSesion && usuarioSesion.rol === "GERENTE") {
+        btnDesbloq.classList.remove("d-none");
+      } else {
+        btnDesbloq.classList.add("d-none");
+      }
+    } else {
+      banner.classList.add("d-none");
+      btnRev.classList.remove("d-none");
+      btnApr.classList.remove("d-none");
+      btnDesbloq.classList.add("d-none");
+      badge.innerText = plan.estado.replace('_', ' ');
+      if (plan.estado === "BORRADOR") badge.className = "badge bg-secondary";
+      else if (plan.estado === "REVISADO") badge.className = "badge bg-warning text-dark";
+      else badge.className = "badge bg-success";
+    }
+  }
+
+  function rotarEstadoAccion(originalIndex) {
+    if (!usuarioSesion) {
+      alert("Inicie sesión con su Legajo.");
+      return;
+    }
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) return;
+    const acc = plan.acciones[originalIndex];
+    if (acc.estado === "PENDIENTE") acc.estado = "EN_PROCESO";
+    else if (acc.estado === "EN_PROCESO") acc.estado = "COMPLETADA";
+    else acc.estado = "PENDIENTE";
+
+    sincronizarPlanEnCloud(plan);
+    renderizarDocumentoOficialPaginado(plan);
+  }
+
+  function abrirModalAccion(index) {
+    if (!usuarioSesion) return;
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) return;
+
+    const modalTitulo = document.getElementById("modalAccionTitulo");
+    const editIndexField = document.getElementById("accEditIndex");
+
+    if (index >= 0) {
+      const acc = plan.acciones[index];
+      modalTitulo.innerText = `Editar Acción N° ${acc.orden}`;
+      editIndexField.value = index;
+      document.getElementById("accQue").value = acc.que;
+      document.getElementById("accPorQue").value = acc.porQue;
+      document.getElementById("accComo").value = acc.como;
+      document.getElementById("accQuien").value = acc.quien;
+      document.getElementById("accCuanto").value = acc.cuanto || "";
+      document.getElementById("accDonde").value = acc.donde;
+      document.getElementById("accCuando").value = acc.cuando;
+      document.getElementById("accEstado").value = acc.estado;
+    } else {
+      modalTitulo.innerText = "Nueva Acción 5W2H";
+      editIndexField.value = "-1";
+      document.getElementById("formAccion5W2H").reset();
+      document.getElementById("accQuien").value = usuarioSesion.nombre;
+      document.getElementById("accDonde").value = "La Plata";
+      document.getElementById("accCuando").value = "A partir de hoy";
+    }
+    new bootstrap.Modal(document.getElementById('modalAccion5W2H')).show();
+  }
+
+  function guardarAccion5W2H(e) {
+    e.preventDefault();
+    const plan = baseDatos[indiceActual];
+    const index = parseInt(document.getElementById("accEditIndex").value);
+
+    const accionData = {
+      orden: index >= 0 ? plan.acciones[index].orden : plan.acciones.length + 1,
+      que: document.getElementById("accQue").value.trim(),
+      porQue: document.getElementById("accPorQue").value.trim(),
+      como: document.getElementById("accComo").value.trim(),
+      quien: document.getElementById("accQuien").value.trim(),
+      cuanto: document.getElementById("accCuanto").value.trim(),
+      donde: document.getElementById("accDonde").value.trim(),
+      cuando: document.getElementById("accCuando").value.trim(),
+      estado: document.getElementById("accEstado").value
+    };
+
+    if (index >= 0) plan.acciones[index] = accionData;
+    else plan.acciones.push(accionData);
+
+    sincronizarPlanEnCloud(plan);
+    bootstrap.Modal.getInstance(document.getElementById('modalAccion5W2H')).hide();
+    renderizarDocumentoOficialPaginado(plan);
+  }
+
+  function registrarRevisionPlan() {
+    if (!usuarioSesion) return;
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) return;
+    const fechaHoy = new Date().toLocaleDateString('es-AR');
+    plan.revisadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
+    plan.fechaRevision = fechaHoy;
+    plan.estado = "REVISADO";
+    sincronizarPlanEnCloud(plan);
+    cargarPDCA(indiceActual);
+  }
+
+  function aprobarPlanGerencia() {
+    if (!usuarioSesion) return;
+    if (usuarioSesion.rol !== "GERENTE") {
+      alert("Solo el Gerente puede aprobar.");
+      return;
+    }
+    const plan = baseDatos[indiceActual];
+    const confirmar = confirm("¿Aprobar y formalizar plan?");
+    if (!confirmar) return;
+
+    const fechaHoy = new Date().toLocaleDateString('es-AR');
+    plan.aprobadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
+    plan.fechaAprobacion = fechaHoy;
+    plan.estado = "APROBADO";
+    plan.bloqueado = true;
+
+    if (!plan.numPdca || plan.numPdca.trim() === "" || plan.numPdca.startsWith("----")) {
+      const anioActual = new Date().getFullYear();
+      plan.numPdca = obtenerSiguienteNumeroPDCA(anioActual);
+    }
+
+    sincronizarPlanEnCloud(plan);
+    alert(`Plan Aprobado: PDCA ${plan.numPdca}`);
+    cargarPDCA(indiceActual);
+  }
+
+  function obtenerSiguienteNumeroPDCA(anio) {
+    let maximo = 83;
+    baseDatos.forEach(plan => {
+      if (plan.numPdca && plan.numPdca.includes('/')) {
+        const partes = plan.numPdca.split('/');
+        const num = parseInt(partes[0], 10);
+        const y = parseInt(partes[1], 10);
+        if (!isNaN(num) && y === anio) {
+          if (num > maximo) maximo = num;
+        }
+      }
+    });
+    return String(maximo + 1).padStart(4, '0') + '/' + anio;
+  }
+
+  function desbloquearPlanGerente() {
+    if (!usuarioSesion || usuarioSesion.rol !== "GERENTE") return;
+    const motivo = prompt("Motivo de reapertura:");
+    if (!motivo) return;
+    const plan = baseDatos[indiceActual];
+    plan.bloqueado = false;
+    plan.estado = "REABIERTO_EDICION";
+    sincronizarPlanEnCloud(plan);
+    cargarPDCA(indiceActual);
+  }
+
+  function abrirModalNuevoPDCA() {
+    if (!usuarioSesion) return;
+    new bootstrap.Modal(document.getElementById('modalNuevoPDCA')).show();
+  }
+
+  function guardarNuevoPDCA(e) {
+    e.preventDefault();
+    const nuevo = {
+      codDoc: document.getElementById("newCodDoc").value.trim(),
+      numPdca: "", 
+      paginaDoc: "Página 1 de 2",
+      titulo: document.getElementById("newTitulo").value.trim(),
+      politica: document.getElementById("newPolitica").value,
+      objetivo: document.getElementById("newObjetivo").value.trim(),
+      meta: document.getElementById("newMeta").value.trim(),
+      efecto: document.getElementById("newEfecto").value.trim(),
+      responsable: document.getElementById("newResponsable").value.trim(),
+      deadline: document.getElementById("newDeadline").value.trim(),
+      estado: "BORRADOR",
+      bloqueado: false,
+      fechaRevision: "",
+      revisadoPor: "",
+      fechaAprobacion: "",
+      aprobadoPor: "",
+      pdfBase64: null,
+      acciones: []
+    };
+
+    baseDatos.push(nuevo);
+    sincronizarPlanEnCloud(nuevo);
+    bootstrap.Modal.getInstance(document.getElementById('modalNuevoPDCA')).hide();
+    document.getElementById("formNuevoPDCA").reset();
+    
+    indiceActual = baseDatos.length - 1;
+    actualizarSelectDocumento(indiceActual);
+    cambiarVista("documento");
+  }
+
+  function abrirModalCambiarPolitica() {
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) return;
+    document.getElementById("selectPoliticaActiva").value = plan.politica;
+    new bootstrap.Modal(document.getElementById('modalPoliticaActiva')).show();
+  }
+
+  function guardarCambioPolitica() {
+    const plan = baseDatos[indiceActual];
+    plan.politica = document.getElementById("selectPoliticaActiva").value;
+    sincronizarPlanEnCloud(plan);
+    bootstrap.Modal.getInstance(document.getElementById('modalPoliticaActiva')).hide();
+    renderizarDocumentoOficialPaginado(plan);
+  }
+
+  function editarCampoPie(campo, mensaje) {
+    if (!usuarioSesion) return;
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) return;
+    const valorActual = plan[campo] || "";
+    const nuevoValor = prompt(mensaje, valorActual);
+    if (nuevoValor !== null) {
+      plan[campo] = nuevoValor.trim();
+      sincronizarPlanEnCloud(plan);
+      renderizarDocumentoOficialPaginado(plan);
+    }
+  }
+
+  function abrirConfigGemini() {
+    const keyActual = localStorage.getItem("gemini_api_key") || "";
+    document.getElementById("inputApiKeyGemini").value = keyActual;
+    new bootstrap.Modal(document.getElementById('modalConfigGemini')).show();
+  }
+
+  function guardarApiKeyGemini() {
+    const key = document.getElementById("inputApiKeyGemini").value.trim();
+    if (!key) return;
+    localStorage.setItem("gemini_api_key", key);
+    bootstrap.Modal.getInstance(document.getElementById('modalConfigGemini')).hide();
+    alert("API Key guardada.");
+  }
+
+  function abrirModalAuditoriaIA(tipo = 'plan', indexAccion = -1) {
+    let apiKey = localStorage.getItem("gemini_api_key");
+    if (!apiKey) {
+      abrirConfigGemini();
+      return;
+    }
+    const plan = baseDatos[indiceActual];
+    const select = document.getElementById("selectAmbitoAuditoria");
+    select.innerHTML = "";
+
+    const optPlan = document.createElement("option");
+    optPlan.value = "plan";
+    optPlan.innerText = `Plan Completo: ${plan.titulo}`;
+    select.appendChild(optPlan);
+
+    plan.acciones.forEach((acc, i) => {
+      const optAcc = document.createElement("option");
+      optAcc.value = `accion_${i}`;
+      optAcc.innerText = `Acción #${acc.orden}: ${acc.que.substring(0, 35)}...`;
+      select.appendChild(optAcc);
+    });
+
+    if (tipo === 'accion' && indexAccion >= 0) {
+      select.value = `accion_${indexAccion}`;
+      ejecutarAnalisisIA('accion', indexAccion);
+    } else {
+      select.value = "plan";
+      ejecutarAnalisisIA('plan', -1);
+    }
+
+    new bootstrap.Modal(document.getElementById('modalRespuestaGemini')).show();
+  }
+
+  function ejecutarAnalisisDesdeSelector(valor) {
+    if (valor === "plan") ejecutarAnalisisIA('plan', -1);
+    else if (valor.startsWith("accion_")) ejecutarAnalisisIA('accion', parseInt(valor.replace("accion_", "")));
+  }
+
+  async function ejecutarAnalisisIA(ambito, accionIdx) {
+    let apiKey = localStorage.getItem("gemini_api_key");
+    if (!apiKey) return;
+    const plan = baseDatos[indiceActual];
+    document.getElementById("geminiSpinner").style.display = "block";
+    document.getElementById("geminiContenido").innerText = "";
+
+    let promptAuditoria = "";
+    if (ambito === 'plan') {
+      document.getElementById("geminiSpinnerText").innerText = "Analizando plan con Gemini...";
+      let accionesTexto = plan.acciones.map(a => `• Tarea ${a.orden}: ${a.que} | Resp: ${a.quien}`).join("\n");
+      promptAuditoria = `Actúa como auditor ISO 9001/IRAM 3810. Analiza este PDCA:\nTítulo: ${plan.titulo}\nMeta: ${plan.meta}\nObjetivo: ${plan.objetivo}\nAcciones:\n${accionesTexto}\nDictamen conciso: congruencia, riesgos y 2 mejoras 5W2H.`;
+    } else {
+      const acc = plan.acciones[accionIdx];
+      document.getElementById("geminiSpinnerText").innerText = `Analizando Acción #${acc.orden}...`;
+      promptAuditoria = `Actúa como auditor de calidad de transporte. Analiza esta acción puntual:\nPlan: ${plan.titulo}\nMeta: ${plan.meta}\nAcción #${acc.orden}: ${acc.que}\nCómo: ${acc.como}\nQuién: ${acc.quien}\nDictamen conciso: alineación, riesgos en taller/calle y propuesta de mejora.`;
+    }
+
+    const modelos = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"];
+    let exito = false;
+    let errDetalle = "";
+
+    for (const mod of modelos) {
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mod}:generateContent?key=${apiKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: promptAuditoria }] }] })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => null);
+          errDetalle = errData?.error?.message || `HTTP ${res.status}`;
+          continue;
+        }
+        const data = await res.json();
+        const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (texto) {
+          document.getElementById("geminiSpinner").style.display = "none";
+          document.getElementById("geminiContenido").innerText = `[Modelo: ${mod}]\n\n` + texto;
+          exito = true;
+          break;
+        }
+      } catch (err) {
+        errDetalle = err.message;
+      }
+    }
+
+    if (!exito) {
+      document.getElementById("geminiSpinner").style.display = "none";
+      document.getElementById("geminiContenido").innerText = `⚠️ Error IA: ${errDetalle}`;
+    }
+  }
+
+  // INICIALIZACIÓN
+  window.onload = function() {
+    const selNuevo = document.getElementById("newPolitica");
+    const selActiva = document.getElementById("selectPoliticaActiva");
+    selNuevo.innerHTML = "";
+    selActiva.innerHTML = "";
+    POLITICAS_2026.forEach(pol => {
+      const opt1 = document.createElement("option"); opt1.value = pol; opt1.innerText = pol; selNuevo.appendChild(opt1);
+      const opt2 = document.createElement("option"); opt2.value = pol; opt2.innerText = pol; selActiva.appendChild(opt2);
+    });
+
+    const logoGuardado = localStorage.getItem("pdca_logo_mba");
+    if (logoGuardado) aplicarLogoATodos(logoGuardado);
+
+    if (usuarioSesion) cambiarVista("dashboard");
+    else cambiarVista("login");
+
+    conectarCloudFirestore();
+  };
+</script>
+
+</body>
+</html>
