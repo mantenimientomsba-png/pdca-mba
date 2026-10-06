@@ -104,17 +104,20 @@
       width: 45%;
       text-align: center;
       font-weight: bold;
-      font-size: 13.5pt;
+      font-size: 14pt;
       letter-spacing: 0.5px;
       color: #000;
+      height: 28px;
     }
 
+    /* NOMBRE DEL PDCA SITUADO EXACTAMENTE EN EL CUADRO DESTACADO */
     .celda-subtitulo-plan {
       text-align: center;
       font-weight: bold;
-      font-size: 9.5pt;
+      font-size: 10pt;
       color: #000;
-      line-height: 1.2;
+      line-height: 1.25;
+      padding: 5px 6px !important;
     }
 
     .celda-meta-derecha {
@@ -218,7 +221,7 @@
 
     .cursor-pointer { cursor: pointer; }
 
-    /* IMPRESIÓN COMPACTA SIN SALTOS FANTASMA NI DOBLE MARGEN */
+    /* IMPRESIÓN COMPACTA */
     @media print {
       @page {
         size: A4 portrait;
@@ -278,7 +281,7 @@
 </head>
 <body>
 
-<!-- BARRA INSTITUCIONAL FIJA -->
+<!-- BARRA INSTITUCIONAL PERMANENTE -->
 <nav class="top-navbar-mba no-print d-flex justify-content-between align-items-center">
   <div class="d-flex align-items-center gap-2">
     <div onclick="document.getElementById('inputLogoFile').click()" title="Cambiar logo" class="cursor-pointer">
@@ -300,7 +303,7 @@
   </div>
 </nav>
 
-<!-- REGLA DE CALIBRACIÓN OFF-SCREEN (MIDE LA ALTURA REAL EXACTA EN MM) -->
+<!-- CALIBRADOR DE MEDIDA EN MILÍMETROS -->
 <div id="reglaMedicion" style="position: fixed; left: -9999px; top: 0; width: 186mm; visibility: hidden; font-family: Calibri, Arial, sans-serif; font-size: 8pt;">
   <div id="reglaMetaCont"></div>
   <table class="table-doc" style="width: 186mm; table-layout: fixed;">
@@ -381,14 +384,14 @@
     </div>
     <div class="col-6 col-md-3">
       <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-success">
-        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Aprobados</span>
+        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Finalizados</span>
         <div class="d-flex justify-content-between align-items-center mt-1">
           <span class="kpi-numero text-success" id="kpiFinalizados">0</span>
         </div>
       </div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-info">
+      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-info">
         <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Mis Tareas</span>
         <div class="d-flex justify-content-between align-items-center mt-1">
           <span class="kpi-numero text-info" id="kpiMisTareas">0</span>
@@ -401,10 +404,11 @@
   <div class="card shadow-sm border-0 rounded-3 mb-4">
     <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
       <h6 class="fw-bold m-0 text-dark">Planes Registrados</h6>
-      <select class="form-select form-select-sm" id="filtroEstadoDashboard" style="width: 160px;" onchange="renderizarTablaDashboard()">
-        <option value="TODOS">Todos</option>
+      <select class="form-select form-select-sm" id="filtroEstadoDashboard" style="width: 170px;" onchange="renderizarTablaDashboard()">
+        <option value="TODOS">Todos los estados</option>
         <option value="BORRADOR">Borradores</option>
-        <option value="APROBADO">Aprobados</option>
+        <option value="REVISADO">Revisados</option>
+        <option value="FINALIZADO">Finalizados</option>
       </select>
     </div>
     <div class="table-responsive">
@@ -412,7 +416,7 @@
         <thead class="table-light">
           <tr>
             <th>PDCA</th>
-            <th>Título del Plan</th>
+            <th>Nombre / Objeto del Plan</th>
             <th class="d-none d-md-table-cell">Responsable</th>
             <th class="text-center">PDF Cloud</th>
             <th class="text-center">Estado</th>
@@ -426,7 +430,7 @@
 
 </div>
 
-<!-- 3. PANTALLA DOCUMENTO FORMAL (PAGINACIÓN EXACTA A WORD) -->
+<!-- 3. PANTALLA DOCUMENTO FORMAL -->
 <div id="seccionDocumento" class="d-none">
 
   <div class="container-fluid no-print py-2 bg-white border-bottom shadow-sm">
@@ -434,13 +438,14 @@
       <div class="d-flex align-items-center gap-2">
         <button class="btn btn-sm btn-outline-dark fw-semibold" onclick="cambiarVista('dashboard')">⬅ Volver</button>
         <select id="pdcaSelect" class="form-select form-select-sm" style="max-width: 280px;" onchange="seleccionarPDCA(this.value)"></select>
+        <button class="btn btn-sm btn-outline-danger fw-semibold" onclick="eliminarPDCAActual()" title="Eliminar este PDCA">🗑️ Borrar Plan</button>
       </div>
       <div class="d-flex align-items-center gap-1 flex-wrap">
         <button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirModalAuditoriaIA('plan')">✨ Auditar IA</button>
         <span id="badgeEstadoPantalla" class="badge bg-secondary">BORRADOR</span>
         <button class="btn btn-sm btn-outline-warning" id="btnRevisarPlan" onclick="registrarRevisionPlan()">Revisar</button>
-        <button class="btn btn-sm btn-success fw-semibold" id="btnAprobarGerencia" onclick="aprobarPlanGerencia()">Aprobar</button>
-        <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanGerente()">🔓 Desbloquear</button>
+        <button class="btn btn-sm btn-success fw-semibold" id="btnFinalizarPlan" onclick="finalizarPlanPDCA()">✔ Finalizar Plan</button>
+        <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanGerente()">🔓 Reabrir Edición</button>
         
         <button class="btn btn-sm btn-primary fw-semibold" onclick="guardarPDFenBaseDeDatos()" title="Archiva el PDF en Cloud Firestore">
           ☁ Guardar PDF en Base de Datos
@@ -460,7 +465,7 @@
 
   <div class="container-fluid px-1 px-md-3 py-3">
     <div id="bannerBloqueo" class="alert alert-danger py-2 mb-2 no-print d-none" style="max-width: 210mm; margin: auto; font-size: 8.5pt;">
-      <strong>🔒 PLAN OFICIAL BLOQUEADO:</strong> Aprobado y formalizado por Gerencia.
+      <strong>🔒 PLAN FINALIZADO Y BLOQUEADO:</strong> Aprobado formalmente por Gerencia.
     </div>
 
     <!-- CONTENEDOR DE HOJAS A4 -->
@@ -615,8 +620,8 @@
               <input type="text" class="form-control form-control-sm" id="newPaginaDoc" value="Página 1 de 2" required>
             </div>
             <div class="col-12">
-              <label class="form-label fw-bold small mb-1">Objeto / Título:</label>
-              <input type="text" class="form-control form-control-sm" id="newTitulo" placeholder="ej: Optimización de Línea 129" required>
+              <label class="form-label fw-bold small mb-1">Nombre / Objeto del PDCA (Cabecera):</label>
+              <input type="text" class="form-control form-control-sm" id="newTitulo" placeholder="ej: Optimizar el uso del combustible. Línea 129" required>
             </div>
             <div class="col-12">
               <label class="form-label fw-bold small mb-1 text-primary">Política 2026:</label>
@@ -701,7 +706,7 @@
       efecto: "Disminuir el costo operativo de gasoil y consolidar un estándar de conducción económica en la flota.",
       responsable: "Gabriel Monzón",
       deadline: "31/10/2026",
-      estado: "APROBADO",
+      estado: "FINALIZADO",
       bloqueado: true,
       fechaRevision: "28/09/2026",
       revisadoPor: "Favio Graciette",
@@ -743,14 +748,13 @@
     localStorage.setItem("planes_pdca_oficial_mba_local", JSON.stringify(baseDatos));
   }
 
-  // ========================================================
-  // CALIBRADOR FÍSICO MILIMÉTRICO (OPTIMIZACIÓN TOTAL DE HOJA)
-  // ========================================================
+  // ==========================================
+  // DISTRIBUCIÓN MILIMÉTRICA REAL EN HOJAS A4
+  // ==========================================
   function calcularDistribucionPaginas(plan) {
     const reglaMeta = document.getElementById("reglaMetaCont");
     const reglaTbody = document.getElementById("reglaTbody");
 
-    // Medición exacta de metadatos en pantalla
     reglaMeta.innerHTML = `
       <div class="bloque-metadatos-plan">
         <div class="doc-linea"><b>Política:</b> ${plan.politica}</div>
@@ -763,15 +767,13 @@
       </div>
     `;
 
-    // 1mm = 3.7795 px en renderizado CSS estándar
     const PX_A_MM = 3.7795;
     const alturaMetadatosMm = reglaMeta.offsetHeight / PX_A_MM;
-    const alturaHeaderMm = 26;      // Encabezado tabla oficial
-    const alturaTheadMm = 7;        // Cabecera gris tabla 5W2H
-    const alturaPieFirmasMm = 24;   // Cuadro de firmas oficial
-    const alturaMaxHojaMm = 276;     // Altura útil de hoja A4 (297mm - 16mm de márgenes)
+    const alturaHeaderMm = 28;
+    const alturaTheadMm = 7;
+    const alturaPieFirmasMm = 24;
+    const alturaMaxHojaMm = 276;
 
-    // Medir la altura física real de cada acción individual
     reglaTbody.innerHTML = "";
     const accionesMedidas = plan.acciones.map((acc, i) => {
       const tr = document.createElement("tr");
@@ -790,7 +792,6 @@
       return { ...acc, idx: i, alturaMm: hMm };
     });
 
-    // COMPROBACIÓN 1: ¿Entra todo completo en 1 sola hoja?
     const alturaTotalFilas = accionesMedidas.reduce((sum, a) => sum + a.alturaMm, 0);
     const espacio1Hoja = alturaHeaderMm + alturaMetadatosMm + alturaTheadMm + alturaTotalFilas + alturaPieFirmasMm;
 
@@ -800,23 +801,20 @@
       ];
     }
 
-    // MULTIHOJA: Distribuir aprovechando el 100% de cada página
     const paginas = [];
     let restantes = [...accionesMedidas];
     let esPrimera = true;
 
     while (restantes.length > 0) {
-      // En Página 1 hay metadatos; en las siguientes no.
       const espacioDisponible = esPrimera 
-        ? (alturaMaxHojaMm - alturaHeaderMm - alturaMetadatosMm - alturaTheadMm)  // ~205mm
-        : (alturaMaxHojaMm - alturaHeaderMm - 6 - alturaTheadMm);                 // ~235mm
+        ? (alturaMaxHojaMm - alturaHeaderMm - alturaMetadatosMm - alturaTheadMm)
+        : (alturaMaxHojaMm - alturaHeaderMm - 6 - alturaTheadMm);
 
       let acumulado = 0;
       let accionesDePagina = [];
 
       while (restantes.length > 0) {
         let h = restantes[0].alturaMm;
-        // Si no entra en esta hoja, cortar y pasar a la siguiente
         if (accionesDePagina.length >= 1 && (acumulado + h > espacioDisponible)) {
           break;
         }
@@ -845,6 +843,9 @@
     return paginas;
   }
 
+  // ==========================================
+  // RENDERIZADO DEL ENCABEZADO Y HOJA FORMAL
+  // ==========================================
   function renderizarDocumentoOficialPaginado(plan) {
     const contenedor = document.getElementById("contenedorHojasImpresion");
     contenedor.innerHTML = "";
@@ -857,26 +858,27 @@
       const hojaDiv = document.createElement("div");
       hojaDiv.className = `hoja-a4 pagina-${p.num}`;
 
+      // ENCABEZADO EXACTO: "PDCA" ARRIBA Y EL NOMBRE ABAJO (ROWSPAN 2)
       let headerHTML = `
         <table class="tabla-encabezado-oficial">
           <tr>
             <td rowspan="3" class="celda-logo-doc cursor-pointer" onclick="document.getElementById('inputLogoFile').click()" title="Cambiar logo">
               <img src="${logoSrc}" alt="Misión Buenos Aires" onerror="aplicarLogoFalso(this)">
             </td>
-            <td rowspan="2" class="celda-titulo-pdca">PDCA</td>
+            <td class="celda-titulo-pdca">PDCA</td>
             <td class="celda-meta-derecha">
               <strong>CÓD:</strong> <span>${plan.codDoc || "01-9999-99-99-99-9999-PD-00-01-02"}</span>
             </td>
           </tr>
           <tr>
+            <td rowspan="2" class="celda-subtitulo-plan cursor-pointer" onclick="editarTituloPlan()" title="Hacé clic para editar el nombre del PDCA">
+              <span id="headerSubtituloPlan">${plan.titulo}</span>
+            </td>
             <td class="celda-meta-derecha">
               <strong>PDCA:</strong> <span class="fw-bold ${plan.numPdca ? 'text-dark' : 'text-primary'}">${plan.numPdca || '----/2026'}</span>
             </td>
           </tr>
           <tr>
-            <td class="celda-subtitulo-plan">
-              <span>${plan.titulo}</span>
-            </td>
             <td class="celda-meta-derecha">
               <span>Página ${p.num} de ${p.total}</span>
             </td>
@@ -1004,7 +1006,7 @@
   }
 
   // ==========================================
-  // PARSER DE ARCHIVOS WORD (.DOCX) REFORZADO
+  // PARSER DE WORD CON EXTRACCIÓN DEL TÍTULO
   // ==========================================
   async function procesarArchivoWord(event) {
     const file = event.target.files[0];
@@ -1034,7 +1036,38 @@
           return txt.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
         }
 
-        // Inserción forzada de saltos de línea para evitar colapsos
+        const tablas = Array.from(parserDiv.querySelectorAll("table"));
+
+        // EXTRACCIÓN EXACTA DEL TÍTULO DESDE LA CABECERA OFICIAL
+        let tituloExtraido = "";
+        if (tablas.length > 0) {
+          const celdasHeader = tablas[0].querySelectorAll("td, th");
+          for (let c of celdasHeader) {
+            const txt = c.textContent.replace(/[\t\r\n]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+            if (!txt) continue;
+            const txtUpper = txt.toUpperCase();
+            if (txtUpper === "PDCA") continue;
+            if (txtUpper.startsWith("CÓD") || txtUpper.startsWith("COD")) continue;
+            if (txtUpper.startsWith("PDCA:") || txtUpper.startsWith("PDCA :")) continue;
+            if (txt.toLowerCase().includes("página") || txt.toLowerCase().includes("pagina")) continue;
+            if (txt.toLowerCase().includes("misión buenos aires")) continue;
+            if (txt.length >= 5) {
+              tituloExtraido = txt;
+              break;
+            }
+          }
+        }
+
+        // Si no lo encuentra en la primera tabla, busca por regex o usa el archivo
+        if (!tituloExtraido) {
+          const mTit = parserDiv.textContent.match(/(?:PDCA\s*\n+|Subtítulo\s*:?\s*)([^\n\r]+)/i);
+          if (mTit && mTit[1] && !mTit[1].includes("01-") && !mTit[1].includes("CÓD") && !mTit[1].toLowerCase().includes("página")) {
+            tituloExtraido = mTit[1].trim();
+          } else {
+            tituloExtraido = file.name.replace(/\.docx$/i, '').trim();
+          }
+        }
+
         parserDiv.querySelectorAll('p, tr, div, li, td, th').forEach(el => el.insertAdjacentHTML('beforeend', '\n'));
         const textoPlano = parserDiv.innerText || parserDiv.textContent;
 
@@ -1057,18 +1090,8 @@
         const mPdcaNum = textoPlano.match(/PDCA\s*:\s*(\d{3,4}\/\d{4})/i);
         const numPdcaExtraido = mPdcaNum ? mPdcaNum[1] : "";
 
-        let tituloExtraido = "";
-        const mTit = textoPlano.match(/(?:PDCA\s*\n+|Subtítulo\s*:?\s*)([^\n\r]+)/i);
-        if (mTit && mTit[1] && !mTit[1].includes("01-") && !mTit[1].includes("CÓD") && !mTit[1].toLowerCase().includes("página")) {
-          tituloExtraido = mTit[1].trim();
-        } else {
-          tituloExtraido = file.name.replace(/\.docx$/i, '').trim();
-        }
-
-        // EXTRACCIÓN EXACTA DE ACCIONES DEL 5W2H
+        // EXTRACCIÓN DE ACCIONES DEL 5W2H
         const accionesExtraidas = [];
-        const tablas = Array.from(parserDiv.querySelectorAll("table"));
-
         let tabla5w2h = null;
         for (let t of tablas) {
           const tText = t.textContent.toLowerCase();
@@ -1162,7 +1185,7 @@
           efecto: efectoExtraido,
           responsable: responsableExtraido,
           deadline: deadlineExtraido,
-          estado: numPdcaExtraido ? "APROBADO" : "BORRADOR",
+          estado: numPdcaExtraido ? "FINALIZADO" : "BORRADOR",
           bloqueado: !!numPdcaExtraido,
           fechaRevision: "",
           revisadoPor: "",
@@ -1182,7 +1205,7 @@
         actualizarDashboard();
         cambiarVista("documento");
 
-        alert(`¡DOCUMENTO RECONOCIDO CON ÉXITO!\n\nTítulo: ${nuevoPlan.titulo}\nAcciones 5W2H importadas: ${nuevoPlan.acciones.length}\nCampos distribuidos exactamente igual al formato Word.`);
+        alert(`¡DOCUMENTO RECONOCIDO CON ÉXITO!\n\nNombre del PDCA: ${nuevoPlan.titulo}\nEstado: ${nuevoPlan.estado}\nAcciones detectadas: ${nuevoPlan.acciones.length}`);
 
       } catch (err) {
         alert("Error al procesar Word: " + err.message);
@@ -1190,6 +1213,106 @@
     };
     reader.readAsArrayBuffer(file);
     event.target.value = "";
+  }
+
+  // ==========================================
+  // BORRAR PDCA Y EDITAR NOMBRE
+  // ==========================================
+  async function eliminarPDCA(index) {
+    if (!usuarioSesion) {
+      alert("Debe iniciar sesión para eliminar planes.");
+      return;
+    }
+    const plan = baseDatos[index];
+    const confirmar = confirm(`¿Confirma que desea BORRAR el PDCA "${plan.titulo}"?\n\nEsta acción es irreversible y eliminará el plan de la base de datos.`);
+    if (!confirmar) return;
+
+    if (db && plan.id) {
+      try {
+        await db.collection("planes_pdca").doc(plan.id).delete();
+      } catch (err) {
+        console.warn("Error borrando en Firestore:", err);
+      }
+    }
+
+    baseDatos.splice(index, 1);
+    guardarLocal();
+
+    if (baseDatos.length === 0) {
+      indiceActual = 0;
+      cambiarVista("dashboard");
+    } else {
+      if (indiceActual >= baseDatos.length) {
+        indiceActual = baseDatos.length - 1;
+      }
+      actualizarSelectDocumento(indiceActual);
+      actualizarDashboard();
+      if (!document.getElementById("seccionDocumento").classList.contains("d-none")) {
+        cargarPDCA(indiceActual);
+      }
+    }
+    alert("Plan eliminado correctamente.");
+  }
+
+  function eliminarPDCAActual() {
+    eliminarPDCA(indiceActual);
+  }
+
+  function editarTituloPlan() {
+    if (!usuarioSesion) return;
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado && usuarioSesion.rol !== "GERENTE") {
+      alert("El plan está finalizado y bloqueado. Solo el Gerente puede modificarlo.");
+      return;
+    }
+    const nuevo = prompt("Modificar Nombre / Objeto del PDCA:", plan.titulo);
+    if (nuevo !== null && nuevo.trim() !== "") {
+      plan.titulo = nuevo.trim();
+      sincronizarPlanEnCloud(plan);
+      actualizarSelectDocumento(indiceActual);
+      actualizarDashboard();
+      renderizarDocumentoOficialPaginado(plan);
+    }
+  }
+
+  // ==========================================
+  // FINALIZAR PLAN PDCA
+  // ==========================================
+  function finalizarPlanPDCA() {
+    if (!usuarioSesion) return;
+    if (usuarioSesion.rol !== "GERENTE") {
+      alert("PERMISO DENEGADO: La finalización y aprobación oficial del plan es potestad exclusiva de la Gerencia.");
+      return;
+    }
+    const plan = baseDatos[indiceActual];
+    const confirmar = confirm(`¿Confirma la finalización y aprobación formal del plan?\n\n1. El estado pasará a FINALIZADO.\n2. Se asignará número correlativo consecutivo si está pendiente.\n3. El plan quedará BLOQUEADO en la base de datos.`);
+    if (!confirmar) return;
+
+    const fechaHoy = new Date().toLocaleDateString('es-AR');
+    plan.aprobadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
+    plan.fechaAprobacion = fechaHoy;
+    plan.estado = "FINALIZADO";
+    plan.bloqueado = true;
+
+    if (!plan.numPdca || plan.numPdca.trim() === "" || plan.numPdca.startsWith("----")) {
+      const anioActual = new Date().getFullYear();
+      plan.numPdca = obtenerSiguienteNumeroPDCA(anioActual);
+    }
+
+    sincronizarPlanEnCloud(plan);
+    alert(`¡PLAN FINALIZADO CON ÉXITO!\n\nCorrelativo: PDCA ${plan.numPdca}\nEstado: FINALIZADO\nBloqueado para modificaciones.`);
+    cargarPDCA(indiceActual);
+  }
+
+  function desbloquearPlanGerente() {
+    if (!usuarioSesion || usuarioSesion.rol !== "GERENTE") return;
+    const motivo = prompt("Motivo de reapertura para modificaciones:");
+    if (!motivo) return;
+    const plan = baseDatos[indiceActual];
+    plan.bloqueado = false;
+    plan.estado = "REABIERTO_EDICION";
+    sincronizarPlanEnCloud(plan);
+    cargarPDCA(indiceActual);
   }
 
   // ==========================================
@@ -1219,7 +1342,7 @@
         plan.pdfBase64 = base64data;
         sincronizarPlanEnCloud(plan);
         gestionarEstadoBloqueoUI(plan);
-        alert("¡PDF GUARDADO EN LA BASE DE DATOS!\n\nAmbas hojas con el formato exacto quedaron almacenadas en Cloud Firestore.");
+        alert("¡PDF GUARDADO EN LA BASE DE DATOS!\n\nEl documento oficial quedó almacenado en Cloud Firestore.");
       };
       reader.readAsDataURL(pdfBlob);
     } catch (e) {
@@ -1322,8 +1445,11 @@
     const nombreUsuario = usuarioSesion ? usuarioSesion.nombre.toLowerCase() : "";
 
     baseDatos.forEach(plan => {
-      if (plan.estado === "APROBADO") finalizados++;
-      else enProceso++;
+      if (plan.estado === "FINALIZADO" || plan.estado === "APROBADO") {
+        finalizados++;
+      } else {
+        enProceso++;
+      }
 
       if (plan.acciones && Array.isArray(plan.acciones)) {
         plan.acciones.forEach(acc => {
@@ -1350,12 +1476,13 @@
     const filtro = document.getElementById("filtroEstadoDashboard").value;
 
     baseDatos.forEach((plan, i) => {
-      if (filtro === "APROBADO" && plan.estado !== "APROBADO") return;
-      if (filtro === "BORRADOR" && plan.estado === "APROBADO") return;
+      if (filtro === "FINALIZADO" && plan.estado !== "FINALIZADO" && plan.estado !== "APROBADO") return;
+      if (filtro === "BORRADOR" && plan.estado !== "BORRADOR") return;
+      if (filtro === "REVISADO" && plan.estado !== "REVISADO") return;
 
       let badgeEstado = '<span class="badge bg-secondary">Borrador</span>';
       if (plan.estado === "REVISADO") badgeEstado = '<span class="badge bg-warning text-dark">Revisado</span>';
-      if (plan.estado === "APROBADO") badgeEstado = '<span class="badge bg-success">Aprobado 🔒</span>';
+      if (plan.estado === "FINALIZADO" || plan.estado === "APROBADO") badgeEstado = '<span class="badge bg-success">Finalizado 🔒</span>';
 
       const badgePdf = plan.pdfBase64 
         ? '<span class="badge bg-primary">☁️ PDF Listo</span>' 
@@ -1369,9 +1496,14 @@
         <td class="text-center">${badgePdf}</td>
         <td class="text-center">${badgeEstado}</td>
         <td class="text-end">
-          <button class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" onclick="abrirPlanDesdeDashboard(${i})">
-            Abrir ➔
-          </button>
+          <div class="d-flex justify-content-end gap-1">
+            <button class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" onclick="abrirPlanDesdeDashboard(${i})">
+              Abrir ➔
+            </button>
+            <button class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold" onclick="eliminarPDCA(${i})" title="Borrar PDCA">
+              🗑️
+            </button>
+          </div>
         </td>
       `;
       tbody.appendChild(tr);
@@ -1488,7 +1620,7 @@
     const banner = document.getElementById("bannerBloqueo");
     const badge = document.getElementById("badgeEstadoPantalla");
     const btnRev = document.getElementById("btnRevisarPlan");
-    const btnApr = document.getElementById("btnAprobarGerencia");
+    const btnFin = document.getElementById("btnFinalizarPlan");
     const btnDesbloq = document.getElementById("btnDesbloquearPlan");
     const btnVerPdf = document.getElementById("btnVerPdfCloud");
 
@@ -1500,10 +1632,10 @@
 
     if (plan.bloqueado) {
       banner.classList.remove("d-none");
-      badge.innerText = "APROBADO (BLOQUEADO)";
-      badge.className = "badge bg-danger";
+      badge.innerText = "FINALIZADO (BLOQUEADO)";
+      badge.className = "badge bg-success";
       btnRev.classList.add("d-none");
-      btnApr.classList.add("d-none");
+      btnFin.classList.add("d-none");
       if (usuarioSesion && usuarioSesion.rol === "GERENTE") {
         btnDesbloq.classList.remove("d-none");
       } else {
@@ -1512,7 +1644,7 @@
     } else {
       banner.classList.add("d-none");
       btnRev.classList.remove("d-none");
-      btnApr.classList.remove("d-none");
+      btnFin.classList.remove("d-none");
       btnDesbloq.classList.add("d-none");
       badge.innerText = plan.estado.replace('_', ' ');
       if (plan.estado === "BORRADOR") badge.className = "badge bg-secondary";
@@ -1605,32 +1737,6 @@
     cargarPDCA(indiceActual);
   }
 
-  function aprobarPlanGerencia() {
-    if (!usuarioSesion) return;
-    if (usuarioSesion.rol !== "GERENTE") {
-      alert("Solo el Gerente puede aprobar.");
-      return;
-    }
-    const plan = baseDatos[indiceActual];
-    const confirmar = confirm("¿Aprobar y formalizar plan?");
-    if (!confirmar) return;
-
-    const fechaHoy = new Date().toLocaleDateString('es-AR');
-    plan.aprobadoPor = `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})`;
-    plan.fechaAprobacion = fechaHoy;
-    plan.estado = "APROBADO";
-    plan.bloqueado = true;
-
-    if (!plan.numPdca || plan.numPdca.trim() === "" || plan.numPdca.startsWith("----")) {
-      const anioActual = new Date().getFullYear();
-      plan.numPdca = obtenerSiguienteNumeroPDCA(anioActual);
-    }
-
-    sincronizarPlanEnCloud(plan);
-    alert(`Plan Aprobado: PDCA ${plan.numPdca}`);
-    cargarPDCA(indiceActual);
-  }
-
   function obtenerSiguienteNumeroPDCA(anio) {
     let maximo = 83;
     baseDatos.forEach(plan => {
@@ -1644,17 +1750,6 @@
       }
     });
     return String(maximo + 1).padStart(4, '0') + '/' + anio;
-  }
-
-  function desbloquearPlanGerente() {
-    if (!usuarioSesion || usuarioSesion.rol !== "GERENTE") return;
-    const motivo = prompt("Motivo de reapertura:");
-    if (!motivo) return;
-    const plan = baseDatos[indiceActual];
-    plan.bloqueado = false;
-    plan.estado = "REABIERTO_EDICION";
-    sincronizarPlanEnCloud(plan);
-    cargarPDCA(indiceActual);
   }
 
   function abrirModalNuevoPDCA() {
