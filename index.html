@@ -13,17 +13,18 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <!-- LIBRERÍAS CLIENT-SIDE: PDF, PARSER WORD Y EMAILJS -->
+  <!-- LIBRERÍAS CLIENT-SIDE: PDF, WORD, EMAILJS Y CHART.JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     body {
-      background-color: #dcdfe3;
-      font-family: Calibri, Arial, Helvetica, sans-serif;
+      background-color: #f1f3f6;
+      font-family: Calibri, 'Segoe UI', Arial, sans-serif;
       font-size: 10pt;
-      color: #000;
+      color: #212529;
       margin: 0;
       padding: 0;
     }
@@ -32,7 +33,7 @@
     .top-navbar-mba {
       background-color: #ffffff;
       border-bottom: 2px solid #005f73;
-      padding: 6px 16px;
+      padding: 8px 18px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
     .brand-logo-img {
@@ -41,16 +42,77 @@
       object-fit: contain;
     }
 
-    /* DASHBOARD */
-    .kpi-card {
-      border-radius: 8px;
+    /* PESTAÑAS DEL DASHBOARD */
+    .nav-tabs-custom {
+      border-bottom: 2px solid #dee2e6;
+      margin-bottom: 20px;
+    }
+    .nav-tabs-custom .nav-link {
+      color: #495057;
+      font-weight: 600;
+      font-size: 10pt;
       border: none;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border-bottom: 3px solid transparent;
+      padding: 8px 18px;
+      border-radius: 0;
+      cursor: pointer;
+    }
+    .nav-tabs-custom .nav-link.active {
+      color: #005f73;
+      border-bottom: 3px solid #005f73;
+      background: none;
+    }
+
+    /* TARJETAS DEL DASHBOARD */
+    .kpi-card {
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      background-color: #ffffff;
+      transition: transform 0.15s ease;
+    }
+    .kpi-card:hover {
+      transform: translateY(-2px);
     }
     .kpi-numero {
-      font-size: 1.9rem;
+      font-size: 2.1rem;
       font-weight: 700;
       line-height: 1.1;
+    }
+
+    /* TARJETAS ESTILO PIZARRA (IMAGEN 2) */
+    .card-pizarra {
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background-color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card-pizarra-header {
+      padding: 8px 14px;
+      border-bottom: 1px solid #edf2f7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 9pt;
+      font-weight: 600;
+      color: #2d3748;
+    }
+    .badge-filtro-pizarra {
+      background-color: #ebf8ff;
+      color: #3182ce;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 7.5pt;
+      font-weight: 700;
+    }
+    .card-pizarra-body {
+      padding: 16px 14px;
+      text-align: center;
+    }
+    .numero-pizarra {
+      font-size: 2.3rem;
+      font-weight: 700;
+      color: #1a202c;
     }
 
     /* CONTENEDOR Y HOJAS A4 VERTICALES */
@@ -61,7 +123,6 @@
       gap: 20px;
       margin-bottom: 50px;
     }
-
     .hoja-a4 {
       background-color: #ffffff;
       width: 210mm;
@@ -87,7 +148,6 @@
       padding: 3px 6px;
       vertical-align: middle;
     }
-
     .celda-logo-doc {
       width: 27%;
       text-align: center;
@@ -100,7 +160,6 @@
       object-fit: contain;
       display: inline-block;
     }
-
     .celda-titulo-pdca {
       width: 45%;
       text-align: center;
@@ -110,7 +169,6 @@
       color: #000;
       height: 28px;
     }
-
     .celda-subtitulo-plan {
       text-align: center;
       font-weight: bold;
@@ -119,7 +177,6 @@
       line-height: 1.25;
       padding: 5px 6px !important;
     }
-
     .celda-meta-derecha {
       width: 28%;
       font-size: 8pt;
@@ -129,26 +186,17 @@
     }
 
     /* METADATOS DEL PLAN */
-    .bloque-metadatos-plan {
-      margin-bottom: 5px;
-    }
+    .bloque-metadatos-plan { margin-bottom: 5px; }
     .doc-linea {
       margin-bottom: 3px;
       line-height: 1.25;
       font-size: 9pt;
       color: #000;
     }
-    .doc-label {
-      font-weight: bold;
-      color: #000;
-    }
+    .doc-label { font-weight: bold; color: #000; }
 
-    /* TABLA 5W2H - 8 COLUMNAS EXACTAS A WORD */
-    .tabla-contenedor-inner {
-      width: 100%;
-      margin-top: 3px;
-    }
-
+    /* TABLA 5W2H */
+    .tabla-contenedor-inner { width: 100%; margin-top: 3px; }
     .table-doc {
       width: 100%;
       border-collapse: collapse;
@@ -171,14 +219,10 @@
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    .table-doc td.text-center, .table-doc th.text-center {
-      text-align: center;
-    }
-    .col-como {
-      white-space: pre-line;
-    }
+    .table-doc td.text-center, .table-doc th.text-center { text-align: center; }
+    .col-como { white-space: pre-line; }
 
-    /* PIE DE PÁGINA REGLAMENTARIO DE FIRMAS */
+    /* PIE DE FIRMAS */
     .bloque-pie-reglamentario {
       margin-top: auto;
       padding-top: 8px;
@@ -190,7 +234,6 @@
       color: #111;
       margin-bottom: 3px;
     }
-
     .tabla-pie-oficial {
       width: 100%;
       border-collapse: collapse;
@@ -235,13 +278,8 @@
       .no-print, .top-navbar-mba, #seccionLogin, #seccionDashboard {
         display: none !important;
       }
-      #seccionDocumento {
-        display: block !important;
-      }
-      .contenedor-hojas-trabajo {
-        gap: 0 !important;
-        margin: 0 !important;
-      }
+      #seccionDocumento { display: block !important; }
+      .contenedor-hojas-trabajo { gap: 0 !important; margin: 0 !important; }
       .hoja-a4 {
         box-shadow: none !important;
         margin: 0 !important;
@@ -270,12 +308,8 @@
         padding: 8px 6px !important;
         box-shadow: none !important;
       }
-      .tabla-contenedor-inner {
-        overflow-x: auto;
-      }
-      .table-doc {
-        min-width: 680px;
-      }
+      .tabla-contenedor-inner { overflow-x: auto; }
+      .table-doc { min-width: 680px; }
     }
   </style>
 </head>
@@ -315,7 +349,9 @@
 <input type="file" id="inputLogoFile" accept="image/*" class="d-none" onchange="procesarArchivoLogo(event)">
 <input type="file" id="inputImportWord" accept=".docx" class="d-none" onchange="procesarArchivoWord(event)">
 
-<!-- 1. PANTALLA LOGIN Y REGISTRO -->
+<!-- ======================================================== -->
+<!-- 1. PANTALLA LOGIN Y REGISTRO                            -->
+<!-- ======================================================== -->
 <div id="seccionLogin" class="container py-4 py-md-5">
   <div class="row justify-content-center">
     <div class="col-12 col-sm-8 col-md-5 col-lg-4">
@@ -357,13 +393,16 @@
   </div>
 </div>
 
-<!-- 2. PANTALLA DASHBOARD -->
+<!-- ======================================================== -->
+<!-- 2. PANTALLA DASHBOARD PRINCIPAL CON SOLAPAS              -->
+<!-- ======================================================== -->
 <div id="seccionDashboard" class="container-fluid container-md py-3 py-md-4 d-none">
 
+  <!-- CABECERA DEL DASHBOARD -->
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <div>
       <h5 class="fw-bold m-0 text-dark" id="dashSaludoUsuario">Bienvenido</h5>
-      <p class="text-muted small m-0" id="dashSubtituloRol">Panel de control de planes e indicadores de avance</p>
+      <p class="text-muted small m-0" id="dashSubtituloRol">Panel de control de planes e indicadores de calidad</p>
     </div>
     <div class="d-flex gap-2 flex-wrap">
       <button class="btn btn-outline-secondary btn-sm fw-semibold d-none" id="btnAdminUsuariosDash" onclick="abrirModalGestionUsuarios()">
@@ -377,72 +416,211 @@
     </div>
   </div>
 
-  <div class="row g-2 g-md-3 mb-4">
-    <div class="col-6 col-md-3">
-      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-primary">
-        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Total Planes</span>
-        <div class="d-flex justify-content-between align-items-center mt-1">
-          <span class="kpi-numero text-dark" id="kpiTotalPlanes">0</span>
+  <!-- SOLAPAS DE NAVEGACIÓN (REGISTRO VS PIZARRA DE CONTROL) -->
+  <ul class="nav nav-tabs-custom">
+    <li class="nav-item">
+      <button class="nav-link active" id="tabBtnRegistro" onclick="cambiarSolapaDashboard('registro')">
+        📋 Registro de Planes PDCA
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" id="tabBtnPizarra" onclick="cambiarSolapaDashboard('pizarra')">
+        📊 Pizarra de Control de Tareas (5W2H)
+      </button>
+    </li>
+  </ul>
+
+  <!-- ========================================== -->
+  <!-- VISTA 1: REGISTRO DE PLANES (IMAGEN 1 MEJORADA) -->
+  <!-- ========================================== -->
+  <div id="vistaSolapaRegistro">
+    <!-- TARJETAS DE PLANES MEJORADAS -->
+    <div class="row g-2 g-md-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="card kpi-card p-3 border-start border-4 border-primary">
+          <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Total Planes</span>
+          <div class="d-flex justify-content-between align-items-center mt-1">
+            <span class="kpi-numero text-dark" id="kpiTotalPlanes">0</span>
+            <span class="badge bg-primary-subtle text-primary small" style="font-size: 7pt;">Oficiales</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card kpi-card p-3 border-start border-4 border-warning">
+          <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">En Borrador / Revisión</span>
+          <div class="d-flex justify-content-between align-items-center mt-1">
+            <span class="kpi-numero text-warning" id="kpiEnProceso">0</span>
+            <span class="badge bg-warning-subtle text-warning small" style="font-size: 7pt;">Pendientes</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card kpi-card p-3 border-start border-4 border-info">
+          <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Aprobados (En Curso)</span>
+          <div class="d-flex justify-content-between align-items-center mt-1">
+            <span class="kpi-numero text-info" id="kpiAprobados">0</span>
+            <span class="badge bg-info-subtle text-info small" style="font-size: 7pt;">Activos</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card kpi-card p-3 border-start border-4 border-success">
+          <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Finalizados (Dead Line)</span>
+          <div class="d-flex justify-content-between align-items-center mt-1">
+            <span class="kpi-numero text-success" id="kpiFinalizados">0</span>
+            <span class="badge bg-success-subtle text-success small" style="font-size: 7pt;">Cerrados</span>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-6 col-md-3">
-      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-warning">
-        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">En Borrador / Revisión</span>
-        <div class="d-flex justify-content-between align-items-center mt-1">
-          <span class="kpi-numero text-warning" id="kpiEnProceso">0</span>
+
+    <!-- TABLA DE PLANES CON BUSCADOR -->
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+      <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h6 class="fw-bold m-0 text-dark">Planes Registrados</h6>
+        <div class="d-flex gap-2 align-items-center">
+          <input type="text" class="form-control form-control-sm" id="inputBuscarPlan" placeholder="🔍 Buscar por nombre o N°..." style="width: 200px;" onkeyup="renderizarTablaDashboard()">
+          <select class="form-select form-select-sm" id="filtroEstadoDashboard" style="width: 170px;" onchange="renderizarTablaDashboard()">
+            <option value="TODOS">Todos los estados</option>
+            <option value="BORRADOR">Borradores</option>
+            <option value="REVISADO">Revisados</option>
+            <option value="APROBADO">Aprobados (En Curso)</option>
+            <option value="FINALIZADO">Finalizados (Dead Line)</option>
+          </select>
         </div>
       </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-info">
-        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Aprobados (En Curso)</span>
-        <div class="d-flex justify-content-between align-items-center mt-1">
-          <span class="kpi-numero text-info" id="kpiAprobados">0</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="card kpi-card p-2 p-md-3 bg-white border-start border-4 border-success">
-        <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Finalizados (Dead Line)</span>
-        <div class="d-flex justify-content-between align-items-center mt-1">
-          <span class="kpi-numero text-success" id="kpiFinalizados">0</span>
-        </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="font-size: 9pt;">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 13%;">PDCA</th>
+              <th style="width: 33%;">Nombre / Objeto del Plan</th>
+              <th style="width: 20%;" class="d-none d-md-table-cell">Responsable / Plazo</th>
+              <th style="width: 12%;" class="text-center">PDF Cloud</th>
+              <th style="width: 12%;" class="text-center">Estado</th>
+              <th style="width: 10%;" class="text-end">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaDashboardBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <div class="card shadow-sm border-0 rounded-3 mb-4">
-    <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
-      <h6 class="fw-bold m-0 text-dark">Planes Registrados</h6>
-      <select class="form-select form-select-sm" id="filtroEstadoDashboard" style="width: 180px;" onchange="renderizarTablaDashboard()">
-        <option value="TODOS">Todos los estados</option>
-        <option value="BORRADOR">Borradores</option>
-        <option value="REVISADO">Revisados</option>
-        <option value="APROBADO">Aprobados (En Curso)</option>
-        <option value="FINALIZADO">Finalizados (Dead Line)</option>
-      </select>
+  <!-- ========================================== -->
+  <!-- VISTA 2: PIZARRA DE CONTROL (IMAGEN 2)      -->
+  <!-- ========================================== -->
+  <div id="vistaSolapaPizarra" class="d-none">
+    
+    <!-- 4 TARJETAS KPI DE TAREAS EXACTAS A LA IMAGEN 2 -->
+    <div class="row g-2 g-md-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="card card-pizarra">
+          <div class="card-pizarra-header">
+            <span>Todas las tareas</span>
+            <span class="badge-filtro-pizarra">Y</span>
+          </div>
+          <div class="card-pizarra-body">
+            <div class="numero-pizarra" id="pizTotalTareas">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card card-pizarra">
+          <div class="card-pizarra-header">
+            <span>En curso</span>
+            <span class="badge-filtro-pizarra">Y</span>
+          </div>
+          <div class="card-pizarra-body">
+            <div class="numero-pizarra text-warning" id="pizEnCurso">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card card-pizarra">
+          <div class="card-pizarra-header">
+            <span>Detenido / Pendiente</span>
+            <span class="badge-filtro-pizarra">Y</span>
+          </div>
+          <div class="card-pizarra-body">
+            <div class="numero-pizarra text-danger" id="pizDetenido">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card card-pizarra">
+          <div class="card-pizarra-header">
+            <span>Listo</span>
+            <span class="badge-filtro-pizarra">Y</span>
+          </div>
+          <div class="card-pizarra-body">
+            <div class="numero-pizarra text-success" id="pizListo">0</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0" style="font-size: 9pt;">
-        <thead class="table-light">
-          <tr>
-            <th style="width: 14%;">PDCA</th>
-            <th style="width: 34%;">Nombre / Objeto del Plan</th>
-            <th style="width: 18%;" class="d-none d-md-table-cell">Responsable / Plazo</th>
-            <th style="width: 11%;" class="text-center">PDF Cloud</th>
-            <th style="width: 13%;" class="text-center">Estado</th>
-            <th style="width: 10%;" class="text-end">Acción</th>
-          </tr>
-        </thead>
-        <tbody id="tablaDashboardBody"></tbody>
-      </table>
+
+    <!-- 2 GRÁFICOS ANALÍTICOS EXACTOS A LA IMAGEN 2 -->
+    <div class="row g-3 mb-4">
+      <!-- GRÁFICO CIRCULAR: TAREAS POR ESTADO -->
+      <div class="col-12 col-md-6">
+        <div class="card card-pizarra h-100">
+          <div class="card-pizarra-header">
+            <span>Tareas por estado</span>
+            <span class="badge-filtro-pizarra">Y</span>
+          </div>
+          <div class="card-body p-3 d-flex flex-column align-items-center justify-content-center" style="min-height: 280px;">
+            <div style="width: 100%; max-width: 270px;">
+              <canvas id="chartTareasEstado"></canvas>
+            </div>
+            <div id="chartEstadoLeyenda" class="d-flex justify-content-center gap-3 mt-3 small text-muted" style="font-size: 8pt;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRÁFICO DE BARRAS: TAREAS POR RESPONSABLE -->
+      <div class="col-12 col-md-6">
+        <div class="card card-pizarra h-100">
+          <div class="card-pizarra-header">
+            <span>Tareas por responsable</span>
+            <span class="badge-filtro-pizarra">Y</span>
+          </div>
+          <div class="card-body p-3" style="min-height: 280px;">
+            <canvas id="chartTareasResponsable"></canvas>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- TARJETA ADICIONAL: AVANCE GLOBAL Y METAS DE CALIDAD -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-4">
+        <div class="card card-pizarra p-3 text-center">
+          <span class="text-muted small fw-bold text-uppercase">Avance Global de Cumplimiento</span>
+          <div class="my-2">
+            <span class="display-6 fw-bold text-primary" id="pizPorcentajeCumplimiento">0%</span>
+          </div>
+          <div class="progress" style="height: 8px;">
+            <div class="progress-bar bg-success" id="pizBarraCumplimiento" style="width: 0%"></div>
+          </div>
+          <small class="text-muted mt-2 d-block" id="pizDetalleAvance">0 de 0 acciones completadas</small>
+        </div>
+      </div>
+      <div class="col-12 col-md-8">
+        <div class="card card-pizarra p-3">
+          <span class="text-muted small fw-bold text-uppercase mb-2 d-block">Distribución de Tareas por Base / Predio</span>
+          <div id="contenedorBasesPredios" class="d-flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>
 
-<!-- 3. PANTALLA DOCUMENTO FORMAL -->
+<!-- ======================================================== -->
+<!-- 3. PANTALLA DOCUMENTO FORMAL                            -->
+<!-- ======================================================== -->
 <div id="seccionDocumento" class="d-none">
 
   <div class="container-fluid no-print py-2 bg-white border-bottom shadow-sm">
@@ -456,7 +634,6 @@
         <button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirModalAuditoriaIA('plan')">✨ Auditar IA</button>
         <span id="badgeEstadoPantalla" class="badge bg-secondary">BORRADOR</span>
         
-        <!-- BOTONES DE FLUJO ADAPTADOS AL PERFIL -->
         <button class="btn btn-sm btn-outline-warning fw-semibold" id="btnRevisarPlan" onclick="registrarRevisionPlan()">📝 Revisar Plan</button>
         <button class="btn btn-sm btn-success fw-semibold" id="btnAprobarPlan" onclick="aprobarPlanFacilitador()">✔ Aprobar y Asignar N° (Facilitador)</button>
         <button class="btn btn-sm btn-outline-success fw-semibold d-none" id="btnMarcarFinalizado" onclick="finalizarPlanPDCA()">🏁 Finalizar Plan</button>
@@ -690,9 +867,9 @@
             <div class="col-12 col-md-4">
               <label class="form-label small fw-bold mb-1">Estado:</label>
               <select class="form-select form-select-sm" id="accEstado">
-                <option value="PENDIENTE">PENDIENTE</option>
-                <option value="EN_PROCESO">EN PROCESO</option>
-                <option value="COMPLETADA">COMPLETADA</option>
+                <option value="PENDIENTE">PENDIENTE / DETENIDO</option>
+                <option value="EN_PROCESO">EN CURSO</option>
+                <option value="COMPLETADA">LISTO</option>
               </select>
             </div>
           </div>
@@ -785,7 +962,7 @@
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
   } catch (err) {
-    console.warn("Firebase local fallback:", err);
+    console.warn("Firebase fallback:", err);
   }
 
   const POLITICAS_2026 = [
@@ -847,7 +1024,18 @@
           quien: "Héctor Nannero", 
           donde: "La Plata", 
           cuando: "Diariamente a partir del: 02/10/2026", 
-          estado: "EN_PROCESO" 
+          estado: "COMPLETADA" 
+        },
+        { 
+          orden: 3, 
+          que: "Inspección de ralentí en garaje y predios", 
+          porQue: "Control de gasto innecesario de gasoil.", 
+          como: "Verificar corte de motor transcurridos 5 minutos de estacionamiento.", 
+          cuanto: "", 
+          quien: "Omar Funes", 
+          donde: "Itatí", 
+          cuando: "05/10/2026", 
+          estado: "PENDIENTE" 
         }
       ]
     }
@@ -857,10 +1045,172 @@
   let baseUsuarios = JSON.parse(localStorage.getItem("usuarios_pdca_local")) || usuariosSemilla;
   let baseDatos = JSON.parse(localStorage.getItem("planes_pdca_oficial_mba_local")) || datosIniciales;
   let indiceActual = 0;
+  let solapaActualDashboard = "registro";
+
+  // Instancias de Chart.js
+  let chartInstanciaEstado = null;
+  let chartInstanciaResponsable = null;
 
   function guardarLocal() {
     localStorage.setItem("planes_pdca_oficial_mba_local", JSON.stringify(baseDatos));
     localStorage.setItem("usuarios_pdca_local", JSON.stringify(baseUsuarios));
+  }
+
+  // ==========================================
+  // CAMBIO DE SOLAPAS (REGISTRO VS PIZARRA)
+  // ==========================================
+  function cambiarSolapaDashboard(solapa) {
+    solapaActualDashboard = solapa;
+    const btnReg = document.getElementById("tabBtnRegistro");
+    const btnPiz = document.getElementById("tabBtnPizarra");
+    const vReg = document.getElementById("vistaSolapaRegistro");
+    const vPiz = document.getElementById("vistaSolapaPizarra");
+
+    if (solapa === "registro") {
+      btnReg.classList.add("active");
+      btnPiz.classList.remove("active");
+      vReg.classList.remove("d-none");
+      vPiz.classList.add("d-none");
+    } else {
+      btnPiz.classList.add("active");
+      btnReg.classList.remove("active");
+      vPiz.classList.remove("d-none");
+      vReg.classList.add("d-none");
+      renderizarPizarraControl();
+    }
+  }
+
+  // ==========================================
+  // RENDERIZADO DE LA PIZARRA DE CONTROL (IMAGEN 2)
+  // ==========================================
+  function renderizarPizarraControl() {
+    let totalTareas = 0;
+    let enCurso = 0;
+    let detenido = 0;
+    let listo = 0;
+    const tareasPorResp = {};
+    const tareasPorBase = {};
+
+    baseDatos.forEach(plan => {
+      if (plan.acciones && Array.isArray(plan.acciones)) {
+        plan.acciones.forEach(acc => {
+          totalTareas++;
+          const est = (acc.estado || "PENDIENTE").toUpperCase();
+
+          if (est === "EN_PROCESO") enCurso++;
+          else if (est === "COMPLETADA") listo++;
+          else detenido++; // PENDIENTE o DETENIDO
+
+          // Conteo por Responsable
+          const resp = acc.quien ? acc.quien.trim() : "Sin asignar";
+          tareasPorResp[resp] = (tareasPorResp[resp] || 0) + 1;
+
+          // Conteo por Ubicación / Base
+          const base = acc.donde ? acc.donde.trim() : "Central";
+          tareasPorBase[base] = (tareasPorBase[base] || 0) + 1;
+        });
+      }
+    });
+
+    // Actualizar Números de Tarjetas
+    document.getElementById("pizTotalTareas").innerText = totalTareas;
+    document.getElementById("pizEnCurso").innerText = enCurso;
+    document.getElementById("pizDetenido").innerText = detenido;
+    document.getElementById("pizListo").innerText = listo;
+
+    // Métricas de Avance Global
+    const porcentajeListo = totalTareas > 0 ? Math.round((listo / totalTareas) * 100) : 0;
+    document.getElementById("pizPorcentajeCumplimiento").innerText = `${porcentajeListo}%`;
+    document.getElementById("pizBarraCumplimiento").style.width = `${porcentajeListo}%`;
+    document.getElementById("pizDetalleAvance").innerText = `${listo} de ${totalTareas} tareas finalizadas exitosamente`;
+
+    // Tarjeta de bases
+    const contBases = document.getElementById("contenedorBasesPredios");
+    contBases.innerHTML = "";
+    Object.keys(tareasPorBase).forEach(b => {
+      const badge = document.createElement("span");
+      badge.className = "badge bg-light text-dark border px-3 py-2";
+      badge.style.fontSize = "8.5pt";
+      badge.innerHTML = `📍 <strong>${b}</strong>: ${tareasPorBase[b]} tarea(s)`;
+      contBases.appendChild(badge);
+    });
+
+    // 1. GRÁFICO CIRCULAR: TAREAS POR ESTADO (EXACTO A IMAGEN 2)
+    const ctxEstado = document.getElementById("chartTareasEstado");
+    if (ctxEstado) {
+      if (chartInstanciaEstado) chartInstanciaEstado.destroy();
+
+      const pEnCurso = totalTareas > 0 ? ((enCurso / totalTareas) * 100).toFixed(1) : 0;
+      const pListo = totalTareas > 0 ? ((listo / totalTareas) * 100).toFixed(1) : 0;
+      const pDetenido = totalTareas > 0 ? ((detenido / totalTareas) * 100).toFixed(1) : 0;
+
+      chartInstanciaEstado = new Chart(ctxEstado, {
+        type: 'doughnut',
+        data: {
+          labels: ['En curso', 'Listo', 'Detenido'],
+          datasets: [{
+            data: totalTareas > 0 ? [enCurso, listo, detenido] : [0, 0, 1],
+            backgroundColor: ['#ffb703', '#06d6a0', '#ef476f'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false }
+          },
+          cutout: '55%'
+        }
+      });
+
+      document.getElementById("chartEstadoLeyenda").innerHTML = `
+        <span><span style="color:#ffb703;">●</span> En curso: ${pEnCurso}%</span>
+        <span><span style="color:#06d6a0;">●</span> Listo: ${pListo}%</span>
+        <span><span style="color:#ef476f;">●</span> Detenido: ${pDetenido}%</span>
+      `;
+    }
+
+    // 2. GRÁFICO DE BARRAS: TAREAS POR RESPONSABLE (EXACTO A IMAGEN 2)
+    const ctxResp = document.getElementById("chartTareasResponsable");
+    if (ctxResp) {
+      if (chartInstanciaResponsable) chartInstanciaResponsable.destroy();
+
+      const labelsResp = Object.keys(tareasPorResp);
+      const datosResp = Object.values(tareasPorResp);
+
+      chartInstanciaResponsable = new Chart(ctxResp, {
+        type: 'bar',
+        data: {
+          labels: labelsResp.length > 0 ? labelsResp : ['Sin tareas'],
+          datasets: [{
+            label: 'Recuento',
+            data: datosResp.length > 0 ? datosResp : [0],
+            backgroundColor: '#3b82f6',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { precision: 0, stepSize: 1 },
+              title: { display: true, text: 'Recuento', font: { size: 9 } }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { font: { size: 9 } }
+            }
+          }
+        }
+      });
+    }
   }
 
   // ==========================================
@@ -886,11 +1236,11 @@
     if (apiKey) localStorage.setItem("gemini_api_key", apiKey);
 
     bootstrap.Modal.getInstance(document.getElementById('modalConfigIntegraciones')).hide();
-    alert("Configuración de EmailJS y Gemini guardada.");
+    alert("Configuración guardada exitosamente.");
   }
 
   // ==========================================
-  // DISPARO DE CORREOS VÍA EMAILJS (DIRECTO)
+  // DISPARO DE CORREOS VÍA EMAILJS
   // ==========================================
   async function dispararEnvioEmailJS(plan) {
     const serviceId = localStorage.getItem("emailjs_service_id");
@@ -898,7 +1248,7 @@
     const publicKey = localStorage.getItem("emailjs_public_key");
 
     if (!serviceId || !templateId || !publicKey) {
-      alert("ATENCIÓN: Para enviar correos automáticos debe configurar su Service ID, Template ID y Public Key de EmailJS en '⚙ Config'.");
+      alert("ATENCIÓN: Debe configurar Service ID, Template ID y Public Key de EmailJS en '⚙ Config'.");
       return;
     }
 
@@ -909,10 +1259,7 @@
     }
 
     const destinatariosMap = {};
-
-    function normalizar(txt) {
-      return (txt || "").toLowerCase().trim();
-    }
+    function normalizar(txt) { return (txt || "").toLowerCase().trim(); }
 
     function buscarEmailUsuario(nombreResponsable) {
       const limpio = normalizar(nombreResponsable);
@@ -924,7 +1271,6 @@
       return u && u.email ? u.email : null;
     }
 
-    // Responsable General
     const emailGeneral = buscarEmailUsuario(plan.responsable);
     if (plan.responsable && emailGeneral) {
       destinatariosMap[plan.responsable] = {
@@ -934,7 +1280,6 @@
       };
     }
 
-    // Responsables de cada acción 5W2H
     plan.acciones.forEach(acc => {
       const respAcc = acc.quien || "Sin asignar";
       const emailAcc = buscarEmailUsuario(respAcc);
@@ -952,7 +1297,7 @@
 
     const lista = Object.values(destinatariosMap);
     if (lista.length === 0) {
-      alert("Plan aprobado. No se encontraron correos registrados para los nombres de los responsables asignados.");
+      alert("Plan aprobado. No se encontraron correos registrados para los responsables en 'Usuarios y Permisos'.");
       return;
     }
 
@@ -1224,10 +1569,7 @@
   }
 
   function evaluarEstadoPlan(plan) {
-    if (plan.estado === "BORRADOR" || plan.estado === "REVISADO") {
-      return plan.estado;
-    }
-
+    if (plan.estado === "BORRADOR" || plan.estado === "REVISADO") return plan.estado;
     if (plan.deadline) {
       const fDeadLine = parsearFecha(plan.deadline);
       if (fDeadLine) {
@@ -1422,7 +1764,7 @@
                       style="font-size: 6.5pt; padding: 2px 3px;"
                       onclick="${estaBloqueado ? '' : `rotarEstadoAccion(${acc.idx})`}"
                       title="Cambiar estado">
-                  ${acc.estado.replace('_', ' ')}
+                  ${acc.estado === 'EN_PROCESO' ? 'EN CURSO' : (acc.estado === 'COMPLETADA' ? 'LISTO' : 'DETENIDO')}
                 </span>
                 ${!estaBloqueado ? `
                   <button class="btn btn-xs btn-outline-primary py-0 px-1" style="font-size: 7pt;" onclick="abrirModalAccion(${acc.idx})" title="Editar">✏</button>
@@ -2010,13 +2352,9 @@
 
     baseDatos.forEach(plan => {
       evaluarEstadoPlan(plan);
-      if (plan.estado === "FINALIZADO") {
-        finalizados++;
-      } else if (plan.estado === "APROBADO") {
-        aprobados++;
-      } else {
-        enProceso++;
-      }
+      if (plan.estado === "FINALIZADO") finalizados++;
+      else if (plan.estado === "APROBADO") aprobados++;
+      else enProceso++;
     });
 
     document.getElementById("kpiTotalPlanes").innerText = totalPlanes;
@@ -2025,12 +2363,16 @@
     document.getElementById("kpiFinalizados").innerText = finalizados;
 
     renderizarTablaDashboard();
+    if (solapaActualDashboard === "pizarra") {
+      renderizarPizarraControl();
+    }
   }
 
   function renderizarTablaDashboard() {
     const tbody = document.getElementById("tablaDashboardBody");
     tbody.innerHTML = "";
     const filtro = document.getElementById("filtroEstadoDashboard").value;
+    const busqueda = (document.getElementById("inputBuscarPlan")?.value || "").toLowerCase().trim();
 
     baseDatos.forEach((plan, i) => {
       evaluarEstadoPlan(plan);
@@ -2039,6 +2381,11 @@
       if (filtro === "APROBADO" && plan.estado !== "APROBADO") return;
       if (filtro === "REVISADO" && plan.estado !== "REVISADO") return;
       if (filtro === "BORRADOR" && plan.estado !== "BORRADOR") return;
+
+      if (busqueda) {
+        const textoFila = `${plan.numPdca} ${plan.titulo} ${plan.responsable}`.toLowerCase();
+        if (!textoFila.includes(busqueda)) return;
+      }
 
       let badgeEstado = '<span class="badge bg-secondary">Borrador</span>';
       if (plan.estado === "REVISADO") badgeEstado = '<span class="badge bg-warning text-dark">Revisado</span>';
@@ -2189,11 +2536,8 @@
     const btnDesbloq = document.getElementById("btnDesbloquearPlan");
     const btnVerPdf = document.getElementById("btnVerPdfCloud");
 
-    if (plan.pdfBase64) {
-      btnVerPdf.classList.remove("d-none");
-    } else {
-      btnVerPdf.classList.add("d-none");
-    }
+    if (plan.pdfBase64) btnVerPdf.classList.remove("d-none");
+    else btnVerPdf.classList.add("d-none");
 
     const esFacilitador = usuarioSesion && usuarioSesion.rol === "FACILITADOR";
     const esGerente = usuarioSesion && usuarioSesion.rol === "GERENTE";
@@ -2214,11 +2558,8 @@
         else btnFin.classList.add("d-none");
       }
 
-      if (esFacilitador || esGerente) {
-        btnDesbloq.classList.remove("d-none");
-      } else {
-        btnDesbloq.classList.add("d-none");
-      }
+      if (esFacilitador || esGerente) btnDesbloq.classList.remove("d-none");
+      else btnDesbloq.classList.add("d-none");
     } else {
       banner.classList.add("d-none");
       btnDesbloq.classList.add("d-none");
@@ -2227,18 +2568,14 @@
       if (plan.estado === "BORRADOR") {
         badge.innerText = "BORRADOR";
         badge.className = "badge bg-secondary";
-        
         if (esFacilitador || esGerente) btnRev.classList.remove("d-none");
         else btnRev.classList.add("d-none");
-
         if (esFacilitador) btnApr.classList.remove("d-none");
         else btnApr.classList.add("d-none");
-
       } else if (plan.estado === "REVISADO") {
         badge.innerText = "REVISADO";
         badge.className = "badge bg-warning text-dark";
         btnRev.classList.add("d-none");
-
         if (esFacilitador) btnApr.classList.remove("d-none");
         else btnApr.classList.add("d-none");
       } else {
