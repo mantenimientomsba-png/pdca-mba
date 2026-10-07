@@ -383,7 +383,7 @@
 
           <div class="alert alert-light border small text-muted text-start mt-3 mb-0 py-2" style="font-size: 7.5pt;">
             <strong>Legajos de acceso configurados:</strong><br>
-            • <strong>0001</strong> (Operador de Sistemas - clave: admin123) ➔ <em>Configuración y Permisos TI</em><br>
+            • <strong>0001</strong> (Operador de Sistemas - clave: admin123) ➔ <em>Configuración TI y Permisos</em><br>
             • <strong>3110</strong> (Favio Graciette / Facilitador - clave: 1234) ➔ <em>Revisa, Aprueba, Borra y Finaliza</em><br>
             • <strong>9001</strong> (Gerente Mantenimiento - clave: 1234) ➔ <em>Revisión técnica y seguimiento</em><br>
             • <strong>2045</strong> (Omar Funes / Monitor - clave: 1234) ➔ <em>Carga y registro de avances 5W2H</em>
@@ -635,7 +635,7 @@
       <div class="d-flex align-items-center gap-2">
         <button class="btn btn-sm btn-outline-dark fw-semibold" onclick="cambiarVista('dashboard')">⬅ Volver</button>
         <select id="pdcaSelect" class="form-select form-select-sm" style="max-width: 280px;" onchange="seleccionarPDCA(this.value)"></select>
-        <!-- BOTÓN BORRAR PLAN: EXCLUSIVO DEL FACILITADOR -->
+        <!-- BOTÓN BORRAR PLAN: HABILITADO PARA FACILITADOR Y SISTEMAS -->
         <button class="btn btn-sm btn-outline-danger fw-semibold d-none" id="btnBorrarPlanDoc" onclick="eliminarPDCAActual()" title="Eliminar definitivamente este PDCA">🗑️ Borrar Plan</button>
       </div>
       <div class="d-flex align-items-center gap-1 flex-wrap">
@@ -826,7 +826,7 @@
       </div>
       <div class="modal-footer py-1">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-sm btn-primary fw-bold" onclick="guardarCambioPolitica()">Aplicar</button>
+        <button type="submit" class="btn btn-sm btn-primary fw-bold" onclick="guardarCambioPolitica()">Aplicar</button>
       </div>
     </div>
   </div>
@@ -983,6 +983,7 @@
     "Política 7: Fortalecer la comunicación institucional."
   ];
 
+  // USUARIOS DEL SISTEMA
   const usuariosSemilla = [
     { legajo: "0001", clave: "admin123", nombre: "Operador de Sistemas", email: "sistemas@misionba.com.ar", rol: "SISTEMAS", estado: "ACTIVO" },
     { legajo: "9001", clave: "1234", nombre: "Gerente de Mantenimiento", email: "gerencia@misionba.com.ar", rol: "GERENTE", estado: "ACTIVO" },
@@ -993,62 +994,8 @@
     { legajo: "1030", clave: "1234", nombre: "Héctor Nannero", email: "hnannero@misionba.com.ar", rol: "MONITOR", estado: "ACTIVO" }
   ];
 
-  const datosIniciales = [
-    {
-      codDoc: "01-9999-99-99-99-9999-PD-00-01-02",
-      numPdca: "0083/2026", 
-      paginaDoc: "Página 1 de 2",
-      titulo: "Optimizar el uso del combustible. Línea 129",
-      politica: "Política 1: Optimizar el uso de los recursos.",
-      objetivo: "Reducir los tiempos improductivos de ralentí en cabeceras y predios, optimizar el rendimiento de combustible interviniendo activamente sobre la conducta de los choferes mediante acompañamiento técnico a los desvíos e incentivos al desempeño eficiente.",
-      meta: "Mejor el rendimiento de combustible en un 5 %",
-      efecto: "Disminuir el costo operativo de gasoil y consolidar un estándar de conducción económica en la flota.",
-      responsable: "Gabriel Monzón",
-      deadline: "31/10/2026",
-      estado: "APROBADO",
-      bloqueado: true,
-      fechaRevision: "28/09/2026",
-      revisadoPor: "Favio Graciette (Facilitador)",
-      fechaAprobacion: "01/10/2026",
-      aprobadoPor: "Favio Graciette (Facilitador)",
-      pdfBase64: null,
-      acciones: [
-        { 
-          orden: 1, 
-          que: "Asegurar la correcta asignación ID y número de serie del controlador de eventos", 
-          porQue: "Sistemas informó que hay controladores de eventos que no corresponden a la unidad, no detallando que casos siendo que desde el Garage se realizó la correcta asignación es necesario auditar los ID en que coches se encuentran.", 
-          como: "Realizando un relevamiento de la flota donde se identifique:\n(se quitarán cinta 3M para visualizar y remplazo con cinta doble faz nuevamente)\n\n• Interno\n• Numero ID controlador de eventos.\n• Numero ID sensor desde Utrack (administración-Dispositivos)\n• Montado en: tablero o fusilera.\n• Estado de encendido: Encendido/ Apagado\n\nComunicar a sistemas los resultados de la auditoría interna", 
-          cuanto: "", 
-          quien: "Juan Araujo", 
-          donde: "La Plata", 
-          cuando: "03/10/2026", 
-          estado: "EN_PROCESO" 
-        },
-        { 
-          orden: 2, 
-          que: "Auditoría diaria y ajuste de kilometraje.", 
-          porQue: "Para garantizar que no existan km no computados que distorsionen los mantenimientos ni el consumo.", 
-          como: "1.1. Verificar que km Controlador de eventos > 0 en toda la flota activa.\n\n1.2. Validar la condición km Controlador de eventos > Km SUBE\n\n1.3. En casos donde km GPS ≤ Km SUBE, aplicar la formula Km Asignado = Km SUBE x 1,05, dar aviso a sistema para su revisión.", 
-          cuanto: "", 
-          quien: "Héctor Nannero", 
-          donde: "La Plata", 
-          cuando: "Diariamente a partir del: 02/10/2026", 
-          estado: "COMPLETADA" 
-        },
-        { 
-          orden: 3, 
-          que: "Inspección de ralentí en garaje y predios", 
-          porQue: "Control de gasto innecesario de gasoil.", 
-          como: "Verificar corte de motor transcurridos 5 minutos de estacionamiento.", 
-          cuanto: "", 
-          quien: "Omar Funes", 
-          donde: "Itatí", 
-          cuando: "05/10/2026", 
-          estado: "PENDIENTE" 
-        }
-      ]
-    }
-  ];
+  // DATOS INICIALES LIMPIOS (SIN PLANES RESUCITADOS HARDCODEADOS)
+  const datosIniciales = [];
 
   let usuarioSesion = JSON.parse(localStorage.getItem("pdca_sesion_activa")) || null;
   let baseUsuarios = JSON.parse(localStorage.getItem("usuarios_pdca_local")) || usuariosSemilla;
@@ -1138,7 +1085,6 @@
       contBases.appendChild(badge);
     });
 
-    // 1. Gráfico circular
     const ctxEstado = document.getElementById("chartTareasEstado");
     if (ctxEstado) {
       if (chartInstanciaEstado) chartInstanciaEstado.destroy();
@@ -1173,7 +1119,6 @@
       `;
     }
 
-    // 2. Gráfico de barras
     const ctxResp = document.getElementById("chartTareasResponsable");
     if (ctxResp) {
       if (chartInstanciaResponsable) chartInstanciaResponsable.destroy();
@@ -1361,7 +1306,6 @@
 
       if (lista.length > 0) {
         baseUsuarios = lista;
-
         const existeSistemas = baseUsuarios.some(u => u.rol === "SISTEMAS" || u.legajo === "0001");
         if (!existeSistemas) {
           const uSistemas = usuariosSemilla[0];
@@ -1482,7 +1426,6 @@
     const btnDashConfig = document.getElementById("btnConfigIntegracionesDash");
     const panelBannerSistemas = document.getElementById("panelBannerSistemas");
 
-    // VISIBILIDAD ESTRICTA: SOLO SISTEMAS VE LOS ACCESOS TÉCNICOS
     if (esSistemas) {
       if (btnNavAdmin) btnNavAdmin.classList.remove("d-none");
       if (btnDashAdmin) btnDashAdmin.classList.remove("d-none");
@@ -1495,10 +1438,10 @@
       if (panelBannerSistemas) panelBannerSistemas.classList.add("d-none");
     }
 
-    // VISIBILIDAD DEL BOTÓN BORRAR PLAN EN DOCUMENTO (SOLO FACILITADOR)
+    // VISIBILIDAD DEL BOTÓN BORRAR PLAN EN DOCUMENTO (FACILITADOR O SISTEMAS)
     const btnBorrarDoc = document.getElementById("btnBorrarPlanDoc");
     if (btnBorrarDoc) {
-      if (esFacilitador) btnBorrarDoc.classList.remove("d-none");
+      if (esFacilitador || esSistemas) btnBorrarDoc.classList.remove("d-none");
       else btnBorrarDoc.classList.add("d-none");
     }
   }
@@ -1639,7 +1582,7 @@
     const alturaMaxHojaMm = 276;
 
     reglaTbody.innerHTML = "";
-    const accionesMedidas = plan.acciones.map((acc, i) => {
+    const accionesMedidas = (plan.acciones || []).map((acc, i) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td style="width: 5%;">${acc.orden}</td>
@@ -2106,7 +2049,7 @@
   }
 
   // ==========================================
-  // FLUJO DE ESTADOS Y ACCIONES
+  // FLUJO DE ESTADOS Y DISPARO DE EMAILJS
   // ==========================================
   function registrarRevisionPlan() {
     if (!usuarioSesion) return;
@@ -2231,7 +2174,6 @@
     const plan = baseDatos[indiceActual];
     const acc = plan.acciones[originalIndex];
 
-    // Rotación ágil: PENDIENTE -> EN_PROCESO -> COMPLETADA
     if (acc.estado === "PENDIENTE") {
       acc.estado = "EN_PROCESO";
     } else if (acc.estado === "EN_PROCESO") {
@@ -2245,15 +2187,15 @@
   }
 
   // ========================================================
-  // BORRAR PDCA: PERMISO EXCLUSIVO PARA FACILITADOR
+  // BORRAR PDCA: HABILITADO PARA FACILITADOR Y SISTEMAS
   // ========================================================
   async function eliminarPDCA(index) {
-    if (!usuarioSesion || usuarioSesion.rol !== "FACILITADOR") {
-      alert("PERMISO DENEGADO: Únicamente el Facilitador de Mantenimiento tiene autorización para eliminar planes PDCA.");
+    if (!usuarioSesion || (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "SISTEMAS")) {
+      alert("PERMISO DENEGADO: Solo el Facilitador de Mantenimiento o el Operador de Sistemas pueden eliminar planes.");
       return;
     }
     const plan = baseDatos[index];
-    const confirmar = confirm(`¿Confirma que desea BORRAR el PDCA:\n"${plan.titulo}"?\n\nEsta acción es irreversible y eliminará el registro de la base de datos.`);
+    const confirmar = confirm(`¿Confirma que desea BORRAR DEFINITIVAMENTE el PDCA:\n"${plan.titulo}"?\n\nEsta acción eliminará el registro de la base de datos de forma permanente.`);
     if (!confirmar) return;
 
     if (db && plan.id) {
@@ -2280,7 +2222,7 @@
         cargarPDCA(indiceActual);
       }
     }
-    alert("El PDCA ha sido eliminado correctamente.");
+    alert("El plan ha sido eliminado correctamente.");
   }
 
   function eliminarPDCAActual() {
@@ -2425,7 +2367,7 @@
     tbody.innerHTML = "";
     const filtro = document.getElementById("filtroEstadoDashboard").value;
     const busqueda = (document.getElementById("inputBuscarPlan")?.value || "").toLowerCase().trim();
-    const esFacilitador = usuarioSesion && usuarioSesion.rol === "FACILITADOR";
+    const esAutorizadoBorrar = usuarioSesion && (usuarioSesion.rol === "FACILITADOR" || usuarioSesion.rol === "SISTEMAS");
 
     baseDatos.forEach((plan, i) => {
       evaluarEstadoPlan(plan);
@@ -2464,8 +2406,8 @@
             <button class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" onclick="abrirPlanDesdeDashboard(${i})">
               Abrir ➔
             </button>
-            ${esFacilitador ? `
-              <button class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold" onclick="eliminarPDCA(${i})" title="Borrar PDCA (Facilitador)">
+            ${esAutorizadoBorrar ? `
+              <button class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold" onclick="eliminarPDCA(${i})" title="Borrar PDCA">
                 🗑️
               </button>
             ` : ''}
@@ -2482,6 +2424,9 @@
     cambiarVista("documento");
   }
 
+  // ========================================================
+  // SINCRONIZACIÓN CLOUD LIMPIA (SIN AUTO-RESUCITACIÓN)
+  // ========================================================
   function conectarCloudFirestore() {
     const badge = document.getElementById("badgeCloudStatus");
     if (!db) {
@@ -2494,25 +2439,19 @@
       badge.className = "badge bg-success";
       badge.innerText = "🟢 Cloud Activo";
 
-      if (snapshot.empty) {
-        baseDatos.forEach(p => db.collection("planes_pdca").add(p));
-        return;
-      }
-
       const listaRemota = [];
       snapshot.forEach(doc => {
         listaRemota.push({ id: doc.id, ...doc.data() });
       });
 
-      if (listaRemota.length > 0) {
-        baseDatos = listaRemota;
-        baseDatos.sort((a, b) => (a.numPdca || "ZZZZ").localeCompare(b.numPdca || "ZZZZ"));
-        guardarLocal();
-        actualizarSelectDocumento(indiceActual < baseDatos.length ? indiceActual : 0);
-        actualizarDashboard();
-        if (!document.getElementById("seccionDocumento").classList.contains("d-none")) {
-          cargarPDCA(indiceActual);
-        }
+      // Se asigna directamente lo que haya en Firestore (incluso si está vacía)
+      baseDatos = listaRemota;
+      guardarLocal();
+      actualizarSelectDocumento(indiceActual < baseDatos.length ? indiceActual : 0);
+      actualizarDashboard();
+      if (!document.getElementById("seccionDocumento").classList.contains("d-none")) {
+        if (baseDatos.length > 0) cargarPDCA(indiceActual);
+        else cambiarVista("dashboard");
       }
     }, (error) => {
       badge.className = "badge bg-warning text-dark";
@@ -2527,7 +2466,10 @@
       if (plan.id) {
         db.collection("planes_pdca").doc(plan.id).set(plan).catch(e => console.warn(e));
       } else {
-        db.collection("planes_pdca").add(plan).then(docRef => plan.id = docRef.id).catch(e => console.warn(e));
+        db.collection("planes_pdca").add(plan).then(docRef => {
+          plan.id = docRef.id;
+          guardarLocal();
+        }).catch(e => console.warn(e));
       }
     } catch (e) {
       console.warn("Sync error:", e);
@@ -2582,71 +2524,6 @@
     renderizarDocumentoOficialPaginado(plan);
   }
 
-  // ==========================================
-  // GESTIÓN DE BOTONES SEGÚN EL ROL
-  // ==========================================
-  function gestionarEstadoBloqueoUI(plan) {
-    const banner = document.getElementById("bannerBloqueo");
-    const badge = document.getElementById("badgeEstadoPantalla");
-    const btnRev = document.getElementById("btnRevisarPlan");
-    const btnApr = document.getElementById("btnAprobarPlan");
-    const btnFin = document.getElementById("btnMarcarFinalizado");
-    const btnDesbloq = document.getElementById("btnDesbloquearPlan");
-    const btnVerPdf = document.getElementById("btnVerPdfCloud");
-
-    if (plan.pdfBase64) btnVerPdf.classList.remove("d-none");
-    else btnVerPdf.classList.add("d-none");
-
-    const esFacilitador = usuarioSesion && usuarioSesion.rol === "FACILITADOR";
-    const esGerente = usuarioSesion && usuarioSesion.rol === "GERENTE";
-    const esSistemas = usuarioSesion && usuarioSesion.rol === "SISTEMAS";
-
-    if (plan.bloqueado) {
-      banner.classList.remove("d-none");
-      btnRev.classList.add("d-none");
-      btnApr.classList.add("d-none");
-
-      if (plan.estado === "FINALIZADO") {
-        badge.innerText = "FINALIZADO (BLOQUEADO)";
-        badge.className = "badge bg-success";
-        btnFin.classList.add("d-none");
-      } else {
-        badge.innerText = "APROBADO (BLOQUEADO)";
-        badge.className = "badge bg-info text-dark";
-        if (esFacilitador) btnFin.classList.remove("d-none");
-        else btnFin.classList.add("d-none");
-      }
-
-      if (esFacilitador || esGerente || esSistemas) {
-        btnDesbloq.classList.remove("d-none");
-      } else {
-        btnDesbloq.classList.add("d-none");
-      }
-    } else {
-      banner.classList.add("d-none");
-      btnDesbloq.classList.add("d-none");
-      btnFin.classList.add("d-none");
-
-      if (plan.estado === "BORRADOR") {
-        badge.innerText = "BORRADOR";
-        badge.className = "badge bg-secondary";
-        if (esFacilitador || esGerente || esSistemas) btnRev.classList.remove("d-none");
-        else btnRev.classList.add("d-none");
-        if (esFacilitador) btnApr.classList.remove("d-none");
-        else btnApr.classList.add("d-none");
-      } else if (plan.estado === "REVISADO") {
-        badge.innerText = "REVISADO";
-        badge.className = "badge bg-warning text-dark";
-        btnRev.classList.add("d-none");
-        if (esFacilitador) btnApr.classList.remove("d-none");
-        else btnApr.classList.add("d-none");
-      } else {
-        badge.innerText = plan.estado;
-        badge.className = "badge bg-info text-dark";
-      }
-    }
-  }
-
   function abrirModalAccion(index) {
     if (!usuarioSesion) return;
     const plan = baseDatos[indiceActual];
@@ -2684,7 +2561,7 @@
     const index = parseInt(document.getElementById("accEditIndex").value);
 
     const accionData = {
-      orden: index >= 0 ? plan.acciones[index].orden : plan.acciones.length + 1,
+      orden: index >= 0 ? plan.acciones[index].orden : (plan.acciones ? plan.acciones.length + 1 : 1),
       que: document.getElementById("accQue").value.trim(),
       porQue: document.getElementById("accPorQue").value.trim(),
       como: document.getElementById("accComo").value.trim(),
@@ -2695,6 +2572,7 @@
       estado: document.getElementById("accEstado").value
     };
 
+    if (!plan.acciones) plan.acciones = [];
     if (index >= 0) plan.acciones[index] = accionData;
     else plan.acciones.push(accionData);
 
@@ -2821,7 +2699,7 @@
     let promptAuditoria = "";
     if (ambito === 'plan') {
       document.getElementById("geminiSpinnerText").innerText = "Analizando plan con Gemini...";
-      let accionesTexto = plan.acciones.map(a => `• Tarea ${a.orden}: ${a.que} | Resp: ${a.quien}`).join("\n");
+      let accionesTexto = (plan.acciones || []).map(a => `• Tarea ${a.orden}: ${a.que} | Resp: ${a.quien}`).join("\n");
       promptAuditoria = `Actúa como auditor ISO 9001/IRAM 3810. Analiza este PDCA:\nTítulo: ${plan.titulo}\nMeta: ${plan.meta}\nObjetivo: ${plan.objetivo}\nAcciones:\n${accionesTexto}\nDictamen conciso: congruencia, riesgos y 2 mejoras 5W2H.`;
     } else {
       const acc = plan.acciones[accionIdx];
