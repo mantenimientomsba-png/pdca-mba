@@ -13,9 +13,10 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-  <!-- GENERADOR DE PDF Y PARSER DE WORD (.DOCX) -->
+  <!-- LIBRERÍAS CLIENT-SIDE: PDF, PARSER WORD Y EMAILJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
   <style>
     body {
@@ -314,9 +315,7 @@
 <input type="file" id="inputLogoFile" accept="image/*" class="d-none" onchange="procesarArchivoLogo(event)">
 <input type="file" id="inputImportWord" accept=".docx" class="d-none" onchange="procesarArchivoWord(event)">
 
-<!-- ======================================================== -->
-<!-- 1. PANTALLA LOGIN Y REGISTRO                            -->
-<!-- ======================================================== -->
+<!-- 1. PANTALLA LOGIN Y REGISTRO -->
 <div id="seccionLogin" class="container py-4 py-md-5">
   <div class="row justify-content-center">
     <div class="col-12 col-sm-8 col-md-5 col-lg-4">
@@ -326,7 +325,6 @@
           <h5 class="fw-bold text-dark mb-1">Acceso al Sistema PDCA</h5>
           <p class="text-muted small mb-3">Ingrese con su Legajo o Correo Electrónico</p>
 
-          <!-- FORMULARIO DE INICIO DE SESIÓN -->
           <form id="formLogin" onsubmit="ejecutarLogin(event)" class="text-start">
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Legajo o Email:</label>
@@ -349,7 +347,7 @@
 
           <div class="alert alert-light border small text-muted text-start mt-3 mb-0 py-2" style="font-size: 7.5pt;">
             <strong>Jerarquía de Permisos:</strong><br>
-            • <strong>Facilitador</strong>: Revisa, Aprueba (asigna N° PDCA) y Finaliza.<br>
+            • <strong>Facilitador</strong>: Revisa, Aprueba (asigna N° PDCA), notifica por email y Finaliza.<br>
             • <strong>Gerente</strong>: Revisa formalmente, audita y gestiona accesos.<br>
             • <strong>Monitor</strong>: Carga tareas y actualiza avances 5W2H.
           </div>
@@ -359,9 +357,7 @@
   </div>
 </div>
 
-<!-- ======================================================== -->
-<!-- 2. PANTALLA DASHBOARD                                    -->
-<!-- ======================================================== -->
+<!-- 2. PANTALLA DASHBOARD -->
 <div id="seccionDashboard" class="container-fluid container-md py-3 py-md-4 d-none">
 
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -376,7 +372,7 @@
       <button class="btn btn-outline-success btn-sm fw-semibold" onclick="document.getElementById('inputImportWord').click()" title="Adjuntar archivo Word .docx con plantilla PDCA">
         📎 Importar Word (.docx)
       </button>
-      <button class="btn btn-outline-info btn-sm fw-semibold" onclick="abrirConfigGemini()">⚙ API IA</button>
+      <button class="btn btn-outline-info btn-sm fw-semibold" onclick="abrirConfigIntegraciones()">⚙ Config (EmailJS & IA)</button>
       <button class="btn btn-primary btn-sm fw-semibold" onclick="abrirModalNuevoPDCA()">+ Nuevo PDCA</button>
     </div>
   </div>
@@ -446,9 +442,7 @@
 
 </div>
 
-<!-- ======================================================== -->
-<!-- 3. PANTALLA DOCUMENTO FORMAL                            -->
-<!-- ======================================================== -->
+<!-- 3. PANTALLA DOCUMENTO FORMAL -->
 <div id="seccionDocumento" class="d-none">
 
   <div class="container-fluid no-print py-2 bg-white border-bottom shadow-sm">
@@ -537,7 +531,7 @@
   </div>
 </div>
 
-<!-- MODAL GESTIÓN DE USUARIOS Y PERMISOS (SOLO FACILITADOR / GERENTE) -->
+<!-- MODAL GESTIÓN DE USUARIOS Y PERMISOS -->
 <div class="modal fade" id="modalGestionUsuarios" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -570,6 +564,43 @@
   </div>
 </div>
 
+<!-- MODAL INTEGRACIONES (EMAILJS Y GEMINI) -->
+<div class="modal fade" id="modalConfigIntegraciones" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">⚙ Configuración de EmailJS y Gemini</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-3">
+        <h6 class="fw-bold text-dark border-bottom pb-1 small">📧 Configuración EmailJS (Envío de Correos)</h6>
+        <div class="mb-2">
+          <label class="form-label small fw-bold mb-1">Service ID:</label>
+          <input type="text" class="form-control form-control-sm" id="inputEmailJsServiceId" placeholder="ej: service_xyz123">
+        </div>
+        <div class="mb-2">
+          <label class="form-label small fw-bold mb-1">Template ID:</label>
+          <input type="text" class="form-control form-control-sm" id="inputEmailJsTemplateId" placeholder="ej: template_abc456">
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-bold mb-1">Public Key (User ID):</label>
+          <input type="text" class="form-control form-control-sm" id="inputEmailJsPublicKey" placeholder="ej: user_789XYZ...">
+        </div>
+
+        <h6 class="fw-bold text-dark border-bottom pb-1 small pt-2">✨ Inteligencia Artificial</h6>
+        <div class="mb-2">
+          <label class="form-label small fw-bold mb-1">API Key de Gemini:</label>
+          <input type="password" class="form-control form-control-sm" id="inputApiKeyGemini" placeholder="AIzaSy...">
+        </div>
+      </div>
+      <div class="modal-footer py-1">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-sm btn-primary fw-bold" onclick="guardarIntegraciones()">Guardar Configuración</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL AUDITORÍA GEMINI -->
 <div class="modal fade" id="modalRespuestaGemini" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -592,24 +623,6 @@
       <div class="modal-footer py-1">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         <button type="button" class="btn btn-sm btn-outline-primary" onclick="navigator.clipboard.writeText(document.getElementById('geminiContenido').innerText); alert('Copiado.');">Copiar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL API KEY GEMINI -->
-<div class="modal fade" id="modalConfigGemini" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-header bg-secondary text-white py-2">
-        <h6 class="modal-title m-0 fw-bold">API Key de Gemini</h6>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body py-2">
-        <input type="password" class="form-control form-control-sm" id="inputApiKeyGemini" placeholder="AIzaSy...">
-      </div>
-      <div class="modal-footer py-1">
-        <button type="button" class="btn btn-sm btn-primary w-100 fw-bold" onclick="guardarApiKeyGemini()">Guardar</button>
       </div>
     </div>
   </div>
@@ -785,11 +798,13 @@
     "Política 7: Fortalecer la comunicación institucional."
   ];
 
-  // USUARIOS SEMILLA (SI LA COLECCIÓN ESTÁ VACÍA)
   const usuariosSemilla = [
     { legajo: "9001", clave: "1234", nombre: "Gerente de Mantenimiento", email: "gerencia@misionba.com.ar", rol: "GERENTE", estado: "ACTIVO" },
     { legajo: "3110", clave: "1234", nombre: "Favio Graciette", email: "fgraciette@misionba.com.ar", rol: "FACILITADOR", estado: "ACTIVO" },
-    { legajo: "2045", clave: "1234", nombre: "Omar Funes", email: "ofunes@misionba.com.ar", rol: "MONITOR", estado: "ACTIVO" }
+    { legajo: "2045", clave: "1234", nombre: "Omar Funes", email: "ofunes@misionba.com.ar", rol: "MONITOR", estado: "ACTIVO" },
+    { legajo: "1010", clave: "1234", nombre: "Gabriel Monzón", email: "gmonzon@misionba.com.ar", rol: "MONITOR", estado: "ACTIVO" },
+    { legajo: "1020", clave: "1234", nombre: "Juan Araujo", email: "jaraujo@misionba.com.ar", rol: "MONITOR", estado: "ACTIVO" },
+    { legajo: "1030", clave: "1234", nombre: "Héctor Nannero", email: "hnannero@misionba.com.ar", rol: "MONITOR", estado: "ACTIVO" }
   ];
 
   const datosIniciales = [
@@ -849,13 +864,146 @@
   }
 
   // ==========================================
+  // CONFIGURACIÓN DE EMAILJS Y GEMINI
+  // ==========================================
+  function abrirConfigIntegraciones() {
+    document.getElementById("inputEmailJsServiceId").value = localStorage.getItem("emailjs_service_id") || "";
+    document.getElementById("inputEmailJsTemplateId").value = localStorage.getItem("emailjs_template_id") || "";
+    document.getElementById("inputEmailJsPublicKey").value = localStorage.getItem("emailjs_public_key") || "";
+    document.getElementById("inputApiKeyGemini").value = localStorage.getItem("gemini_api_key") || "";
+    new bootstrap.Modal(document.getElementById('modalConfigIntegraciones')).show();
+  }
+
+  function guardarIntegraciones() {
+    const sId = document.getElementById("inputEmailJsServiceId").value.trim();
+    const tId = document.getElementById("inputEmailJsTemplateId").value.trim();
+    const pKey = document.getElementById("inputEmailJsPublicKey").value.trim();
+    const apiKey = document.getElementById("inputApiKeyGemini").value.trim();
+
+    localStorage.setItem("emailjs_service_id", sId);
+    localStorage.setItem("emailjs_template_id", tId);
+    localStorage.setItem("emailjs_public_key", pKey);
+    if (apiKey) localStorage.setItem("gemini_api_key", apiKey);
+
+    bootstrap.Modal.getInstance(document.getElementById('modalConfigIntegraciones')).hide();
+    alert("Configuración de EmailJS y Gemini guardada.");
+  }
+
+  // ==========================================
+  // DISPARO DE CORREOS VÍA EMAILJS (DIRECTO)
+  // ==========================================
+  async function dispararEnvioEmailJS(plan) {
+    const serviceId = localStorage.getItem("emailjs_service_id");
+    const templateId = localStorage.getItem("emailjs_template_id");
+    const publicKey = localStorage.getItem("emailjs_public_key");
+
+    if (!serviceId || !templateId || !publicKey) {
+      alert("ATENCIÓN: Para enviar correos automáticos debe configurar su Service ID, Template ID y Public Key de EmailJS en '⚙ Config'.");
+      return;
+    }
+
+    try {
+      emailjs.init({ publicKey: publicKey });
+    } catch (e) {
+      console.warn("Init EmailJS:", e);
+    }
+
+    const destinatariosMap = {};
+
+    function normalizar(txt) {
+      return (txt || "").toLowerCase().trim();
+    }
+
+    function buscarEmailUsuario(nombreResponsable) {
+      const limpio = normalizar(nombreResponsable);
+      if (!limpio) return null;
+      const u = baseUsuarios.find(user => {
+        const uNom = normalizar(user.nombre);
+        return uNom.includes(limpio) || limpio.includes(uNom);
+      });
+      return u && u.email ? u.email : null;
+    }
+
+    // Responsable General
+    const emailGeneral = buscarEmailUsuario(plan.responsable);
+    if (plan.responsable && emailGeneral) {
+      destinatariosMap[plan.responsable] = {
+        nombre: plan.responsable,
+        email: emailGeneral,
+        tareas: []
+      };
+    }
+
+    // Responsables de cada acción 5W2H
+    plan.acciones.forEach(acc => {
+      const respAcc = acc.quien || "Sin asignar";
+      const emailAcc = buscarEmailUsuario(respAcc);
+      if (emailAcc) {
+        if (!destinatariosMap[respAcc]) {
+          destinatariosMap[respAcc] = {
+            nombre: respAcc,
+            email: emailAcc,
+            tareas: []
+          };
+        }
+        destinatariosMap[respAcc].tareas.push(acc);
+      }
+    });
+
+    const lista = Object.values(destinatariosMap);
+    if (lista.length === 0) {
+      alert("Plan aprobado. No se encontraron correos registrados para los nombres de los responsables asignados.");
+      return;
+    }
+
+    let enviados = 0;
+    const linkApp = window.location.href.split('#')[0];
+
+    for (const d of lista) {
+      let textoTareas = "";
+      if (d.tareas.length > 0) {
+        textoTareas = d.tareas.map(t => 
+          `• Tarea ${t.orden}: ${t.que}\n  Procedimiento: ${t.como}\n  Lugar y Plazo: ${t.donde} (${t.cuando})`
+        ).join("\n\n");
+      } else {
+        textoTareas = "Supervisión general del cumplimiento integral del plan.";
+      }
+
+      const templateParams = {
+        to_email: d.email,
+        to_name: d.nombre,
+        pdca_num: plan.numPdca,
+        pdca_titulo: plan.titulo,
+        pdca_politica: plan.politica,
+        pdca_objetivo: plan.objetivo,
+        pdca_meta: plan.meta,
+        pdca_deadline: plan.deadline,
+        aprobado_por: plan.aprobadoPor,
+        fecha_aprobacion: plan.fechaAprobacion,
+        tareas_detalle: textoTareas,
+        link_sistema: linkApp
+      };
+
+      try {
+        await emailjs.send(serviceId, templateId, templateParams, publicKey);
+        enviados++;
+      } catch (err) {
+        console.warn(`Error enviando email a ${d.email}:`, err);
+      }
+    }
+
+    alert(`¡NOTIFICACIONES ENVIADAS CON ÉXITO VÍA EMAILJS!\n\nSe enviaron ${enviados} correo(s) a los responsables:\n` +
+      lista.map(d => `• ${d.nombre} (${d.email})`).join('\n')
+    );
+  }
+
+  // ==========================================
   // SINCRONIZACIÓN CLOUD DE USUARIOS
   // ==========================================
   function conectarColeccionUsuarios() {
     if (!db) return;
     db.collection("usuarios_pdca").onSnapshot((snapshot) => {
       if (snapshot.empty) {
-        // Inicializar usuarios semilla en Firestore si es la primera vez
         usuariosSemilla.forEach(u => db.collection("usuarios_pdca").add(u));
         return;
       }
@@ -868,7 +1016,6 @@
       if (lista.length > 0) {
         baseUsuarios = lista;
         guardarLocal();
-        // Si el usuario actual está logueado, actualizar sus permisos por si cambiaron
         if (usuarioSesion) {
           const uActualizado = baseUsuarios.find(u => u.legajo === usuarioSesion.legajo || u.email === usuarioSesion.email);
           if (uActualizado) {
@@ -878,7 +1025,7 @@
           }
         }
       }
-    }, (err) => console.warn("Error leyendo usuarios en Cloud:", err));
+    }, (err) => console.warn("Error leyendo usuarios:", err));
   }
 
   function guardarUsuarioEnCloud(usuario) {
@@ -910,7 +1057,6 @@
     const legajo = document.getElementById("regLegajo").value.trim();
     const clave = document.getElementById("regClave").value.trim();
 
-    // Validar si ya existe
     const existe = baseUsuarios.find(u => u.legajo === legajo || u.email.toLowerCase() === email);
     if (existe) {
       alert("ATENCIÓN: Ya existe un usuario registrado con ese N° de Legajo o Correo Electrónico.");
@@ -922,7 +1068,7 @@
       email: email,
       legajo: legajo,
       clave: clave,
-      rol: "MONITOR", // Rol operativo inicial
+      rol: "MONITOR",
       estado: "ACTIVO",
       fechaRegistro: new Date().toLocaleDateString('es-AR')
     };
@@ -1589,9 +1735,7 @@
   }
 
   // ==========================================
-  // FLUJO DE ESTADOS Y PERMISOS ACTUALIZADOS:
-  // - GERENTE: Puede Revisar
-  // - FACILITADOR: Puede Revisar, Aprobar (Asigna N°) y Finalizar
+  // FLUJO DE ESTADOS Y DISPARO DE EMAILJS
   // ==========================================
   function registrarRevisionPlan() {
     if (!usuarioSesion) return;
@@ -1601,7 +1745,6 @@
       return;
     }
 
-    // Permitido para Facilitador y Gerente
     if (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE") {
       alert("PERMISO DENEGADO: La revisión técnica requiere rol de Facilitador o Gerente.");
       return;
@@ -1617,10 +1760,9 @@
     cargarPDCA(indiceActual);
   }
 
-  function aprobarPlanFacilitador() {
+  async function aprobarPlanFacilitador() {
     if (!usuarioSesion) return;
 
-    // Aprobación exclusiva de FACILITADOR
     if (usuarioSesion.rol !== "FACILITADOR") {
       alert("PERMISO DENEGADO: La aprobación formal y asignación de número oficial de trazabilidad es potestad exclusiva del FACILITADOR.");
       return;
@@ -1633,7 +1775,7 @@
       if (!resp) return;
     }
 
-    const confirmar = confirm(`¿Confirma la aprobación formal del plan como Facilitador?\n\nAl confirmar:\n1. Se asignará número correlativo consecutivo oficial.\n2. Se registrará la firma del Facilitador.\n3. El plan quedará BLOQUEADO en la base de datos.`);
+    const confirmar = confirm(`¿Confirma la aprobación formal del plan como Facilitador?\n\nAl confirmar:\n1. Se asignará número correlativo consecutivo oficial.\n2. Se registrará la firma del Facilitador.\n3. Se enviará el correo de asignación oficial a cada responsable por EmailJS.\n4. El plan quedará BLOQUEADO en la base de datos.`);
     if (!confirmar) return;
 
     const fechaHoy = new Date().toLocaleDateString('es-AR');
@@ -1641,7 +1783,6 @@
     plan.fechaAprobacion = fechaHoy;
     plan.bloqueado = true;
 
-    // Asignación de correlativo oficial consecutivo
     if (!plan.numPdca || plan.numPdca.trim() === "" || plan.numPdca.startsWith("----")) {
       const anioActual = new Date().getFullYear();
       plan.numPdca = obtenerSiguienteNumeroPDCA(anioActual);
@@ -1653,14 +1794,15 @@
     }
 
     sincronizarPlanEnCloud(plan);
-    alert(`¡PLAN APROBADO Y OFICIALIZADO!\n\nCorrelativo asignado: PDCA ${plan.numPdca}\nAprobado por: ${plan.aprobadoPor}\nEstado: ${plan.estado}`);
     cargarPDCA(indiceActual);
+
+    // DISPARO DIRECTO DESDE EL NAVEGADOR CON EMAILJS
+    await dispararEnvioEmailJS(plan);
   }
 
   function finalizarPlanPDCA() {
     if (!usuarioSesion) return;
 
-    // Finalización formal exclusiva del FACILITADOR
     if (usuarioSesion.rol !== "FACILITADOR") {
       alert("PERMISO DENEGADO: El cierre formal y finalización anticipada del PDCA es potestad del FACILITADOR.");
       return;
@@ -2038,9 +2180,6 @@
     renderizarDocumentoOficialPaginado(plan);
   }
 
-  // ==========================================
-  // GESTIÓN DE BOTONES SEGÚN EL ROL
-  // ==========================================
   function gestionarEstadoBloqueoUI(plan) {
     const banner = document.getElementById("bannerBloqueo");
     const badge = document.getElementById("badgeEstadoPantalla");
@@ -2089,11 +2228,9 @@
         badge.innerText = "BORRADOR";
         badge.className = "badge bg-secondary";
         
-        // Gerente o Facilitador pueden revisar
         if (esFacilitador || esGerente) btnRev.classList.remove("d-none");
         else btnRev.classList.add("d-none");
 
-        // Facilitador puede aprobar
         if (esFacilitador) btnApr.classList.remove("d-none");
         else btnApr.classList.add("d-none");
 
@@ -2249,24 +2386,10 @@
     }
   }
 
-  function abrirConfigGemini() {
-    const keyActual = localStorage.getItem("gemini_api_key") || "";
-    document.getElementById("inputApiKeyGemini").value = keyActual;
-    new bootstrap.Modal(document.getElementById('modalConfigGemini')).show();
-  }
-
-  function guardarApiKeyGemini() {
-    const key = document.getElementById("inputApiKeyGemini").value.trim();
-    if (!key) return;
-    localStorage.setItem("gemini_api_key", key);
-    bootstrap.Modal.getInstance(document.getElementById('modalConfigGemini')).hide();
-    alert("API Key guardada.");
-  }
-
   function abrirModalAuditoriaIA(tipo = 'plan', indexAccion = -1) {
     let apiKey = localStorage.getItem("gemini_api_key");
     if (!apiKey) {
-      abrirConfigGemini();
+      abrirConfigIntegraciones();
       return;
     }
     const plan = baseDatos[indiceActual];
