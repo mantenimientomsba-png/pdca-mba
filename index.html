@@ -80,7 +80,7 @@
       line-height: 1.1;
     }
 
-    /* TARJETAS ESTILO PIZARRA (IMAGEN 2) */
+    /* TARJETAS ESTILO PIZARRA */
     .card-pizarra {
       border-radius: 8px;
       border: 1px solid #e2e8f0;
@@ -332,7 +332,8 @@
     <span id="badgeCloudStatus" class="badge bg-secondary" style="font-size: 7.5pt;">Iniciando...</span>
     <div id="usuarioInfoNavbar" class="d-none align-items-center gap-2">
       <span class="small text-dark fw-semibold d-none d-md-inline" id="txtNavbarUsuario"></span>
-      <button class="btn btn-sm btn-outline-primary py-0 px-2 small d-none" id="btnAdminUsuariosNavbar" onclick="abrirModalGestionUsuarios()">👥 Usuarios</button>
+      <!-- BOTÓN EXCLUSIVO DE SISTEMAS EN NAVBAR -->
+      <button class="btn btn-sm btn-outline-danger py-0 px-2 small d-none" id="btnAdminUsuariosNavbar" onclick="abrirModalGestionUsuarios()">👥 Usuarios TI</button>
       <button class="btn btn-sm btn-outline-danger py-0 px-2 small" onclick="cerrarSesion()">Salir</button>
     </div>
   </div>
@@ -364,7 +365,7 @@
           <form id="formLogin" onsubmit="ejecutarLogin(event)" class="text-start">
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Legajo o Email:</label>
-              <input type="text" class="form-control" id="loginIdentificador" placeholder="ej: 3110 o usuario@misionba.com.ar" required autofocus>
+              <input type="text" class="form-control" id="loginIdentificador" placeholder="ej: 0001, 3110 o usuario@misionba.com.ar" required autofocus>
             </div>
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Contraseña:</label>
@@ -382,10 +383,11 @@
           </div>
 
           <div class="alert alert-light border small text-muted text-start mt-3 mb-0 py-2" style="font-size: 7.5pt;">
-            <strong>Jerarquía de Permisos:</strong><br>
-            • <strong>Facilitador</strong>: Revisa, Aprueba (asigna N° PDCA), notifica por email y Finaliza.<br>
-            • <strong>Gerente</strong>: Revisa formalmente, audita y gestiona accesos.<br>
-            • <strong>Monitor</strong>: Carga tareas y actualiza avances 5W2H.
+            <strong>Legajos de acceso configurados:</strong><br>
+            • <strong>0001</strong> (Operador de Sistemas - clave: admin123) ➔ <em>Roles, Permisos y Config TI</em><br>
+            • <strong>3110</strong> (Favio Graciette / Facilitador - clave: 1234) ➔ <em>Revisa, Aprueba y Finaliza</em><br>
+            • <strong>9001</strong> (Gerente Mantenimiento - clave: 1234) ➔ <em>Revisión y seguimiento</em><br>
+            • <strong>2045</strong> (Omar Funes / Monitor - clave: 1234) ➔ <em>Carga y avances 5W2H</em>
           </div>
         </div>
       </div>
@@ -398,6 +400,20 @@
 <!-- ======================================================== -->
 <div id="seccionDashboard" class="container-fluid container-md py-3 py-md-4 d-none">
 
+  <!-- BANNER EXCLUSIVO DE SISTEMAS (SOLO VISIBLE CON ROL 'SISTEMAS') -->
+  <div id="panelBannerSistemas" class="alert alert-dark border-0 shadow-sm d-none mb-3 py-2 px-3">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-danger px-2 py-1">🛠️ OPERADOR DE SISTEMAS</span>
+        <span class="text-white small">Gestión exclusiva de roles, permisos de operadores y credenciales de correo/IA</span>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-light fw-bold py-1 px-3" onclick="abrirModalGestionUsuarios()">👥 Roles y Permisos</button>
+        <button class="btn btn-sm btn-outline-light fw-bold py-1 px-3" onclick="abrirConfigIntegraciones()">⚙ Config EmailJS & IA</button>
+      </div>
+    </div>
+  </div>
+
   <!-- CABECERA DEL DASHBOARD -->
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <div>
@@ -405,13 +421,18 @@
       <p class="text-muted small m-0" id="dashSubtituloRol">Panel de control de planes e indicadores de calidad</p>
     </div>
     <div class="d-flex gap-2 flex-wrap">
+      <!-- BOTONES EXCLUSIVOS DE SISTEMAS EN CABECERA -->
       <button class="btn btn-outline-secondary btn-sm fw-semibold d-none" id="btnAdminUsuariosDash" onclick="abrirModalGestionUsuarios()">
         👥 Usuarios y Permisos
       </button>
+      <button class="btn btn-outline-info btn-sm fw-semibold d-none" id="btnConfigIntegracionesDash" onclick="abrirConfigIntegraciones()">
+        ⚙ Config (EmailJS & IA)
+      </button>
+      
+      <!-- BOTONES OPERATIVOS -->
       <button class="btn btn-outline-success btn-sm fw-semibold" onclick="document.getElementById('inputImportWord').click()" title="Adjuntar archivo Word .docx con plantilla PDCA">
         📎 Importar Word (.docx)
       </button>
-      <button class="btn btn-outline-info btn-sm fw-semibold" onclick="abrirConfigIntegraciones()">⚙ Config (EmailJS & IA)</button>
       <button class="btn btn-primary btn-sm fw-semibold" onclick="abrirModalNuevoPDCA()">+ Nuevo PDCA</button>
     </div>
   </div>
@@ -430,11 +451,8 @@
     </li>
   </ul>
 
-  <!-- ========================================== -->
-  <!-- VISTA 1: REGISTRO DE PLANES (IMAGEN 1 MEJORADA) -->
-  <!-- ========================================== -->
+  <!-- VISTA 1: REGISTRO DE PLANES -->
   <div id="vistaSolapaRegistro">
-    <!-- TARJETAS DE PLANES MEJORADAS -->
     <div class="row g-2 g-md-3 mb-4">
       <div class="col-6 col-md-3">
         <div class="card kpi-card p-3 border-start border-4 border-primary">
@@ -507,12 +525,8 @@
     </div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- VISTA 2: PIZARRA DE CONTROL (IMAGEN 2)      -->
-  <!-- ========================================== -->
+  <!-- VISTA 2: PIZARRA DE CONTROL -->
   <div id="vistaSolapaPizarra" class="d-none">
-    
-    <!-- 4 TARJETAS KPI DE TAREAS EXACTAS A LA IMAGEN 2 -->
     <div class="row g-2 g-md-3 mb-4">
       <div class="col-6 col-md-3">
         <div class="card card-pizarra">
@@ -560,9 +574,7 @@
       </div>
     </div>
 
-    <!-- 2 GRÁFICOS ANALÍTICOS EXACTOS A LA IMAGEN 2 -->
     <div class="row g-3 mb-4">
-      <!-- GRÁFICO CIRCULAR: TAREAS POR ESTADO -->
       <div class="col-12 col-md-6">
         <div class="card card-pizarra h-100">
           <div class="card-pizarra-header">
@@ -578,7 +590,6 @@
         </div>
       </div>
 
-      <!-- GRÁFICO DE BARRAS: TAREAS POR RESPONSABLE -->
       <div class="col-12 col-md-6">
         <div class="card card-pizarra h-100">
           <div class="card-pizarra-header">
@@ -592,7 +603,6 @@
       </div>
     </div>
 
-    <!-- TARJETA ADICIONAL: AVANCE GLOBAL Y METAS DE CALIDAD -->
     <div class="row g-3 mb-4">
       <div class="col-12 col-md-4">
         <div class="card card-pizarra p-3 text-center">
@@ -696,7 +706,7 @@
             <input type="password" class="form-control form-control-sm" id="regClave" placeholder="Mínimo 4 caracteres" required>
           </div>
           <div class="alert alert-info py-2 small mb-0" style="font-size: 7.5pt;">
-            * Los nuevos usuarios se crean inicialmente con perfil <strong>MONITOR</strong>. El Facilitador o Gerente puede elevar el perfil a <strong>FACILITADOR</strong> o <strong>GERENTE</strong> desde el panel de control.
+            * Los nuevos usuarios se crean inicialmente con perfil <strong>MONITOR</strong>. El Operador de Sistemas asignará los permisos correspondientes.
           </div>
         </div>
         <div class="modal-footer py-1">
@@ -708,12 +718,12 @@
   </div>
 </div>
 
-<!-- MODAL GESTIÓN DE USUARIOS Y PERMISOS -->
+<!-- MODAL GESTIÓN DE USUARIOS Y PERMISOS (SOLO SISTEMAS) -->
 <div class="modal fade" id="modalGestionUsuarios" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header bg-dark text-white py-2">
-        <h6 class="modal-title m-0 fw-bold">👥 Administración de Usuarios y Permisos Cloud</h6>
+        <h6 class="modal-title m-0 fw-bold">👥 Administración de Usuarios y Permisos TI (Exclusivo Sistemas)</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body py-2">
@@ -725,7 +735,7 @@
                 <th>Legajo</th>
                 <th>Nombre</th>
                 <th>Email</th>
-                <th>Rol / Permiso</th>
+                <th>Rol / Permiso Asignado</th>
                 <th>Estado</th>
                 <th class="text-end">Acción</th>
               </tr>
@@ -741,27 +751,27 @@
   </div>
 </div>
 
-<!-- MODAL INTEGRACIONES (EMAILJS Y GEMINI) -->
+<!-- MODAL INTEGRACIONES (SOLO SISTEMAS) -->
 <div class="modal fade" id="modalConfigIntegraciones" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header bg-secondary text-white py-2">
-        <h6 class="modal-title m-0 fw-bold">⚙ Configuración de EmailJS y Gemini</h6>
+        <h6 class="modal-title m-0 fw-bold">⚙ Configuración de EmailJS y Gemini (Exclusivo Sistemas)</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body py-3">
         <h6 class="fw-bold text-dark border-bottom pb-1 small">📧 Configuración EmailJS (Envío de Correos)</h6>
         <div class="mb-2">
           <label class="form-label small fw-bold mb-1">Service ID:</label>
-          <input type="text" class="form-control form-control-sm" id="inputEmailJsServiceId" placeholder="ej: service_xyz123">
+          <input type="text" class="form-control form-control-sm" id="inputEmailJsServiceId" placeholder="ej: service_qegwiyh">
         </div>
         <div class="mb-2">
           <label class="form-label small fw-bold mb-1">Template ID:</label>
-          <input type="text" class="form-control form-control-sm" id="inputEmailJsTemplateId" placeholder="ej: template_abc456">
+          <input type="text" class="form-control form-control-sm" id="inputEmailJsTemplateId" placeholder="ej: template_pdca">
         </div>
         <div class="mb-3">
           <label class="form-label small fw-bold mb-1">Public Key (User ID):</label>
-          <input type="text" class="form-control form-control-sm" id="inputEmailJsPublicKey" placeholder="ej: user_789XYZ...">
+          <input type="text" class="form-control form-control-sm" id="inputEmailJsPublicKey" placeholder="ej: vl0LNjFsArj315Skm">
         </div>
 
         <h6 class="fw-bold text-dark border-bottom pb-1 small pt-2">✨ Inteligencia Artificial</h6>
@@ -772,7 +782,7 @@
       </div>
       <div class="modal-footer py-1">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-sm btn-primary fw-bold" onclick="guardarIntegraciones()">Guardar Configuración</button>
+        <button type="submit" class="btn btn-sm btn-primary fw-bold" onclick="guardarIntegraciones()">Guardar Configuración</button>
       </div>
     </div>
   </div>
@@ -975,7 +985,9 @@
     "Política 7: Fortalecer la comunicación institucional."
   ];
 
+  // USUARIOS CON EL NUEVO PERFIL 'SISTEMAS'
   const usuariosSemilla = [
+    { legajo: "0001", clave: "admin123", nombre: "Operador de Sistemas", email: "sistemas@misionba.com.ar", rol: "SISTEMAS", estado: "ACTIVO" },
     { legajo: "9001", clave: "1234", nombre: "Gerente de Mantenimiento", email: "gerencia@misionba.com.ar", rol: "GERENTE", estado: "ACTIVO" },
     { legajo: "3110", clave: "1234", nombre: "Favio Graciette", email: "fgraciette@misionba.com.ar", rol: "FACILITADOR", estado: "ACTIVO" },
     { legajo: "2045", clave: "1234", nombre: "Omar Funes", email: "ofunes@misionba.com.ar", rol: "MONITOR", estado: "ACTIVO" },
@@ -1047,7 +1059,6 @@
   let indiceActual = 0;
   let solapaActualDashboard = "registro";
 
-  // Instancias de Chart.js
   let chartInstanciaEstado = null;
   let chartInstanciaResponsable = null;
 
@@ -1081,7 +1092,7 @@
   }
 
   // ==========================================
-  // RENDERIZADO DE LA PIZARRA DE CONTROL (IMAGEN 2)
+  // RENDERIZADO DE LA PIZARRA DE CONTROL
   // ==========================================
   function renderizarPizarraControl() {
     let totalTareas = 0;
@@ -1099,32 +1110,27 @@
 
           if (est === "EN_PROCESO") enCurso++;
           else if (est === "COMPLETADA") listo++;
-          else detenido++; // PENDIENTE o DETENIDO
+          else detenido++;
 
-          // Conteo por Responsable
           const resp = acc.quien ? acc.quien.trim() : "Sin asignar";
           tareasPorResp[resp] = (tareasPorResp[resp] || 0) + 1;
 
-          // Conteo por Ubicación / Base
           const base = acc.donde ? acc.donde.trim() : "Central";
           tareasPorBase[base] = (tareasPorBase[base] || 0) + 1;
         });
       }
     });
 
-    // Actualizar Números de Tarjetas
     document.getElementById("pizTotalTareas").innerText = totalTareas;
     document.getElementById("pizEnCurso").innerText = enCurso;
     document.getElementById("pizDetenido").innerText = detenido;
     document.getElementById("pizListo").innerText = listo;
 
-    // Métricas de Avance Global
     const porcentajeListo = totalTareas > 0 ? Math.round((listo / totalTareas) * 100) : 0;
     document.getElementById("pizPorcentajeCumplimiento").innerText = `${porcentajeListo}%`;
     document.getElementById("pizBarraCumplimiento").style.width = `${porcentajeListo}%`;
     document.getElementById("pizDetalleAvance").innerText = `${listo} de ${totalTareas} tareas finalizadas exitosamente`;
 
-    // Tarjeta de bases
     const contBases = document.getElementById("contenedorBasesPredios");
     contBases.innerHTML = "";
     Object.keys(tareasPorBase).forEach(b => {
@@ -1135,7 +1141,7 @@
       contBases.appendChild(badge);
     });
 
-    // 1. GRÁFICO CIRCULAR: TAREAS POR ESTADO (EXACTO A IMAGEN 2)
+    // 1. Gráfico circular
     const ctxEstado = document.getElementById("chartTareasEstado");
     if (ctxEstado) {
       if (chartInstanciaEstado) chartInstanciaEstado.destroy();
@@ -1158,9 +1164,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: true,
-          plugins: {
-            legend: { display: false }
-          },
+          plugins: { legend: { display: false } },
           cutout: '55%'
         }
       });
@@ -1172,7 +1176,7 @@
       `;
     }
 
-    // 2. GRÁFICO DE BARRAS: TAREAS POR RESPONSABLE (EXACTO A IMAGEN 2)
+    // 2. Gráfico de barras
     const ctxResp = document.getElementById("chartTareasResponsable");
     if (ctxResp) {
       if (chartInstanciaResponsable) chartInstanciaResponsable.destroy();
@@ -1194,9 +1198,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
+          plugins: { legend: { display: false } },
           scales: {
             y: {
               beginAtZero: true,
@@ -1214,17 +1216,22 @@
   }
 
   // ==========================================
-  // CONFIGURACIÓN DE EMAILJS Y GEMINI
+  // CONFIGURACIÓN DE EMAILJS Y GEMINI (EXCLUSIVO SISTEMAS)
   // ==========================================
   function abrirConfigIntegraciones() {
-    document.getElementById("inputEmailJsServiceId").value = localStorage.getItem("emailjs_service_id") || "";
-    document.getElementById("inputEmailJsTemplateId").value = localStorage.getItem("emailjs_template_id") || "";
-    document.getElementById("inputEmailJsPublicKey").value = localStorage.getItem("emailjs_public_key") || "";
+    if (!usuarioSesion || usuarioSesion.rol !== "SISTEMAS") {
+      alert("ACCESO DENEGADO: La configuración técnica de EmailJS y claves de sistema es exclusiva del perfil de SISTEMAS.");
+      return;
+    }
+    document.getElementById("inputEmailJsServiceId").value = localStorage.getItem("emailjs_service_id") || "service_qegwiyh";
+    document.getElementById("inputEmailJsTemplateId").value = localStorage.getItem("emailjs_template_id") || "template_pdca";
+    document.getElementById("inputEmailJsPublicKey").value = localStorage.getItem("emailjs_public_key") || "vl0LNjFsArj315Skm";
     document.getElementById("inputApiKeyGemini").value = localStorage.getItem("gemini_api_key") || "";
     new bootstrap.Modal(document.getElementById('modalConfigIntegraciones')).show();
   }
 
   function guardarIntegraciones() {
+    if (!usuarioSesion || usuarioSesion.rol !== "SISTEMAS") return;
     const sId = document.getElementById("inputEmailJsServiceId").value.trim();
     const tId = document.getElementById("inputEmailJsTemplateId").value.trim();
     const pKey = document.getElementById("inputEmailJsPublicKey").value.trim();
@@ -1236,19 +1243,19 @@
     if (apiKey) localStorage.setItem("gemini_api_key", apiKey);
 
     bootstrap.Modal.getInstance(document.getElementById('modalConfigIntegraciones')).hide();
-    alert("Configuración guardada exitosamente.");
+    alert("Parámetros de Sistemas actualizados correctamente.");
   }
 
   // ==========================================
   // DISPARO DE CORREOS VÍA EMAILJS
   // ==========================================
   async function dispararEnvioEmailJS(plan) {
-    const serviceId = localStorage.getItem("emailjs_service_id");
-    const templateId = localStorage.getItem("emailjs_template_id");
-    const publicKey = localStorage.getItem("emailjs_public_key");
+    const serviceId = localStorage.getItem("emailjs_service_id") || "service_qegwiyh";
+    const templateId = localStorage.getItem("emailjs_template_id") || "template_pdca";
+    const publicKey = localStorage.getItem("emailjs_public_key") || "vl0LNjFsArj315Skm";
 
     if (!serviceId || !templateId || !publicKey) {
-      alert("ATENCIÓN: Debe configurar Service ID, Template ID y Public Key de EmailJS en '⚙ Config'.");
+      console.warn("Faltan configurar claves de EmailJS.");
       return;
     }
 
@@ -1296,10 +1303,7 @@
     });
 
     const lista = Object.values(destinatariosMap);
-    if (lista.length === 0) {
-      alert("Plan aprobado. No se encontraron correos registrados para los responsables en 'Usuarios y Permisos'.");
-      return;
-    }
+    if (lista.length === 0) return;
 
     let enviados = 0;
     const linkApp = window.location.href.split('#')[0];
@@ -1337,7 +1341,7 @@
       }
     }
 
-    alert(`¡NOTIFICACIONES ENVIADAS CON ÉXITO VÍA EMAILJS!\n\nSe enviaron ${enviados} correo(s) a los responsables:\n` +
+    alert(`¡NOTIFICACIONES ENVIADAS CON ÉXITO VÍA EMAILJS!\n\nSe despacharon ${enviados} correo(s) a los responsables:\n` +
       lista.map(d => `• ${d.nombre} (${d.email})`).join('\n')
     );
   }
@@ -1360,6 +1364,14 @@
 
       if (lista.length > 0) {
         baseUsuarios = lista;
+
+        // Asegurar que exista al menos un usuario de Sistemas si la base remota no lo tiene
+        const existeSistemas = baseUsuarios.some(u => u.rol === "SISTEMAS" || u.legajo === "0001");
+        if (!existeSistemas) {
+          const uSistemas = usuariosSemilla[0];
+          db.collection("usuarios_pdca").add(uSistemas);
+        }
+
         guardarLocal();
         if (usuarioSesion) {
           const uActualizado = baseUsuarios.find(u => u.legajo === usuarioSesion.legajo || u.email === usuarioSesion.email);
@@ -1422,7 +1434,7 @@
     guardarUsuarioEnCloud(nuevoUsuario);
 
     bootstrap.Modal.getInstance(document.getElementById('modalRegistroUsuario')).hide();
-    alert(`¡REGISTRO EXITOSO!\n\nUsuario: ${nombre}\nLegajo: ${legajo}\nPerfil asignado: MONITOR\n\nYa puede ingresar con su legajo o correo.`);
+    alert(`¡REGISTRO EXITOSO!\n\nUsuario: ${nombre}\nLegajo: ${legajo}\nPerfil inicial: MONITOR\n\nEl operador de Sistemas puede asignarle permisos superiores desde el panel.`);
     document.getElementById("loginIdentificador").value = legajo;
   }
 
@@ -1442,7 +1454,7 @@
     }
 
     if (usuario.estado === "BLOQUEADO") {
-      alert("Su cuenta se encuentra inhabilitada. Consulte con el Facilitador o Gerente.");
+      alert("Su cuenta se encuentra inhabilitada por el Operador de Sistemas.");
       return;
     }
 
@@ -1461,30 +1473,38 @@
 
   function actualizarDatosUsuarioSesion() {
     if (!usuarioSesion) return;
-    const esAutorizado = (usuarioSesion.rol === "FACILITADOR" || usuarioSesion.rol === "GERENTE");
+    const esSistemas = (usuarioSesion.rol === "SISTEMAS");
 
-    document.getElementById("txtNavbarUsuario").innerHTML = `👤 <strong>${usuarioSesion.nombre}</strong> <span class="badge bg-secondary">${usuarioSesion.rol}</span>`;
+    const badgeColor = esSistemas ? "bg-danger" : (usuarioSesion.rol === "FACILITADOR" ? "bg-success" : "bg-secondary");
+    document.getElementById("txtNavbarUsuario").innerHTML = `👤 <strong>${usuarioSesion.nombre}</strong> <span class="badge ${badgeColor}">${usuarioSesion.rol}</span>`;
     document.getElementById("dashSaludoUsuario").innerText = `Hola, ${usuarioSesion.nombre}`;
     document.getElementById("dashSubtituloRol").innerText = `Rol: ${usuarioSesion.rol} (Legajo: ${usuarioSesion.legajo})`;
 
     const btnNavAdmin = document.getElementById("btnAdminUsuariosNavbar");
     const btnDashAdmin = document.getElementById("btnAdminUsuariosDash");
+    const btnDashConfig = document.getElementById("btnConfigIntegracionesDash");
+    const panelBannerSistemas = document.getElementById("panelBannerSistemas");
 
-    if (esAutorizado) {
-      btnNavAdmin.classList.remove("d-none");
-      btnDashAdmin.classList.remove("d-none");
+    // VISIBILIDAD ESTRICTA: SOLO SISTEMAS VE LOS ACCESOS TÉCNICOS
+    if (esSistemas) {
+      if (btnNavAdmin) btnNavAdmin.classList.remove("d-none");
+      if (btnDashAdmin) btnDashAdmin.classList.remove("d-none");
+      if (btnDashConfig) btnDashConfig.classList.remove("d-none");
+      if (panelBannerSistemas) panelBannerSistemas.classList.remove("d-none");
     } else {
-      btnNavAdmin.classList.add("d-none");
-      btnDashAdmin.classList.add("d-none");
+      if (btnNavAdmin) btnNavAdmin.classList.add("d-none");
+      if (btnDashAdmin) btnDashAdmin.classList.add("d-none");
+      if (btnDashConfig) btnDashConfig.classList.add("d-none");
+      if (panelBannerSistemas) panelBannerSistemas.classList.add("d-none");
     }
   }
 
   // ==========================================
-  // PANEL DE ADMINISTRACIÓN DE USUARIOS
+  // PANEL DE ADMINISTRACIÓN DE USUARIOS (SOLO SISTEMAS)
   // ==========================================
   function abrirModalGestionUsuarios() {
-    if (!usuarioSesion || (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE")) {
-      alert("Acceso exclusivo para Facilitadores y Gerencia.");
+    if (!usuarioSesion || usuarioSesion.rol !== "SISTEMAS") {
+      alert("ACCESO DENEGADO: La administración de usuarios y permisos es exclusiva del perfil de SISTEMAS.");
       return;
     }
     renderizarTablaUsuarios();
@@ -1506,6 +1526,7 @@
             <option value="MONITOR" ${u.rol === 'MONITOR' ? 'selected' : ''}>MONITOR (Carga y avances)</option>
             <option value="GERENTE" ${u.rol === 'GERENTE' ? 'selected' : ''}>GERENTE (Revisión y auditoría)</option>
             <option value="FACILITADOR" ${u.rol === 'FACILITADOR' ? 'selected' : ''}>FACILITADOR (Revisa, Aprueba y Finaliza)</option>
+            <option value="SISTEMAS" ${u.rol === 'SISTEMAS' ? 'selected' : ''}>SISTEMAS (Administrador IT)</option>
           </select>
         </td>
         <td>
@@ -1523,6 +1544,7 @@
   }
 
   function cambiarRolUsuario(index, nuevoRol) {
+    if (!usuarioSesion || usuarioSesion.rol !== "SISTEMAS") return;
     const u = baseUsuarios[index];
     u.rol = nuevoRol;
     guardarUsuarioEnCloud(u);
@@ -1530,6 +1552,7 @@
   }
 
   function alternarEstadoUsuario(index) {
+    if (!usuarioSesion || usuarioSesion.rol !== "SISTEMAS") return;
     const u = baseUsuarios[index];
     u.estado = u.estado === "BLOQUEADO" ? "ACTIVO" : "BLOQUEADO";
     guardarUsuarioEnCloud(u);
@@ -1537,6 +1560,7 @@
   }
 
   function cambiarClaveUsuario(index) {
+    if (!usuarioSesion || usuarioSesion.rol !== "SISTEMAS") return;
     const u = baseUsuarios[index];
     const nueva = prompt(`Asignar nueva contraseña para ${u.nombre}:`);
     if (nueva && nueva.trim().length >= 4) {
@@ -2087,7 +2111,7 @@
       return;
     }
 
-    if (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE") {
+    if (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE" && usuarioSesion.rol !== "SISTEMAS") {
       alert("PERMISO DENEGADO: La revisión técnica requiere rol de Facilitador o Gerente.");
       return;
     }
@@ -2138,7 +2162,6 @@
     sincronizarPlanEnCloud(plan);
     cargarPDCA(indiceActual);
 
-    // DISPARO DIRECTO DESDE EL NAVEGADOR CON EMAILJS
     await dispararEnvioEmailJS(plan);
   }
 
@@ -2164,8 +2187,8 @@
   }
 
   function desbloquearPlanAutorizado() {
-    if (!usuarioSesion || (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE")) {
-      alert("Solo el Facilitador o Gerente pueden reabrir un plan bloqueado.");
+    if (!usuarioSesion || (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE" && usuarioSesion.rol !== "SISTEMAS")) {
+      alert("Solo el Facilitador, Gerente o Sistemas pueden reabrir un plan bloqueado.");
       return;
     }
     const motivo = prompt("Ingrese el motivo técnico de la reapertura:");
@@ -2238,7 +2261,7 @@
   function editarTituloPlan() {
     if (!usuarioSesion) return;
     const plan = baseDatos[indiceActual];
-    if (plan.bloqueado && (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE")) {
+    if (plan.bloqueado && (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE" && usuarioSesion.rol !== "SISTEMAS")) {
       alert("El plan está formalizado. Solo el Facilitador o Gerente pueden modificarlo.");
       return;
     }
@@ -2527,6 +2550,9 @@
     renderizarDocumentoOficialPaginado(plan);
   }
 
+  // ==========================================
+  // GESTIÓN DE BOTONES SEGÚN EL ROL
+  // ==========================================
   function gestionarEstadoBloqueoUI(plan) {
     const banner = document.getElementById("bannerBloqueo");
     const badge = document.getElementById("badgeEstadoPantalla");
@@ -2541,6 +2567,7 @@
 
     const esFacilitador = usuarioSesion && usuarioSesion.rol === "FACILITADOR";
     const esGerente = usuarioSesion && usuarioSesion.rol === "GERENTE";
+    const esSistemas = usuarioSesion && usuarioSesion.rol === "SISTEMAS";
 
     if (plan.bloqueado) {
       banner.classList.remove("d-none");
@@ -2558,8 +2585,11 @@
         else btnFin.classList.add("d-none");
       }
 
-      if (esFacilitador || esGerente) btnDesbloq.classList.remove("d-none");
-      else btnDesbloq.classList.add("d-none");
+      if (esFacilitador || esGerente || esSistemas) {
+        btnDesbloq.classList.remove("d-none");
+      } else {
+        btnDesbloq.classList.add("d-none");
+      }
     } else {
       banner.classList.add("d-none");
       btnDesbloq.classList.add("d-none");
@@ -2568,7 +2598,7 @@
       if (plan.estado === "BORRADOR") {
         badge.innerText = "BORRADOR";
         badge.className = "badge bg-secondary";
-        if (esFacilitador || esGerente) btnRev.classList.remove("d-none");
+        if (esFacilitador || esGerente || esSistemas) btnRev.classList.remove("d-none");
         else btnRev.classList.add("d-none");
         if (esFacilitador) btnApr.classList.remove("d-none");
         else btnApr.classList.add("d-none");
@@ -2726,7 +2756,11 @@
   function abrirModalAuditoriaIA(tipo = 'plan', indexAccion = -1) {
     let apiKey = localStorage.getItem("gemini_api_key");
     if (!apiKey) {
-      abrirConfigIntegraciones();
+      if (usuarioSesion && usuarioSesion.rol === "SISTEMAS") {
+        abrirConfigIntegraciones();
+      } else {
+        alert("Consulte al Operador de Sistemas para activar la API Key de Gemini.");
+      }
       return;
     }
     const plan = baseDatos[indiceActual];
