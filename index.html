@@ -405,7 +405,7 @@
 <input type="file" id="inputLogoFile" accept="image/*" class="d-none" onchange="procesarArchivoLogo(event)">
 <input type="file" id="inputImportWord" accept=".docx" class="d-none" onchange="procesarArchivoWord(event)">
 
-<!-- 1. PANTALLA LOGIN Y REGISTRO -->
+<!-- 1. PANTALLA LOGIN Y REGISTRO (PORTAL LIMPIO SIN TEXTOS DE PRUEBA) -->
 <div id="seccionLogin" class="container py-4 py-md-5">
   <div class="row justify-content-center">
     <div class="col-12 col-sm-8 col-md-5 col-lg-4">
@@ -418,7 +418,7 @@
           <form id="formLogin" onsubmit="ejecutarLogin(event)" class="text-start">
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Legajo o Email:</label>
-              <input type="text" class="form-control" id="loginIdentificador" placeholder="ej: 0001, 3110 o usuario@misionba.com.ar" required autofocus>
+              <input type="text" class="form-control" id="loginIdentificador" placeholder="ej: 3110 o usuario@misionba.com.ar" required autofocus>
             </div>
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Contraseña:</label>
@@ -433,14 +433,6 @@
             <button class="btn btn-sm btn-outline-success w-100 fw-bold" onclick="abrirModalRegistro()">
               + Registrar Nuevo Usuario
             </button>
-          </div>
-
-          <div class="alert alert-light border small text-muted text-start mt-3 mb-0 py-2" style="font-size: 7.5pt;">
-            <strong>Legajos de acceso configurados:</strong><br>
-            • <strong>0001</strong> (Operador de Sistemas - clave: admin123) ➔ <em>Configuración TI y Permisos</em><br>
-            • <strong>3110</strong> (Favio Graciette / Facilitador - clave: 1234) ➔ <em>Revisa, Aprueba, Borra y Finaliza</em><br>
-            • <strong>9001</strong> (Gerente Mantenimiento - clave: 1234) ➔ <em>Revisión técnica y seguimiento</em><br>
-            • <strong>2045</strong> (Omar Funes / Monitor - clave: 1234) ➔ <em>Carga y registro de avances 5W2H</em>
           </div>
         </div>
       </div>
@@ -579,7 +571,7 @@
     </div>
   </div>
 
-  <!-- VISTA 2: TABLERO DE CONTROL PDCA (PLANES) -->
+  <!-- VISTA 2: TABLERO DE CONTROL PDCA -->
   <div id="vistaSolapaPizarra" class="d-none">
     <div class="row g-2 g-md-3 mb-4">
       <div class="col-6 col-md-3">
@@ -1068,7 +1060,7 @@
   </div>
 </div>
 
-<!-- MODAL ACCIÓN 5W2H (FORMULARIO ORIGINAL) -->
+<!-- MODAL ACCIÓN 5W2H -->
 <div class="modal fade" id="modalAccion5W2H" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -1444,7 +1436,6 @@
 
         const tieneEvidencia = (acc.evidenciaTexto && acc.evidenciaTexto.trim()) || acc.evidenciaArchivo;
 
-        // Crear tarjeta Kanban
         const card = document.createElement("div");
         card.className = "kanban-card";
         card.draggable = true;
@@ -1466,7 +1457,6 @@
             👤 <strong>${acc.quien}</strong> | 📍 ${acc.donde} (${acc.cuando})
           </div>
 
-          <!-- BOTÓN EXCLUSIVO DE EVIDENCIA EN KANBAN -->
           <div class="mb-2">
             <button class="btn btn-xs ${tieneEvidencia ? 'btn-success text-white' : 'btn-outline-secondary'} w-100 py-1 fw-bold"
                     style="font-size: 7.5pt;"
@@ -1489,7 +1479,6 @@
         else if (est === "COMPLETADA") listaListo.appendChild(card);
         else listaPend.appendChild(card);
 
-        // Fila para Cronograma Gantt
         let colorBarra = "bg-danger";
         let porcentajeBarra = "25%";
         let textoEstado = "Pendiente / Detenido";
@@ -1551,7 +1540,7 @@
   }
 
   // ========================================================
-  // GESTIÓN DE EVIDENCIA EN KANBAN (CARGA, FOTO Y BASE64)
+  // GESTIÓN DE EVIDENCIA EN KANBAN
   // ========================================================
   function abrirModalEvidencia(pIdx, aIdx) {
     const plan = baseDatos[pIdx];
@@ -1586,7 +1575,6 @@
     const file = event.target.files[0];
     if (!file) return;
 
-    // Si es imagen, optimizar con canvas para no superar límites de Firestore
     if (file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -1619,7 +1607,6 @@
       };
       reader.readAsDataURL(file);
     } else {
-      // PDF u otro documento (verificar tamaño menor a 600KB para Firestore)
       if (file.size > 700 * 1024) {
         alert("El archivo adjunto supera los 700 KB permitidos para guardado en nube. Por favor adjunte un PDF más liviano o una foto.");
         event.target.value = "";
