@@ -126,7 +126,7 @@
     }
     .kanban-col {
       flex: 1;
-      min-width: 300px;
+      min-width: 310px;
       background-color: #ebedf0;
       border-radius: 8px;
       padding: 12px;
@@ -486,7 +486,7 @@
     </div>
   </div>
 
-  <!-- SOLAPAS DE NAVEGACIÓN (TRES PESTAÑAS) -->
+  <!-- SOLAPAS DE NAVEGACIÓN -->
   <ul class="nav nav-tabs-custom">
     <li class="nav-item">
       <button class="nav-link active" id="tabBtnRegistro" onclick="cambiarSolapaDashboard('registro')">
@@ -579,7 +579,7 @@
     </div>
   </div>
 
-  <!-- VISTA 2: TABLERO DE CONTROL PDCA (ENFOCADO EN PLANES) -->
+  <!-- VISTA 2: TABLERO DE CONTROL PDCA (PLANES) -->
   <div id="vistaSolapaPizarra" class="d-none">
     <div class="row g-2 g-md-3 mb-4">
       <div class="col-6 col-md-3">
@@ -668,7 +668,7 @@
           <div class="progress" style="height: 8px;">
             <div class="progress-bar bg-success" id="pizBarraCumplimientoPDCA" style="width: 0%"></div>
           </div>
-          <small class="text-muted mt-2 d-block" id="pizDetalleAvancePDCA">0 de 0 planes finalizados</small>
+          <small class="text-muted mt-2 d-block" id="pizDetalleAvancePDCA">0 de 0 planes formalmente cerrados</small>
         </div>
       </div>
       <div class="col-12 col-md-8">
@@ -680,7 +680,7 @@
     </div>
   </div>
 
-  <!-- VISTA 3: TABLERO KANBAN (TIPO TRELLO) & CRONOGRAMA -->
+  <!-- VISTA 3: TABLERO KANBAN & CRONOGRAMA -->
   <div id="vistaSolapaKanban" class="d-none">
     
     <!-- BARRA DE FILTROS DEL KANBAN -->
@@ -731,7 +731,7 @@
 
     </div>
 
-    <!-- CRONOGRAMA DE SEGUIMIENTO DE PLAZOS (TIPO GANTT) -->
+    <!-- CRONOGRAMA DE SEGUIMIENTO (GANTT) -->
     <div class="card shadow-sm border-0 rounded-3 mb-4">
       <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
         <h6 class="fw-bold m-0 text-dark">📅 Cronograma de Seguimiento y Avance de Tareas</h6>
@@ -801,8 +801,74 @@
       <strong>🔒 PLAN OFICIAL FORMALIZADO:</strong> Aprobado por Facilitador / Calidad para asegurar trazabilidad. <em>El progreso de las tareas (En curso / Listo) permanece modificable haciendo clic sobre cada estado o desde el Tablero Kanban.</em>
     </div>
 
-    <!-- CONTENEDOR DE HOJAS A4 -->
     <div class="contenedor-hojas-trabajo" id="contenedorHojasImpresion"></div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- MODALES DEL SISTEMA                                      -->
+<!-- ======================================================== -->
+
+<!-- MODAL EXCLUSIVO DE EVIDENCIA DE CUMPLIMIENTO (KANBAN) -->
+<div class="modal fade" id="modalEvidenciaKanban" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title m-0 fw-bold" id="lblModalEvidenciaTitulo">📎 Evidencia de Cumplimiento</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formEvidenciaKanban" onsubmit="guardarEvidenciaKanban(event)">
+        <input type="hidden" id="evPlanIdx" value="-1">
+        <input type="hidden" id="evAccIdx" value="-1">
+        <input type="hidden" id="evArchivoBase64" value="">
+        <input type="hidden" id="evNombreArchivo" value="">
+
+        <div class="modal-body py-3">
+          <div class="bg-light p-2 rounded border mb-3 small">
+            <div><strong id="evPlanTitulo">PDCA</strong></div>
+            <div class="text-muted" id="evTareaTexto">Tarea</div>
+            <div class="text-muted mt-1" id="evResponsableTexto">Resp: --</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold mb-1">
+              📝 Observaciones técnicas / Justificación de la acción:
+            </label>
+            <textarea class="form-control form-control-sm" id="evTextoObservacion" rows="3" placeholder="Ej: OT #14580 cerrada en taller Barracas. Se realizó la prueba y no presenta pérdidas..."></textarea>
+            <small class="text-muted" style="font-size: 7.5pt;">Opcional: detalle de número de orden de trabajo, remito o resultado del control.</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small fw-bold mb-1">
+              📷 Adjuntar foto o documento de comprobante:
+            </label>
+            <input type="file" class="form-control form-control-sm" id="inputArchivoEvidencia" accept="image/*,.pdf" onchange="procesarArchivoEvidencia(event)">
+            <small class="text-muted" style="font-size: 7.5pt;">Formatos: Fotos (JPG, PNG) o PDF. El sistema optimiza imágenes pesadas automáticamente.</small>
+          </div>
+
+          <!-- CONTENEDOR DE VISTA PREVIA DEL ARCHIVO ADJUNTO -->
+          <div id="contenedorPreviewEvidencia" class="p-2 border rounded bg-white text-center d-none mb-2">
+            <div id="previewFotoEvidenciaCont" class="mb-2 d-none">
+              <img id="imgPreviewEvidencia" src="" alt="Comprobante" style="max-height: 140px; max-width: 100%; border-radius: 4px; object-fit: contain;">
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="small text-truncate fw-semibold text-dark" id="txtNombreArchivoAdjunto">archivo.pdf</span>
+              <div class="d-flex gap-1">
+                <a id="btnAbrirArchivoEvidencia" href="#" target="_blank" class="btn btn-xs btn-outline-primary py-0 px-2" style="font-size: 7.5pt;">Ver Completo ↗</a>
+                <button type="button" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size: 7.5pt;" onclick="quitarArchivoEvidencia()">Quitar</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="infoRegistroEvidencia" class="small text-muted fst-italic mt-2 d-none" style="font-size: 7.5pt;"></div>
+        </div>
+
+        <div class="modal-footer py-2">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-sm btn-success fw-bold px-3">💾 Guardar Evidencia</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -996,13 +1062,13 @@
       </div>
       <div class="modal-footer py-1">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-sm btn-primary fw-bold" onclick="guardarCambioPolitica()">Aplicar</button>
+        <button type="submit" class="btn btn-sm btn-primary fw-bold" onclick="guardarCambioPolitica()">Aplicar</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MODAL ACCIÓN 5W2H -->
+<!-- MODAL ACCIÓN 5W2H (FORMULARIO ORIGINAL) -->
 <div class="modal fade" id="modalAccion5W2H" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -1259,7 +1325,6 @@
       contBases.appendChild(badge);
     });
 
-    // 1. Gráfico circular: PDCA por estado
     const ctxEstado = document.getElementById("chartPDCAEstado");
     if (ctxEstado) {
       if (chartInstanciaEstado) chartInstanciaEstado.destroy();
@@ -1294,7 +1359,6 @@
       `;
     }
 
-    // 2. Gráfico de barras: PDCA por responsable general
     const ctxResp = document.getElementById("chartPDCAResponsable");
     if (ctxResp) {
       if (chartInstanciaResponsable) chartInstanciaResponsable.destroy();
@@ -1334,7 +1398,7 @@
   }
 
   // ==========================================
-  // RENDERIZADO DEL TABLERO KANBAN (TIPO TRELLO) & GANTT
+  // RENDERIZADO DEL TABLERO KANBAN & CRONOGRAMA
   // ==========================================
   function actualizarSelectorKanbanPDCA() {
     const sel = document.getElementById("filtroKanbanPDCA");
@@ -1378,6 +1442,8 @@
         else if (est === "COMPLETADA") cListo++;
         else cPend++;
 
+        const tieneEvidencia = (acc.evidenciaTexto && acc.evidenciaTexto.trim()) || acc.evidenciaArchivo;
+
         // Crear tarjeta Kanban
         const card = document.createElement("div");
         card.className = "kanban-card";
@@ -1389,6 +1455,7 @@
         card.ondragend = () => card.classList.remove("dragging");
 
         let badgePdca = plan.numPdca ? `PDCA ${plan.numPdca}` : 'BORRADOR';
+        
         card.innerHTML = `
           <div class="d-flex justify-content-between align-items-center mb-1">
             <span class="badge bg-dark-subtle text-dark border small" style="font-size: 7pt;">${badgePdca}</span>
@@ -1398,6 +1465,17 @@
           <div class="small text-muted mb-2" style="font-size: 7.5pt;">
             👤 <strong>${acc.quien}</strong> | 📍 ${acc.donde} (${acc.cuando})
           </div>
+
+          <!-- BOTÓN EXCLUSIVO DE EVIDENCIA EN KANBAN -->
+          <div class="mb-2">
+            <button class="btn btn-xs ${tieneEvidencia ? 'btn-success text-white' : 'btn-outline-secondary'} w-100 py-1 fw-bold"
+                    style="font-size: 7.5pt;"
+                    onclick="abrirModalEvidencia(${pIdx}, ${aIdx})"
+                    title="Ver o cargar evidencia de cumplimiento">
+              ${tieneEvidencia ? '📎 Ver Evidencia Registrada' : '+ 📎 Adjuntar Evidencia'}
+            </button>
+          </div>
+
           <div class="d-flex justify-content-between align-items-center pt-1 border-top">
             <div class="btn-group btn-group-sm">
               ${est !== 'PENDIENTE' ? `<button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 7pt;" onclick="cambiarEstadoAccionDirecto(${pIdx}, ${aIdx}, 'PENDIENTE')" title="Mover a Pendiente">⬅</button>` : ''}
@@ -1472,6 +1550,150 @@
     }
   }
 
+  // ========================================================
+  // GESTIÓN DE EVIDENCIA EN KANBAN (CARGA, FOTO Y BASE64)
+  // ========================================================
+  function abrirModalEvidencia(pIdx, aIdx) {
+    const plan = baseDatos[pIdx];
+    const acc = plan.acciones[aIdx];
+
+    document.getElementById("evPlanIdx").value = pIdx;
+    document.getElementById("evAccIdx").value = aIdx;
+    document.getElementById("lblModalEvidenciaTitulo").innerText = `📎 Evidencia de Cumplimiento - Tarea #${acc.orden}`;
+    document.getElementById("evPlanTitulo").innerText = `[${plan.numPdca || 'BORRADOR'}] ${plan.titulo}`;
+    document.getElementById("evTareaTexto").innerText = `Tarea: ${acc.que}`;
+    document.getElementById("evResponsableTexto").innerText = `Responsable asignado: ${acc.quien} (${acc.donde})`;
+
+    document.getElementById("evTextoObservacion").value = acc.evidenciaTexto || "";
+    document.getElementById("evArchivoBase64").value = acc.evidenciaArchivo || "";
+    document.getElementById("evNombreArchivo").value = acc.evidenciaNombreArchivo || "";
+    document.getElementById("inputArchivoEvidencia").value = "";
+
+    actualizarVistaPreviewEvidencia(acc.evidenciaArchivo, acc.evidenciaNombreArchivo);
+
+    const infoReg = document.getElementById("infoRegistroEvidencia");
+    if (acc.evidenciaUsuario && acc.evidenciaFecha) {
+      infoReg.classList.remove("d-none");
+      infoReg.innerText = `Última carga registrada por: ${acc.evidenciaUsuario} el ${acc.evidenciaFecha}`;
+    } else {
+      infoReg.classList.add("d-none");
+    }
+
+    new bootstrap.Modal(document.getElementById('modalEvidenciaKanban')).show();
+  }
+
+  function procesarArchivoEvidencia(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Si es imagen, optimizar con canvas para no superar límites de Firestore
+    if (file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const maxDim = 1200;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) {
+              h = Math.round((h * maxDim) / w);
+              w = maxDim;
+            } else {
+              w = Math.round((w * maxDim) / h);
+              h = maxDim;
+            }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+          const base64Optimizada = canvas.toDataURL("image/jpeg", 0.75);
+
+          document.getElementById("evArchivoBase64").value = base64Optimizada;
+          document.getElementById("evNombreArchivo").value = file.name;
+          actualizarVistaPreviewEvidencia(base64Optimizada, file.name);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      // PDF u otro documento (verificar tamaño menor a 600KB para Firestore)
+      if (file.size > 700 * 1024) {
+        alert("El archivo adjunto supera los 700 KB permitidos para guardado en nube. Por favor adjunte un PDF más liviano o una foto.");
+        event.target.value = "";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Doc = e.target.result;
+        document.getElementById("evArchivoBase64").value = base64Doc;
+        document.getElementById("evNombreArchivo").value = file.name;
+        actualizarVistaPreviewEvidencia(base64Doc, file.name);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function actualizarVistaPreviewEvidencia(base64, nombre) {
+    const cont = document.getElementById("contenedorPreviewEvidencia");
+    const contFoto = document.getElementById("previewFotoEvidenciaCont");
+    const imgEl = document.getElementById("imgPreviewEvidencia");
+    const txtNom = document.getElementById("txtNombreArchivoAdjunto");
+    const btnAbrir = document.getElementById("btnAbrirArchivoEvidencia");
+
+    if (!base64) {
+      cont.classList.add("d-none");
+      return;
+    }
+
+    cont.classList.remove("d-none");
+    txtNom.innerText = nombre || "comprobante_adjunto";
+    btnAbrir.href = base64;
+
+    if (base64.startsWith("data:image/")) {
+      contFoto.classList.remove("d-none");
+      imgEl.src = base64;
+    } else {
+      contFoto.classList.add("d-none");
+    }
+  }
+
+  function quitarArchivoEvidencia() {
+    document.getElementById("evArchivoBase64").value = "";
+    document.getElementById("evNombreArchivo").value = "";
+    document.getElementById("inputArchivoEvidencia").value = "";
+    actualizarVistaPreviewEvidencia(null, null);
+  }
+
+  function guardarEvidenciaKanban(e) {
+    e.preventDefault();
+    const pIdx = parseInt(document.getElementById("evPlanIdx").value);
+    const aIdx = parseInt(document.getElementById("evAccIdx").value);
+
+    if (pIdx < 0 || aIdx < 0) return;
+
+    const plan = baseDatos[pIdx];
+    const acc = plan.acciones[aIdx];
+
+    const texto = document.getElementById("evTextoObservacion").value.trim();
+    const base64 = document.getElementById("evArchivoBase64").value;
+    const nombreArchivo = document.getElementById("evNombreArchivo").value;
+
+    acc.evidenciaTexto = texto;
+    acc.evidenciaArchivo = base64;
+    acc.evidenciaNombreArchivo = nombreArchivo;
+    acc.evidenciaFecha = new Date().toLocaleString('es-AR');
+    acc.evidenciaUsuario = usuarioSesion ? `${usuarioSesion.nombre} (Leg. ${usuarioSesion.legajo})` : "Operador";
+
+    sincronizarPlanEnCloud(plan);
+    bootstrap.Modal.getInstance(document.getElementById('modalEvidenciaKanban')).hide();
+    renderizarTableroKanban();
+
+    alert("¡EVIDENCIA GUARDADA CON ÉXITO!\n\nEl descargo y archivo adjunto quedaron registrados en la base de datos.");
+  }
+
   // ==========================================
   // CONFIGURACIÓN DE EMAILJS Y GEMINI (SOLO SISTEMAS)
   // ==========================================
@@ -1534,7 +1756,6 @@
     const map = {};
     const defaultEmail = "mantenimientomsba@gmail.com";
 
-    // Responsable General del Plan
     if (plan.responsable) {
       const em = buscarEmailEnUsuarios(plan.responsable) || defaultEmail;
       map[plan.responsable] = {
@@ -1545,7 +1766,6 @@
       };
     }
 
-    // Responsables individuales de las tareas 5W2H
     (plan.acciones || []).forEach(acc => {
       const resp = acc.quien ? acc.quien.trim() : "Responsable Asignado";
       if (!map[resp]) {
@@ -2996,7 +3216,7 @@
     };
 
     if (!plan.acciones) plan.acciones = [];
-    if (index >= 0) plan.acciones[index] = accionData;
+    if (index >= 0) plan.acciones[index] = { ...plan.acciones[index], ...accionData };
     else plan.acciones.push(accionData);
 
     sincronizarPlanEnCloud(plan);
