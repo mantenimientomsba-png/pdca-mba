@@ -427,7 +427,7 @@
 <input type="file" id="inputLogoFile" accept="image/*" class="d-none" onchange="procesarArchivoLogo(event)">
 <input type="file" id="inputImportWord" accept=".docx" class="d-none" onchange="procesarArchivoWord(event)">
 
-<!-- 1. PANTALLA LOGIN Y REGISTRO -->
+<!-- 1. PANTALLA LOGIN Y REGISTRO (PORTAL LIMPIO) -->
 <div id="seccionLogin" class="container py-4 py-md-5">
   <div class="row justify-content-center">
     <div class="col-12 col-sm-8 col-md-5 col-lg-4">
@@ -642,6 +642,7 @@
       </div>
     </div>
 
+    <!-- GRÁFICOS ANALÍTICOS DE PLANES PDCA -->
     <div class="row g-3 mb-4">
       <div class="col-12 col-md-6">
         <div class="card card-pizarra h-100">
@@ -816,7 +817,7 @@
 <!-- MODALES DEL SISTEMA                                      -->
 <!-- ======================================================== -->
 
-<!-- MODAL CONSULTOR IA INTERACTIVO (GEMINI CON FAILOVER ROBUSTO) -->
+<!-- MODAL CONSULTOR IA INTERACTIVO (GEMINI CON CASCADA MULTIMODELO CORREGIDA) -->
 <div class="modal fade" id="modalRespuestaGemini" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -968,7 +969,7 @@
       </div>
       <div class="modal-footer py-2">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-sm btn-success fw-bold px-3" id="btnEjecutarEnvioEmail" onclick="ejecutarEnvioEmailConfirmado()">
+        <button type="submit" class="btn btn-sm btn-success fw-bold px-3" id="btnEjecutarEnvioEmail" onclick="ejecutarEnvioEmailConfirmado()">
           ✉️ Enviar Notificaciones Ahora
         </button>
       </div>
@@ -2437,6 +2438,69 @@
     gestionarEstadoBloqueoUI(plan);
   }
 
+  // GESTIÓN DE BOTONES Y ESTADOS DE BLOQUEO
+  function gestionarEstadoBloqueoUI(plan) {
+    const banner = document.getElementById("bannerBloqueo");
+    const badge = document.getElementById("badgeEstadoPantalla");
+    const btnRev = document.getElementById("btnRevisarPlan");
+    const btnApr = document.getElementById("btnAprobarPlan");
+    const btnFin = document.getElementById("btnMarcarFinalizado");
+    const btnDesbloq = document.getElementById("btnDesbloquearPlan");
+    const btnVerPdf = document.getElementById("btnVerPdfCloud");
+
+    if (plan.pdfBase64) btnVerPdf.classList.remove("d-none");
+    else btnVerPdf.classList.add("d-none");
+
+    const esFacilitador = usuarioSesion && usuarioSesion.rol === "FACILITADOR";
+    const esGerente = usuarioSesion && usuarioSesion.rol === "GERENTE";
+    const esSistemas = usuarioSesion && usuarioSesion.rol === "SISTEMAS";
+
+    if (plan.bloqueado) {
+      banner.classList.remove("d-none");
+      btnRev.classList.add("d-none");
+      btnApr.classList.add("d-none");
+
+      if (plan.estado === "FINALIZADO") {
+        badge.innerText = "FINALIZADO (BLOQUEADO)";
+        badge.className = "badge bg-success";
+        btnFin.classList.add("d-none");
+      } else {
+        badge.innerText = "APROBADO (BLOQUEADO)";
+        badge.className = "badge bg-info text-dark";
+        if (esFacilitador) btnFin.classList.remove("d-none");
+        else btnFin.classList.add("d-none");
+      }
+
+      if (esFacilitador || esGerente || esSistemas) {
+        btnDesbloq.classList.remove("d-none");
+      } else {
+        btnDesbloq.classList.add("d-none");
+      }
+    } else {
+      banner.classList.add("d-none");
+      btnDesbloq.classList.add("d-none");
+      btnFin.classList.add("d-none");
+
+      if (plan.estado === "BORRADOR") {
+        badge.innerText = "BORRADOR";
+        badge.className = "badge bg-secondary";
+        if (esFacilitador || esGerente || esSistemas) btnRev.classList.remove("d-none");
+        else btnRev.classList.add("d-none");
+        if (esFacilitador) btnApr.classList.remove("d-none");
+        else btnApr.classList.add("d-none");
+      } else if (plan.estado === "REVISADO") {
+        badge.innerText = "REVISADO";
+        badge.className = "badge bg-warning text-dark";
+        btnRev.classList.add("d-none");
+        if (esFacilitador) btnApr.classList.remove("d-none");
+        else btnApr.classList.add("d-none");
+      } else {
+        badge.innerText = plan.estado;
+        badge.className = "badge bg-info text-dark";
+      }
+    }
+  }
+
   // ========================================================
   // PARSER DE WORD CON EXTRACCIÓN DE ENCABEZADOS XML
   // ========================================================
@@ -3319,7 +3383,7 @@
   }
 
   // ========================================================
-  // ASISTENTE / CONSULTOR TÉCNICO INTERACTIVO (FAILOVER MULTIMODELO)
+  // ASISTENTE / CONSULTOR TÉCNICO INTERACTIVO (MODELOS V1BETA CORREGIDOS)
   // ========================================================
   let chatIAHistoria = [];
 
@@ -3444,13 +3508,11 @@ ${contextoTecnico}
 Pregunta o requerimiento del operador:
 "${preguntaUsuario}"`;
 
-    // CASCADA DE MODELOS ROBUSTA ANTE SATURACIONES (EVITA EL ERROR 503 "HIGH DEMAND")
+    // LISTA DE MODELOS COMPATIBLES CON v1beta (SIN GEMINI-1.5-PRO OBSOLETO)
     const modelos = [
       "gemini-2.0-flash",
-      "gemini-1.5-flash-8b",
-      "gemini-2.0-flash-lite",
       "gemini-1.5-flash",
-      "gemini-1.5-pro"
+      "gemini-1.5-flash-8b"
     ];
 
     let respuestaTexto = "";
@@ -3466,7 +3528,7 @@ Pregunta o requerimiento del operador:
         if (!res.ok) {
           const errData = await res.json().catch(() => null);
           errorDetalle = errData?.error?.message || `HTTP ${res.status}`;
-          console.warn(`Modelo ${mod} saturado o no disponible (${errorDetalle}), probando siguiente modelo...`);
+          console.warn(`Modelo ${mod} no disponible (${errorDetalle}), probando siguiente...`);
           continue;
         }
         const data = await res.json();
