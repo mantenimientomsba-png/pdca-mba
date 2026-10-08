@@ -2671,4 +2671,521 @@
   // ==========================================
   // COMPILACIÓN Y DESCARGA DE PDF
   // ==========================================
-  async function
+  async function guardarPDFenBaseDeDatos() {
+    const plan = baseDatos[indiceActual];
+    const contenedor = document.getElementById("contenedorHojasImpresion");
+    const nombre = (plan.numPdca ? `PDCA_${plan.numPdca.replace('/', '_')}` : 'PDCA_Borrador') + '.pdf';
+
+    const opciones = {
+      margin:       0,
+      filename:     nombre,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:    { mode: ['css', 'legacy'], after: '.hoja-a4' }
+    };
+
+    alert("Compilando documento en PDF vertical y almacenando en Cloud Firestore...");
+
+    try {
+      const pdfBlob = await html2pdf().set(opciones).from(contenedor).outputPdf('blob');
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        const base64data = reader.result;
+        plan.pdfBase64 = base64data;
+        sincronizarPlanEnCloud(plan);
+        gestionarEstadoBloqueoUI(plan);
+        alert("¡PDF GUARDADO EN LA BASE DE DATOS!\n\nEl documento oficial quedó archivado en Cloud Firestore.");
+      };
+      reader.readAsDataURL(pdfBlob);
+    } catch (e) {
+      alert("Error al compilar PDF: " + e.message);
+    }
+  }
+
+  function abrirPdfDesdeBaseDeDatos() {
+    const plan = baseDatos[indiceActual];
+    if (!plan.pdfBase64) {
+      alert("No hay un PDF archivado aún para este plan. Presioná '☁️ Guardar PDF'.");
+      return;
+    }
+    const win = window.open();
+    win.document.write(`
+      <iframe src="${plan.pdfBase64}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>
+    `);
+  }
+
+  function descargarPDFVertical() {
+    const plan = baseDatos[indiceActual];
+    const contenedor = document.getElementById("contenedorHojasImpresion");
+    const nombre = (plan.numPdca ? `PDCA_${plan.numPdca.replace('/', '_')}` : 'PDCA_Borrador') + '.pdf';
+
+    const opciones = {
+      margin:       0,
+      filename:     nombre,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:    { mode: ['css', 'legacy'], after: '.hoja-a4' }
+    };
+
+    html2pdf().set(opciones).from(contenedor).save();
+  }
+
+  // ==========================================
+  // NAVEGACIÓN Y SESIÓN
+  // ==========================================
+  function cambiarVista(vista) {
+    const sLogin = document.getElementById("seccionLogin");
+    const sDash = document.getElementById("seccionDashboard");
+    const sDoc = document.getElementById("seccionDocumento");
+    const navUser = document.getElementById("usuarioInfoNavbar");
+
+    sLogin.classList.add("d-none");
+    sDash.classList.add("d-none");
+    sDoc.classList.add("d-none");
+
+    if (vista === "login") {
+      sLogin.classList.remove("d-none");
+      navUser.classList.add("d-none");
+    } else if (vista === "dashboard") {
+      sDash.classList.remove("d-none");
+      navUser.classList.remove("d-none");
+      actualizarDashboard();
+    } else if (vista === "documento") {
+      sDoc.classList.remove("d-none");
+      navUser.classList.remove("d-none");
+      cargarPDCA(indiceActual);
+    }
+  }
+
+  function actualizarDashboard() {
+    actualizarDatosUsuarioSesion();
+    let totalPlanes = baseDatos.length;
+    let enProceso = 0;
+    let aprobados = 0;
+    let finalizados = 0;
+
+    baseDatos.forEach(plan => {
+      evaluarEstadoPlan(plan);
+      if (plan.estado === "FINALIZADO") finalizados++;
+      else if (plan.estado === "APROBADO") aprobados++;
+      else enProceso++;
+    });
+
+    document.getElementById("kpiTotalPlanes").innerText = totalPlanes;
+    document.getElementById("kpiEnProceso").innerText = enProceso;
+    document.getElementById("kpiAprobados").innerText = aprobados;
+    document.getElementById("kpiFinalizados").innerText = finalizados;
+
+    renderizarTablaDashboard();
+    if (solapaActualDashboard === "pizarra") {
+      renderizarTableroControlPDCA();
+    } else if (solapaActualDashboard === "kanban") {
+      renderizarTableroKanban();
+    }
+  }
+
+  function renderizarTablaDashboard() {
+    const tbody = document.getElementById("tablaDashboardBody");
+    tbody.innerHTML = "";
+    const filtro = document.getElementById("filtroEstadoDashboard").value;
+    const busqueda = (document.getElementById("inputBuscarPlan")?.value || "").toLowerCase().trim();
+    const esAutorizadoBorrar = usuarioSesion && (usuarioSesion.rol === "FACILITADOR" || usuarioSesion.rol === "SISTEMAS");
+
+    baseDatos.forEach((plan, i) => {
+      evaluarEstadoPlan(plan);
+
+      if (filtro === "FINALIZADO" && plan.estado !== "FINALIZADO") return;
+      if (filtro === "APROBADO" && plan.estado !== "APROBADO") return;
+      if (filtro === "REVISADO" && plan.estado !== "REVISADO") return;
+      if (filtro === "BORRADOR" && plan.estado !== "BORRADOR") return;
+
+      if (busqueda) {
+        const textoFila = `${plan.numPdca} ${plan.titulo} ${plan.responsable}`.toLowerCase();
+        if (!textoFila.includes(busqueda)) return;
+      }
+
+      let badgeEstado = '<span class="badge bg-secondary">Borrador</span>';
+      if (plan.estado === "REVISADO") badgeEstado = '<span class="badge bg-warning text-dark">Revisado</span>';
+      if (plan.estado === "APROBADO") badgeEstado = '<span class="badge bg-info text-dark">Aprobado 🔒</span>';
+      if (plan.estado === "FINALIZADO") badgeEstado = '<span class="badge bg-success">Finalizado 🔒</span>';
+
+      const badgePdf = plan.pdfBase64 
+        ? '<span class="badge bg-primary">☁️ PDF Listo</span>' 
+        : '<span class="badge bg-light text-muted border">Sin PDF</span>';
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="fw-bold">${plan.numPdca || '<span class="text-muted fst-italic">Pendiente</span>'}</td>
+        <td><strong>${plan.titulo}</strong></td>
+        <td class="d-none d-md-table-cell">
+          <span class="d-block">${plan.responsable}</span>
+          <span class="text-muted small">Plazo: ${plan.deadline}</span>
+        </td>
+        <td class="text-center">${badgePdf}</td>
+        <td class="text-center">${badgeEstado}</td>
+        <td class="text-end">
+          <div class="d-flex justify-content-end gap-1">
+            <button class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" onclick="abrirPlanDesdeDashboard(${i})">
+              Abrir ➔
+            </button>
+            ${esAutorizadoBorrar ? `
+              <button class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold" onclick="eliminarPDCA(${i})" title="Borrar PDCA">
+                🗑️
+              </button>
+            ` : ''}
+          </div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function abrirPlanDesdeDashboard(index) {
+    indiceActual = index;
+    actualizarSelectDocumento(index);
+    cambiarVista("documento");
+  }
+
+  // ========================================================
+  // SINCRONIZACIÓN CLOUD LIMPIA
+  // ========================================================
+  function conectarCloudFirestore() {
+    const badge = document.getElementById("badgeCloudStatus");
+    if (!db) {
+      badge.className = "badge bg-warning text-dark";
+      badge.innerText = "🟡 Modo Local";
+      return;
+    }
+
+    db.collection("planes_pdca").onSnapshot((snapshot) => {
+      badge.className = "badge bg-success";
+      badge.innerText = "🟢 Cloud Activo";
+
+      const listaRemota = [];
+      snapshot.forEach(doc => {
+        listaRemota.push({ id: doc.id, ...doc.data() });
+      });
+
+      baseDatos = listaRemota;
+      guardarLocal();
+      actualizarSelectDocumento(indiceActual < baseDatos.length ? indiceActual : 0);
+      actualizarDashboard();
+      if (!document.getElementById("seccionDocumento").classList.contains("d-none")) {
+        if (baseDatos.length > 0) cargarPDCA(indiceActual);
+        else cambiarVista("dashboard");
+      }
+    }, (error) => {
+      badge.className = "badge bg-warning text-dark";
+      badge.innerText = "🟡 Modo Local";
+    });
+  }
+
+  function sincronizarPlanEnCloud(plan) {
+    guardarLocal();
+    if (!db) return;
+    try {
+      if (plan.id) {
+        db.collection("planes_pdca").doc(plan.id).set(plan).catch(e => console.warn(e));
+      } else {
+        db.collection("planes_pdca").add(plan).then(docRef => {
+          plan.id = docRef.id;
+          guardarLocal();
+        }).catch(e => console.warn(e));
+      }
+    } catch (e) {
+      console.warn("Sync error:", e);
+    }
+  }
+
+  function procesarArchivoLogo(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      const base64 = evt.target.result;
+      localStorage.setItem("pdca_logo_mba", base64);
+      aplicarLogoATodos(base64);
+      cargarPDCA(indiceActual);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function aplicarLogoATodos(src) {
+    document.getElementById("logoBarraFija").src = src;
+    document.getElementById("logoCardLogin").src = src;
+  }
+
+  function aplicarLogoFalso(imgEl) {
+    imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50'><text x='50%' y='65%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='16' fill='%23005f73'>Misión Buenos Aires</text></svg>";
+  }
+
+  function actualizarSelectDocumento(indice = 0) {
+    const select = document.getElementById("pdcaSelect");
+    select.innerHTML = "";
+    baseDatos.forEach((p, i) => {
+      const opt = document.createElement("option");
+      opt.value = i;
+      const numLabel = p.numPdca ? `[PDCA ${p.numPdca}]` : '[BORRADOR]';
+      const lockLabel = p.bloqueado ? ' 🔒' : '';
+      opt.innerText = `${numLabel} ${p.titulo}${lockLabel}`;
+      select.appendChild(opt);
+    });
+    select.value = indice;
+  }
+
+  function seleccionarPDCA(val) {
+    indiceActual = parseInt(val);
+    cargarPDCA(indiceActual);
+  }
+
+  function cargarPDCA(index) {
+    if (baseDatos.length === 0) return;
+    indiceActual = parseInt(index);
+    const plan = baseDatos[indiceActual];
+    renderizarDocumentoOficialPaginado(plan);
+  }
+
+  function abrirModalAccion(index) {
+    if (!usuarioSesion) return;
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) return;
+
+    const modalTitulo = document.getElementById("modalAccionTitulo");
+    const editIndexField = document.getElementById("accEditIndex");
+
+    if (index >= 0) {
+      const acc = plan.acciones[index];
+      modalTitulo.innerText = `Editar Acción N° ${acc.orden}`;
+      editIndexField.value = index;
+      document.getElementById("accQue").value = acc.que;
+      document.getElementById("accPorQue").value = acc.porQue;
+      document.getElementById("accComo").value = acc.como;
+      document.getElementById("accQuien").value = acc.quien;
+      document.getElementById("accCuanto").value = acc.cuanto || "";
+      document.getElementById("accDonde").value = acc.donde;
+      document.getElementById("accCuando").value = acc.cuando;
+      document.getElementById("accEstado").value = acc.estado;
+    } else {
+      modalTitulo.innerText = "Nueva Acción 5W2H";
+      editIndexField.value = "-1";
+      document.getElementById("formAccion5W2H").reset();
+      document.getElementById("accQuien").value = usuarioSesion.nombre;
+      document.getElementById("accDonde").value = "La Plata";
+      document.getElementById("accCuando").value = "A partir de hoy";
+    }
+    new bootstrap.Modal(document.getElementById('modalAccion5W2H')).show();
+  }
+
+  function guardarAccion5W2H(e) {
+    e.preventDefault();
+    const plan = baseDatos[indiceActual];
+    const index = parseInt(document.getElementById("accEditIndex").value);
+
+    const accionData = {
+      orden: index >= 0 ? plan.acciones[index].orden : (plan.acciones ? plan.acciones.length + 1 : 1),
+      que: document.getElementById("accQue").value.trim(),
+      porQue: document.getElementById("accPorQue").value.trim(),
+      como: document.getElementById("accComo").value.trim(),
+      quien: document.getElementById("accQuien").value.trim(),
+      cuanto: document.getElementById("accCuanto").value.trim(),
+      donde: document.getElementById("accDonde").value.trim(),
+      cuando: document.getElementById("accCuando").value.trim(),
+      estado: document.getElementById("accEstado").value
+    };
+
+    if (!plan.acciones) plan.acciones = [];
+    if (index >= 0) plan.acciones[index] = accionData;
+    else plan.acciones.push(accionData);
+
+    sincronizarPlanEnCloud(plan);
+    bootstrap.Modal.getInstance(document.getElementById('modalAccion5W2H')).hide();
+    renderizarDocumentoOficialPaginado(plan);
+  }
+
+  function abrirModalNuevoPDCA() {
+    if (!usuarioSesion) return;
+    new bootstrap.Modal(document.getElementById('modalNuevoPDCA')).show();
+  }
+
+  function guardarNuevoPDCA(e) {
+    e.preventDefault();
+    const nuevo = {
+      codDoc: document.getElementById("newCodDoc").value.trim(),
+      numPdca: "", 
+      paginaDoc: "Página 1 de 2",
+      titulo: document.getElementById("newTitulo").value.trim(),
+      politica: document.getElementById("newPolitica").value,
+      objetivo: document.getElementById("newObjetivo").value.trim(),
+      meta: document.getElementById("newMeta").value.trim(),
+      efecto: document.getElementById("newEfecto").value.trim(),
+      responsable: document.getElementById("newResponsable").value.trim(),
+      deadline: document.getElementById("newDeadline").value.trim(),
+      estado: "BORRADOR",
+      bloqueado: false,
+      fechaRevision: "",
+      revisadoPor: "",
+      fechaAprobacion: "",
+      aprobadoPor: "",
+      pdfBase64: null,
+      acciones: []
+    };
+
+    baseDatos.push(nuevo);
+    sincronizarPlanEnCloud(nuevo);
+    bootstrap.Modal.getInstance(document.getElementById('modalNuevoPDCA')).hide();
+    document.getElementById("formNuevoPDCA").reset();
+    
+    indiceActual = baseDatos.length - 1;
+    actualizarSelectDocumento(indiceActual);
+    cambiarVista("documento");
+  }
+
+  function abrirModalCambiarPolitica() {
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) return;
+    document.getElementById("selectPoliticaActiva").value = plan.politica;
+    new bootstrap.Modal(document.getElementById('modalPoliticaActiva')).show();
+  }
+
+  function guardarCambioPolitica() {
+    const plan = baseDatos[indiceActual];
+    plan.politica = document.getElementById("selectPoliticaActiva").value;
+    sincronizarPlanEnCloud(plan);
+    bootstrap.Modal.getInstance(document.getElementById('modalPoliticaActiva')).hide();
+    renderizarDocumentoOficialPaginado(plan);
+  }
+
+  function editarCampoPie(campo, mensaje) {
+    if (!usuarioSesion) return;
+    const plan = baseDatos[indiceActual];
+    if (plan.bloqueado) return;
+    const valorActual = plan[campo] || "";
+    const nuevoValor = prompt(mensaje, valorActual);
+    if (nuevoValor !== null) {
+      plan[campo] = nuevoValor.trim();
+      sincronizarPlanEnCloud(plan);
+      renderizarDocumentoOficialPaginado(plan);
+    }
+  }
+
+  function abrirModalAuditoriaIA(tipo = 'plan', indexAccion = -1) {
+    let apiKey = localStorage.getItem("gemini_api_key");
+    if (!apiKey) {
+      if (usuarioSesion && usuarioSesion.rol === "SISTEMAS") {
+        abrirConfigIntegraciones();
+      } else {
+        alert("Consulte al Operador de Sistemas para activar la API Key de Gemini.");
+      }
+      return;
+    }
+    const plan = baseDatos[indiceActual];
+    const select = document.getElementById("selectAmbitoAuditoria");
+    select.innerHTML = "";
+
+    const optPlan = document.createElement("option");
+    optPlan.value = "plan";
+    optPlan.innerText = `Plan Completo: ${plan.titulo}`;
+    select.appendChild(optPlan);
+
+    plan.acciones.forEach((acc, i) => {
+      const optAcc = document.createElement("option");
+      optAcc.value = `accion_${i}`;
+      optAcc.innerText = `Acción #${acc.orden}: ${acc.que.substring(0, 35)}...`;
+      select.appendChild(optAcc);
+    });
+
+    if (tipo === 'accion' && indexAccion >= 0) {
+      select.value = `accion_${indexAccion}`;
+      ejecutarAnalisisIA('accion', indexAccion);
+    } else {
+      select.value = "plan";
+      ejecutarAnalisisIA('plan', -1);
+    }
+
+    new bootstrap.Modal(document.getElementById('modalRespuestaGemini')).show();
+  }
+
+  function ejecutarAnalisisDesdeSelector(valor) {
+    if (valor === "plan") ejecutarAnalisisIA('plan', -1);
+    else if (valor.startsWith("accion_")) ejecutarAnalisisIA('accion', parseInt(valor.replace("accion_", "")));
+  }
+
+  async function ejecutarAnalisisIA(ambito, accionIdx) {
+    let apiKey = localStorage.getItem("gemini_api_key");
+    if (!apiKey) return;
+    const plan = baseDatos[indiceActual];
+    document.getElementById("geminiSpinner").style.display = "block";
+    document.getElementById("geminiContenido").innerText = "";
+
+    let promptAuditoria = "";
+    if (ambito === 'plan') {
+      document.getElementById("geminiSpinnerText").innerText = "Analizando plan con Gemini...";
+      let accionesTexto = (plan.acciones || []).map(a => `• Tarea ${a.orden}: ${a.que} | Resp: ${a.quien}`).join("\n");
+      promptAuditoria = `Actúa como auditor ISO 9001/IRAM 3810. Analiza este PDCA:\nTítulo: ${plan.titulo}\nMeta: ${plan.meta}\nObjetivo: ${plan.objetivo}\nAcciones:\n${accionesTexto}\nDictamen conciso: congruencia, riesgos y 2 mejoras 5W2H.`;
+    } else {
+      const acc = plan.acciones[accionIdx];
+      document.getElementById("geminiSpinnerText").innerText = `Analizando Acción #${acc.orden}...`;
+      promptAuditoria = `Actúa como auditor de calidad de transporte. Analiza esta acción puntual:\nPlan: ${plan.titulo}\nMeta: ${plan.meta}\nAcción #${acc.orden}: ${acc.que}\nCómo: ${acc.como}\nQuién: ${acc.quien}\nDictamen conciso: alineación, riesgos en taller/calle y propuesta de mejora.`;
+    }
+
+    const modelos = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"];
+    let exito = false;
+    let errDetalle = "";
+
+    for (const mod of modelos) {
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mod}:generateContent?key=${apiKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: promptAuditoria }] }] })
+        });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => null);
+          errDetalle = errData?.error?.message || `HTTP ${res.status}`;
+          continue;
+        }
+        const data = await res.json();
+        const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (texto) {
+          document.getElementById("geminiSpinner").style.display = "none";
+          document.getElementById("geminiContenido").innerText = `[Modelo: ${mod}]\n\n` + texto;
+          exito = true;
+          break;
+        }
+      } catch (err) {
+        errDetalle = err.message;
+      }
+    }
+
+    if (!exito) {
+      document.getElementById("geminiSpinner").style.display = "none";
+      document.getElementById("geminiContenido").innerText = `⚠️ Error IA: ${errDetalle}`;
+    }
+  }
+
+  // INICIALIZACIÓN
+  window.onload = function() {
+    const selNuevo = document.getElementById("newPolitica");
+    const selActiva = document.getElementById("selectPoliticaActiva");
+    selNuevo.innerHTML = "";
+    selActiva.innerHTML = "";
+    POLITICAS_2026.forEach(pol => {
+      const opt1 = document.createElement("option"); opt1.value = pol; opt1.innerText = pol; selNuevo.appendChild(opt1);
+      const opt2 = document.createElement("option"); opt2.value = pol; opt2.innerText = pol; selActiva.appendChild(opt2);
+    });
+
+    const logoGuardado = localStorage.getItem("pdca_logo_mba");
+    if (logoGuardado) aplicarLogoATodos(logoGuardado);
+
+    conectarColeccionUsuarios();
+    conectarCloudFirestore();
+
+    if (usuarioSesion) cambiarVista("dashboard");
+    else cambiarVista("login");
+  };
+</script>
+
+</body>
+</html>
