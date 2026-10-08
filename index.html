@@ -116,6 +116,59 @@
       color: #1a202c;
     }
 
+    /* TABLERO KANBAN ESTILO TRELLO */
+    .kanban-board {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      overflow-x: auto;
+      padding-bottom: 16px;
+    }
+    .kanban-col {
+      flex: 1;
+      min-width: 300px;
+      background-color: #ebedf0;
+      border-radius: 8px;
+      padding: 12px;
+      border-top: 4px solid #ccc;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .kanban-col-pendiente { border-top-color: #ef476f; }
+    .kanban-col-encurso { border-top-color: #ffb703; }
+    .kanban-col-listo { border-top-color: #06d6a0; }
+
+    .kanban-col-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 9.5pt;
+      color: #2b2d42;
+    }
+    .kanban-card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 150px;
+    }
+    .kanban-card {
+      background-color: #ffffff;
+      border-radius: 6px;
+      padding: 10px 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border: 1px solid #e2e8f0;
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .kanban-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+    }
+    .kanban-card.dragging {
+      opacity: 0.4;
+    }
+
     /* CONTENEDOR Y HOJAS A4 VERTICALES */
     .contenedor-hojas-trabajo {
       display: flex;
@@ -311,6 +364,8 @@
       }
       .tabla-contenedor-inner { overflow-x: auto; }
       .table-doc { min-width: 680px; }
+      .kanban-board { flex-direction: column; }
+      .kanban-col { width: 100%; min-width: auto; }
     }
   </style>
 </head>
@@ -431,7 +486,7 @@
     </div>
   </div>
 
-  <!-- SOLAPAS DE NAVEGACIÓN -->
+  <!-- SOLAPAS DE NAVEGACIÓN (TRES PESTAÑAS) -->
   <ul class="nav nav-tabs-custom">
     <li class="nav-item">
       <button class="nav-link active" id="tabBtnRegistro" onclick="cambiarSolapaDashboard('registro')">
@@ -440,7 +495,12 @@
     </li>
     <li class="nav-item">
       <button class="nav-link" id="tabBtnPizarra" onclick="cambiarSolapaDashboard('pizarra')">
-        📊 Pizarra de Control de Tareas (5W2H)
+        📊 Tablero de Control PDCA
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" id="tabBtnKanban" onclick="cambiarSolapaDashboard('kanban')">
+        📌 Tablero Kanban (Tipo Trello) & Cronograma
       </button>
     </li>
   </ul>
@@ -519,65 +579,66 @@
     </div>
   </div>
 
-  <!-- VISTA 2: PIZARRA DE CONTROL -->
+  <!-- VISTA 2: TABLERO DE CONTROL PDCA (ENFOCADO EN PLANES) -->
   <div id="vistaSolapaPizarra" class="d-none">
     <div class="row g-2 g-md-3 mb-4">
       <div class="col-6 col-md-3">
         <div class="card card-pizarra">
           <div class="card-pizarra-header">
-            <span>Todas las tareas</span>
-            <span class="badge-filtro-pizarra">Y</span>
+            <span>Todos los PDCA</span>
+            <span class="badge-filtro-pizarra">PDCA</span>
           </div>
           <div class="card-pizarra-body">
-            <div class="numero-pizarra" id="pizTotalTareas">0</div>
+            <div class="numero-pizarra text-dark" id="pizTotalPDCA">0</div>
           </div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="card card-pizarra">
           <div class="card-pizarra-header">
-            <span>En curso</span>
-            <span class="badge-filtro-pizarra">Y</span>
+            <span>En curso (Aprobados)</span>
+            <span class="badge-filtro-pizarra">PDCA</span>
           </div>
           <div class="card-pizarra-body">
-            <div class="numero-pizarra text-warning" id="pizEnCurso">0</div>
+            <div class="numero-pizarra text-warning" id="pizEnCursoPDCA">0</div>
           </div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="card card-pizarra">
           <div class="card-pizarra-header">
-            <span>Detenido / Pendiente</span>
-            <span class="badge-filtro-pizarra">Y</span>
+            <span>Borrador / Revisión</span>
+            <span class="badge-filtro-pizarra">PDCA</span>
           </div>
           <div class="card-pizarra-body">
-            <div class="numero-pizarra text-danger" id="pizDetenido">0</div>
+            <div class="numero-pizarra text-danger" id="pizBorradorPDCA">0</div>
           </div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="card card-pizarra">
           <div class="card-pizarra-header">
-            <span>Listo</span>
-            <span class="badge-filtro-pizarra">Y</span>
+            <span>Finalizados</span>
+            <span class="badge-filtro-pizarra">PDCA</span>
           </div>
           <div class="card-pizarra-body">
-            <div class="numero-pizarra text-success" id="pizListo">0</div>
+            <div class="numero-pizarra text-success" id="pizListoPDCA">0</div>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- GRÁFICOS ANALÍTICOS DE PLANES PDCA -->
     <div class="row g-3 mb-4">
       <div class="col-12 col-md-6">
         <div class="card card-pizarra h-100">
           <div class="card-pizarra-header">
-            <span>Tareas por estado</span>
-            <span class="badge-filtro-pizarra">Y</span>
+            <span>PDCA por estado</span>
+            <span class="badge-filtro-pizarra">PDCA</span>
           </div>
           <div class="card-body p-3 d-flex flex-column align-items-center justify-content-center" style="min-height: 280px;">
             <div style="width: 100%; max-width: 270px;">
-              <canvas id="chartTareasEstado"></canvas>
+              <canvas id="chartPDCAEstado"></canvas>
             </div>
             <div id="chartEstadoLeyenda" class="d-flex justify-content-center gap-3 mt-3 small text-muted" style="font-size: 8pt;"></div>
           </div>
@@ -587,11 +648,11 @@
       <div class="col-12 col-md-6">
         <div class="card card-pizarra h-100">
           <div class="card-pizarra-header">
-            <span>Tareas por responsable</span>
-            <span class="badge-filtro-pizarra">Y</span>
+            <span>PDCA por responsable</span>
+            <span class="badge-filtro-pizarra">PDCA</span>
           </div>
           <div class="card-body p-3" style="min-height: 280px;">
-            <canvas id="chartTareasResponsable"></canvas>
+            <canvas id="chartPDCAResponsable"></canvas>
           </div>
         </div>
       </div>
@@ -600,21 +661,96 @@
     <div class="row g-3 mb-4">
       <div class="col-12 col-md-4">
         <div class="card card-pizarra p-3 text-center">
-          <span class="text-muted small fw-bold text-uppercase">Avance Global de Cumplimiento</span>
+          <span class="text-muted small fw-bold text-uppercase">Cumplimiento Global de Planes</span>
           <div class="my-2">
-            <span class="display-6 fw-bold text-primary" id="pizPorcentajeCumplimiento">0%</span>
+            <span class="display-6 fw-bold text-primary" id="pizPorcentajeCumplimientoPDCA">0%</span>
           </div>
           <div class="progress" style="height: 8px;">
-            <div class="progress-bar bg-success" id="pizBarraCumplimiento" style="width: 0%"></div>
+            <div class="progress-bar bg-success" id="pizBarraCumplimientoPDCA" style="width: 0%"></div>
           </div>
-          <small class="text-muted mt-2 d-block" id="pizDetalleAvance">0 de 0 acciones completadas</small>
+          <small class="text-muted mt-2 d-block" id="pizDetalleAvancePDCA">0 de 0 planes finalizados</small>
         </div>
       </div>
       <div class="col-12 col-md-8">
         <div class="card card-pizarra p-3">
-          <span class="text-muted small fw-bold text-uppercase mb-2 d-block">Distribución de Tareas por Base / Predio</span>
+          <span class="text-muted small fw-bold text-uppercase mb-2 d-block">Distribución de Planes por Política / Sector</span>
           <div id="contenedorBasesPredios" class="d-flex flex-wrap gap-2"></div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA 3: TABLERO KANBAN (TIPO TRELLO) & CRONOGRAMA -->
+  <div id="vistaSolapaKanban" class="d-none">
+    
+    <!-- BARRA DE FILTROS DEL KANBAN -->
+    <div class="card shadow-sm border-0 rounded-3 mb-3 p-3 bg-white">
+      <div class="row g-2 align-items-center">
+        <div class="col-12 col-md-6">
+          <label class="form-label small fw-bold mb-1 text-muted">Filtrar tareas por Plan PDCA:</label>
+          <select class="form-select form-select-sm" id="filtroKanbanPDCA" onchange="renderizarTableroKanban()">
+            <option value="TODOS">Todos los Planes PDCA (Vista Global)</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label small fw-bold mb-1 text-muted">Filtrar por Responsable:</label>
+          <input type="text" class="form-control form-control-sm" id="filtroKanbanResp" placeholder="Escriba un nombre..." onkeyup="renderizarTableroKanban()">
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUMNAS KANBAN ESTILO TRELLO -->
+    <div class="kanban-board mb-4">
+      
+      <!-- COLUMNA 1: PENDIENTE / DETENIDO -->
+      <div class="kanban-col kanban-col-pendiente" ondragover="event.preventDefault()" ondrop="soltarTarjetaKanban(event, 'PENDIENTE')">
+        <div class="kanban-col-header">
+          <span>🔴 PENDIENTE / DETENIDO</span>
+          <span class="badge bg-danger rounded-pill" id="kbCountPendiente">0</span>
+        </div>
+        <div class="kanban-card-list" id="kbListaPendiente"></div>
+      </div>
+
+      <!-- COLUMNA 2: EN CURSO -->
+      <div class="kanban-col kanban-col-encurso" ondragover="event.preventDefault()" ondrop="soltarTarjetaKanban(event, 'EN_PROCESO')">
+        <div class="kanban-col-header">
+          <span>🟡 EN CURSO</span>
+          <span class="badge bg-warning text-dark rounded-pill" id="kbCountEnCurso">0</span>
+        </div>
+        <div class="kanban-card-list" id="kbListaEnCurso"></div>
+      </div>
+
+      <!-- COLUMNA 3: LISTO / COMPLETADA -->
+      <div class="kanban-col kanban-col-listo" ondragover="event.preventDefault()" ondrop="soltarTarjetaKanban(event, 'COMPLETADA')">
+        <div class="kanban-col-header">
+          <span>🟢 LISTO / COMPLETADA</span>
+          <span class="badge bg-success rounded-pill" id="kbCountListo">0</span>
+        </div>
+        <div class="kanban-card-list" id="kbListaListo"></div>
+      </div>
+
+    </div>
+
+    <!-- CRONOGRAMA DE SEGUIMIENTO DE PLAZOS (TIPO GANTT) -->
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+      <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h6 class="fw-bold m-0 text-dark">📅 Cronograma de Seguimiento y Avance de Tareas</h6>
+        <span class="badge bg-light text-muted border small">Línea de tiempo</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="font-size: 8.5pt;">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 15%;">Plan PDCA</th>
+              <th style="width: 25%;">Tarea (¿Qué?)</th>
+              <th style="width: 15%;">Responsable</th>
+              <th style="width: 12%;">Plazo / Dead Line</th>
+              <th style="width: 13%;">Estado</th>
+              <th style="width: 20%;">Progreso de Ejecución</th>
+            </tr>
+          </thead>
+          <tbody id="tablaGanttBody"></tbody>
+        </table>
       </div>
     </div>
 
@@ -662,7 +798,7 @@
 
   <div class="container-fluid px-1 px-md-3 py-3">
     <div id="bannerBloqueo" class="alert alert-danger py-2 mb-2 no-print d-none" style="max-width: 210mm; margin: auto; font-size: 8.5pt;">
-      <strong>🔒 PLAN OFICIAL FORMALIZADO:</strong> Aprobado por Facilitador / Calidad para asegurar trazabilidad. <em>El progreso de las tareas (En curso / Listo) permanece modificable haciendo clic sobre cada estado.</em>
+      <strong>🔒 PLAN OFICIAL FORMALIZADO:</strong> Aprobado por Facilitador / Calidad para asegurar trazabilidad. <em>El progreso de las tareas (En curso / Listo) permanece modificable haciendo clic sobre cada estado o desde el Tablero Kanban.</em>
     </div>
 
     <!-- CONTENEDOR DE HOJAS A4 -->
@@ -1044,94 +1180,101 @@
   }
 
   // ==========================================
-  // CAMBIO DE SOLAPAS (REGISTRO VS PIZARRA)
+  // CAMBIO DE SOLAPAS (REGISTRO / PIZARRA / KANBAN)
   // ==========================================
   function cambiarSolapaDashboard(solapa) {
     solapaActualDashboard = solapa;
     const btnReg = document.getElementById("tabBtnRegistro");
     const btnPiz = document.getElementById("tabBtnPizarra");
+    const btnKb = document.getElementById("tabBtnKanban");
     const vReg = document.getElementById("vistaSolapaRegistro");
     const vPiz = document.getElementById("vistaSolapaPizarra");
+    const vKb = document.getElementById("vistaSolapaKanban");
+
+    btnReg.classList.remove("active");
+    btnPiz.classList.remove("active");
+    btnKb.classList.remove("active");
+    vReg.classList.add("d-none");
+    vPiz.classList.add("d-none");
+    vKb.classList.add("d-none");
 
     if (solapa === "registro") {
       btnReg.classList.add("active");
-      btnPiz.classList.remove("active");
       vReg.classList.remove("d-none");
-      vPiz.classList.add("d-none");
-    } else {
+    } else if (solapa === "pizarra") {
       btnPiz.classList.add("active");
-      btnReg.classList.remove("active");
       vPiz.classList.remove("d-none");
-      vReg.classList.add("d-none");
-      renderizarPizarraControl();
+      renderizarTableroControlPDCA();
+    } else if (solapa === "kanban") {
+      btnKb.classList.add("active");
+      vKb.classList.remove("d-none");
+      actualizarSelectorKanbanPDCA();
+      renderizarTableroKanban();
     }
   }
 
   // ==========================================
-  // RENDERIZADO DE LA PIZARRA DE CONTROL
+  // RENDERIZADO DEL TABLERO DE CONTROL DE PLANES PDCA
   // ==========================================
-  function renderizarPizarraControl() {
-    let totalTareas = 0;
+  function renderizarTableroControlPDCA() {
+    let totalPlanes = baseDatos.length;
     let enCurso = 0;
-    let detenido = 0;
-    let listo = 0;
-    const tareasPorResp = {};
-    const tareasPorBase = {};
+    let borradorRevision = 0;
+    let finalizados = 0;
+    const planesPorResp = {};
+    const planesPorPolitica = {};
 
     baseDatos.forEach(plan => {
-      if (plan.acciones && Array.isArray(plan.acciones)) {
-        plan.acciones.forEach(acc => {
-          totalTareas++;
-          const est = (acc.estado || "PENDIENTE").toUpperCase();
+      evaluarEstadoPlan(plan);
+      const est = plan.estado || "BORRADOR";
 
-          if (est === "EN_PROCESO") enCurso++;
-          else if (est === "COMPLETADA") listo++;
-          else detenido++;
+      if (est === "APROBADO") enCurso++;
+      else if (est === "FINALIZADO") finalizados++;
+      else borradorRevision++;
 
-          const resp = acc.quien ? acc.quien.trim() : "Sin asignar";
-          tareasPorResp[resp] = (tareasPorResp[resp] || 0) + 1;
+      const resp = plan.responsable ? plan.responsable.trim() : "Sin asignar";
+      planesPorResp[resp] = (planesPorResp[resp] || 0) + 1;
 
-          const base = acc.donde ? acc.donde.trim() : "Central";
-          tareasPorBase[base] = (tareasPorBase[base] || 0) + 1;
-        });
-      }
+      const pol = plan.politica ? plan.politica.split(':')[0].trim() : "General";
+      planesPorPolitica[pol] = (planesPorPolitica[pol] || 0) + 1;
     });
 
-    document.getElementById("pizTotalTareas").innerText = totalTareas;
-    document.getElementById("pizEnCurso").innerText = enCurso;
-    document.getElementById("pizDetenido").innerText = detenido;
-    document.getElementById("pizListo").innerText = listo;
+    document.getElementById("pizTotalPDCA").innerText = totalPlanes;
+    document.getElementById("pizEnCursoPDCA").innerText = enCurso;
+    document.getElementById("pizBorradorPDCA").innerText = borradorRevision;
+    document.getElementById("pizListoPDCA").innerText = finalizados;
 
-    const porcentajeListo = totalTareas > 0 ? Math.round((listo / totalTareas) * 100) : 0;
-    document.getElementById("pizPorcentajeCumplimiento").innerText = `${porcentajeListo}%`;
-    document.getElementById("pizBarraCumplimiento").style.width = `${porcentajeListo}%`;
-    document.getElementById("pizDetalleAvance").innerText = `${listo} de ${totalTareas} tareas finalizadas exitosamente`;
+    const porcentajeListo = totalPlanes > 0 ? Math.round((finalizados / totalPlanes) * 100) : 0;
+    document.getElementById("pizPorcentajeCumplimientoPDCA").innerText = `${porcentajeListo}%`;
+    document.getElementById("pizBarraCumplimientoPDCA").style.width = `${porcentajeListo}%`;
+    document.getElementById("pizDetalleAvancePDCA").innerText = `${finalizados} de ${totalPlanes} planes formalmente cerrados`;
 
     const contBases = document.getElementById("contenedorBasesPredios");
     contBases.innerHTML = "";
-    Object.keys(tareasPorBase).forEach(b => {
+    Object.keys(planesPorPolitica).forEach(p => {
       const badge = document.createElement("span");
       badge.className = "badge bg-light text-dark border px-3 py-2";
       badge.style.fontSize = "8.5pt";
-      badge.innerHTML = `📍 <strong>${b}</strong>: ${tareasPorBase[b]} tarea(s)`;
+      badge.innerHTML = `📌 <strong>${p}</strong>: ${planesPorPolitica[p]} plan(es)`;
       contBases.appendChild(badge);
     });
 
-    const ctxEstado = document.getElementById("chartTareasEstado");
+    // 1. Gráfico circular: PDCA por estado
+    const ctxEstado = document.getElementById("chartPDCAEstado");
     if (ctxEstado) {
       if (chartInstanciaEstado) chartInstanciaEstado.destroy();
 
-      const pEnCurso = totalTareas > 0 ? ((enCurso / totalTareas) * 100).toFixed(1) : 0;
-      const pListo = totalTareas > 0 ? ((listo / totalTareas) * 100).toFixed(1) : 0;
-      const pDetenido = totalTareas > 0 ? ((detenido / totalTareas) * 100).toFixed(1) : 0;
+      const pEnCurso = totalPlanes > 0 ? ((enCurso / totalPlanes) * 100).toFixed(1) : 0;
+      const pBorrador = totalPlanes > 0 ? ((borradorRevision / totalPlanes) * 100).toFixed(1) : 0;
+      const pFinal = totalPlanes > 0 ? ((finalizados / totalPlanes) * 100).toFixed(1) : 0;
 
       chartInstanciaEstado = new Chart(ctxEstado, {
         type: 'doughnut',
         data: {
-          labels: ['En curso', 'Listo', 'Detenido'],
+          labels: ['En curso (Aprobados)', 'Borrador / Revisión', 'Finalizados'],
           datasets: [{
-            data: totalTareas > 0 ? [enCurso, listo, detenido] : [0, 0, 1],
-            backgroundColor: ['#ffb703', '#06d6a0', '#ef476f'],
+            data: totalPlanes > 0 ? [enCurso, borradorRevision, finalizados] : [0, 0, 1],
+            backgroundColor: ['#ffb703', '#ef476f', '#06d6a0'],
             borderWidth: 2,
             borderColor: '#ffffff'
           }]
@@ -1146,24 +1289,25 @@
 
       document.getElementById("chartEstadoLeyenda").innerHTML = `
         <span><span style="color:#ffb703;">●</span> En curso: ${pEnCurso}%</span>
-        <span><span style="color:#06d6a0;">●</span> Listo: ${pListo}%</span>
-        <span><span style="color:#ef476f;">●</span> Detenido: ${pDetenido}%</span>
+        <span><span style="color:#ef476f;">●</span> Borrador/Rev: ${pBorrador}%</span>
+        <span><span style="color:#06d6a0;">●</span> Finalizado: ${pFinal}%</span>
       `;
     }
 
-    const ctxResp = document.getElementById("chartTareasResponsable");
+    // 2. Gráfico de barras: PDCA por responsable general
+    const ctxResp = document.getElementById("chartPDCAResponsable");
     if (ctxResp) {
       if (chartInstanciaResponsable) chartInstanciaResponsable.destroy();
 
-      const labelsResp = Object.keys(tareasPorResp);
-      const datosResp = Object.values(tareasPorResp);
+      const labelsResp = Object.keys(planesPorResp);
+      const datosResp = Object.values(planesPorResp);
 
       chartInstanciaResponsable = new Chart(ctxResp, {
         type: 'bar',
         data: {
-          labels: labelsResp.length > 0 ? labelsResp : ['Sin tareas'],
+          labels: labelsResp.length > 0 ? labelsResp : ['Sin planes'],
           datasets: [{
-            label: 'Recuento',
+            label: 'Planes asignados',
             data: datosResp.length > 0 ? datosResp : [0],
             backgroundColor: '#3b82f6',
             borderRadius: 4
@@ -1177,7 +1321,7 @@
             y: {
               beginAtZero: true,
               ticks: { precision: 0, stepSize: 1 },
-              title: { display: true, text: 'Recuento', font: { size: 9 } }
+              title: { display: true, text: 'Cantidad de PDCA', font: { size: 9 } }
             },
             x: {
               grid: { display: false },
@@ -1186,6 +1330,145 @@
           }
         }
       });
+    }
+  }
+
+  // ==========================================
+  // RENDERIZADO DEL TABLERO KANBAN (TIPO TRELLO) & GANTT
+  // ==========================================
+  function actualizarSelectorKanbanPDCA() {
+    const sel = document.getElementById("filtroKanbanPDCA");
+    if (!sel) return;
+    const valorActual = sel.value;
+    sel.innerHTML = `<option value="TODOS">Todos los Planes PDCA (Vista Global)</option>`;
+    baseDatos.forEach((p, idx) => {
+      const opt = document.createElement("option");
+      opt.value = idx;
+      opt.innerText = `[${p.numPdca || 'BORRADOR'}] ${p.titulo}`;
+      sel.appendChild(opt);
+    });
+    sel.value = valorActual || "TODOS";
+  }
+
+  function renderizarTableroKanban() {
+    const listaPend = document.getElementById("kbListaPendiente");
+    const listaCurso = document.getElementById("kbListaEnCurso");
+    const listaListo = document.getElementById("kbListaListo");
+    const tablaGantt = document.getElementById("tablaGanttBody");
+
+    listaPend.innerHTML = "";
+    listaCurso.innerHTML = "";
+    listaListo.innerHTML = "";
+    tablaGantt.innerHTML = "";
+
+    const filtroPdcaIdx = document.getElementById("filtroKanbanPDCA").value;
+    const filtroResp = (document.getElementById("filtroKanbanResp")?.value || "").toLowerCase().trim();
+
+    let cPend = 0, cCurso = 0, cListo = 0;
+
+    baseDatos.forEach((plan, pIdx) => {
+      if (filtroPdcaIdx !== "TODOS" && parseInt(filtroPdcaIdx) !== pIdx) return;
+
+      (plan.acciones || []).forEach((acc, aIdx) => {
+        const respTxt = (acc.quien || "").toLowerCase();
+        if (filtroResp && !respTxt.includes(filtroResp)) return;
+
+        const est = (acc.estado || "PENDIENTE").toUpperCase();
+        if (est === "EN_PROCESO") cCurso++;
+        else if (est === "COMPLETADA") cListo++;
+        else cPend++;
+
+        // Crear tarjeta Kanban
+        const card = document.createElement("div");
+        card.className = "kanban-card";
+        card.draggable = true;
+        card.ondragstart = (e) => {
+          e.dataTransfer.setData("text/plain", JSON.stringify({ planIdx: pIdx, accIdx: aIdx }));
+          card.classList.add("dragging");
+        };
+        card.ondragend = () => card.classList.remove("dragging");
+
+        let badgePdca = plan.numPdca ? `PDCA ${plan.numPdca}` : 'BORRADOR';
+        card.innerHTML = `
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="badge bg-dark-subtle text-dark border small" style="font-size: 7pt;">${badgePdca}</span>
+            <small class="text-muted fw-bold">#${acc.orden}</small>
+          </div>
+          <div class="fw-bold mb-1" style="font-size: 8.5pt; color: #1e293b;">${acc.que}</div>
+          <div class="small text-muted mb-2" style="font-size: 7.5pt;">
+            👤 <strong>${acc.quien}</strong> | 📍 ${acc.donde} (${acc.cuando})
+          </div>
+          <div class="d-flex justify-content-between align-items-center pt-1 border-top">
+            <div class="btn-group btn-group-sm">
+              ${est !== 'PENDIENTE' ? `<button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 7pt;" onclick="cambiarEstadoAccionDirecto(${pIdx}, ${aIdx}, 'PENDIENTE')" title="Mover a Pendiente">⬅</button>` : ''}
+              ${est !== 'EN_PROCESO' ? `<button class="btn btn-xs btn-outline-warning py-0 px-1" style="font-size: 7pt;" onclick="cambiarEstadoAccionDirecto(${pIdx}, ${aIdx}, 'EN_PROCESO')" title="Mover a En Curso">⏳ En curso</button>` : ''}
+              ${est !== 'COMPLETADA' ? `<button class="btn btn-xs btn-outline-success py-0 px-1" style="font-size: 7pt;" onclick="cambiarEstadoAccionDirecto(${pIdx}, ${aIdx}, 'COMPLETADA')" title="Mover a Listo">✔ Listo</button>` : ''}
+            </div>
+          </div>
+        `;
+
+        if (est === "EN_PROCESO") listaCurso.appendChild(card);
+        else if (est === "COMPLETADA") listaListo.appendChild(card);
+        else listaPend.appendChild(card);
+
+        // Fila para Cronograma Gantt
+        let colorBarra = "bg-danger";
+        let porcentajeBarra = "25%";
+        let textoEstado = "Pendiente / Detenido";
+
+        if (est === "EN_PROCESO") {
+          colorBarra = "bg-warning";
+          porcentajeBarra = "60%";
+          textoEstado = "En curso";
+        } else if (est === "COMPLETADA") {
+          colorBarra = "bg-success";
+          porcentajeBarra = "100%";
+          textoEstado = "Listo / Completada";
+        }
+
+        const trGantt = document.createElement("tr");
+        trGantt.innerHTML = `
+          <td><strong>${badgePdca}</strong><br><small class="text-muted">${plan.titulo.substring(0, 25)}...</small></td>
+          <td>${acc.que}</td>
+          <td><strong>${acc.quien}</strong></td>
+          <td><span class="badge bg-light text-dark border">${acc.cuando}</span></td>
+          <td><span class="badge ${est === 'COMPLETADA' ? 'bg-success' : (est === 'EN_PROCESO' ? 'bg-warning text-dark' : 'bg-danger')}">${textoEstado}</span></td>
+          <td>
+            <div class="progress" style="height: 14px;">
+              <div class="progress-bar ${colorBarra} progress-bar-striped" style="width: ${porcentajeBarra}">${porcentajeBarra}</div>
+            </div>
+          </td>
+        `;
+        tablaGantt.appendChild(trGantt);
+      });
+    });
+
+    document.getElementById("kbCountPendiente").innerText = cPend;
+    document.getElementById("kbCountEnCurso").innerText = cCurso;
+    document.getElementById("kbCountListo").innerText = cListo;
+  }
+
+  function soltarTarjetaKanban(event, nuevoEstado) {
+    event.preventDefault();
+    try {
+      const data = JSON.parse(event.dataTransfer.getData("text/plain"));
+      cambiarEstadoAccionDirecto(data.planIdx, data.accIdx, nuevoEstado);
+    } catch (err) {
+      console.warn("Drop error:", err);
+    }
+  }
+
+  function cambiarEstadoAccionDirecto(planIdx, accIdx, nuevoEstado) {
+    if (!usuarioSesion) {
+      alert("Inicie sesión para actualizar tareas.");
+      return;
+    }
+    const plan = baseDatos[planIdx];
+    if (plan && plan.acciones && plan.acciones[accIdx]) {
+      plan.acciones[accIdx].estado = nuevoEstado;
+      sincronizarPlanEnCloud(plan);
+      renderizarTableroKanban();
+      if (solapaActualDashboard === "pizarra") renderizarTableroControlPDCA();
     }
   }
 
@@ -1314,7 +1597,6 @@
       console.warn("Init EmailJS:", e);
     }
 
-    // Obtener los correos ingresados o editados en la tabla
     listaDestinatariosPreparada.forEach((d, idx) => {
       const campo = document.getElementById(`inputDestEmail_${idx}`);
       if (campo && campo.value.trim()) {
@@ -1905,7 +2187,7 @@
   }
 
   // ========================================================
-  // PARSER DE WORD ROBUSTO (JSZIP XML NATIVO + MAMMOTH)
+  // PARSER DE WORD CON EXTRACCIÓN DE ENCABEZADOS XML
   // ========================================================
   function extraerCeldasDeXML(xmlStr) {
     const celdas = [];
@@ -1964,7 +2246,7 @@
         let headerNumPdcaXML = "";
         let headerPaginaXML = "";
 
-        // 1. EXTRACCIÓN MEDIANTE JSZIP
+        // 1. EXTRACCIÓN MEDIANTE JSZIP DIRECTO DE ENCABEZADOS
         if (window.JSZip) {
           try {
             const zip = await JSZip.loadAsync(arrayBuffer);
@@ -1981,7 +2263,6 @@
                 const celdas = extraerCeldasDeXML(xmlStr);
                 todasLasCeldas.push(...celdas);
 
-                // Detectar metadatos en las celdas
                 for (let c of celdas) {
                   const cu = c.toUpperCase();
                   if (cu.includes("PDCA:")) {
@@ -2324,6 +2605,7 @@
 
     sincronizarPlanEnCloud(plan);
     renderizarDocumentoOficialPaginado(plan);
+    if (solapaActualDashboard === "kanban") renderizarTableroKanban();
   }
 
   // ========================================================
@@ -2389,519 +2671,4 @@
   // ==========================================
   // COMPILACIÓN Y DESCARGA DE PDF
   // ==========================================
-  async function guardarPDFenBaseDeDatos() {
-    const plan = baseDatos[indiceActual];
-    const contenedor = document.getElementById("contenedorHojasImpresion");
-    const nombre = (plan.numPdca ? `PDCA_${plan.numPdca.replace('/', '_')}` : 'PDCA_Borrador') + '.pdf';
-
-    const opciones = {
-      margin:       0,
-      filename:     nombre,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak:    { mode: ['css', 'legacy'], after: '.hoja-a4' }
-    };
-
-    alert("Compilando documento en PDF vertical y almacenando en Cloud Firestore...");
-
-    try {
-      const pdfBlob = await html2pdf().set(opciones).from(contenedor).outputPdf('blob');
-      const reader = new FileReader();
-      reader.onloadend = function() {
-        const base64data = reader.result;
-        plan.pdfBase64 = base64data;
-        sincronizarPlanEnCloud(plan);
-        gestionarEstadoBloqueoUI(plan);
-        alert("¡PDF GUARDADO EN LA BASE DE DATOS!\n\nEl documento oficial quedó archivado en Cloud Firestore.");
-      };
-      reader.readAsDataURL(pdfBlob);
-    } catch (e) {
-      alert("Error al compilar PDF: " + e.message);
-    }
-  }
-
-  function abrirPdfDesdeBaseDeDatos() {
-    const plan = baseDatos[indiceActual];
-    if (!plan.pdfBase64) {
-      alert("No hay un PDF archivado aún para este plan. Presioná '☁️ Guardar PDF'.");
-      return;
-    }
-    const win = window.open();
-    win.document.write(`
-      <iframe src="${plan.pdfBase64}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>
-    `);
-  }
-
-  function descargarPDFVertical() {
-    const plan = baseDatos[indiceActual];
-    const contenedor = document.getElementById("contenedorHojasImpresion");
-    const nombre = (plan.numPdca ? `PDCA_${plan.numPdca.replace('/', '_')}` : 'PDCA_Borrador') + '.pdf';
-
-    const opciones = {
-      margin:       0,
-      filename:     nombre,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak:    { mode: ['css', 'legacy'], after: '.hoja-a4' }
-    };
-
-    html2pdf().set(opciones).from(contenedor).save();
-  }
-
-  // ==========================================
-  // NAVEGACIÓN Y SESIÓN
-  // ==========================================
-  function cambiarVista(vista) {
-    const sLogin = document.getElementById("seccionLogin");
-    const sDash = document.getElementById("seccionDashboard");
-    const sDoc = document.getElementById("seccionDocumento");
-    const navUser = document.getElementById("usuarioInfoNavbar");
-
-    sLogin.classList.add("d-none");
-    sDash.classList.add("d-none");
-    sDoc.classList.add("d-none");
-
-    if (vista === "login") {
-      sLogin.classList.remove("d-none");
-      navUser.classList.add("d-none");
-    } else if (vista === "dashboard") {
-      sDash.classList.remove("d-none");
-      navUser.classList.remove("d-none");
-      actualizarDashboard();
-    } else if (vista === "documento") {
-      sDoc.classList.remove("d-none");
-      navUser.classList.remove("d-none");
-      cargarPDCA(indiceActual);
-    }
-  }
-
-  function actualizarDashboard() {
-    actualizarDatosUsuarioSesion();
-    let totalPlanes = baseDatos.length;
-    let enProceso = 0;
-    let aprobados = 0;
-    let finalizados = 0;
-
-    baseDatos.forEach(plan => {
-      evaluarEstadoPlan(plan);
-      if (plan.estado === "FINALIZADO") finalizados++;
-      else if (plan.estado === "APROBADO") aprobados++;
-      else enProceso++;
-    });
-
-    document.getElementById("kpiTotalPlanes").innerText = totalPlanes;
-    document.getElementById("kpiEnProceso").innerText = enProceso;
-    document.getElementById("kpiAprobados").innerText = aprobados;
-    document.getElementById("kpiFinalizados").innerText = finalizados;
-
-    renderizarTablaDashboard();
-    if (solapaActualDashboard === "pizarra") {
-      renderizarPizarraControl();
-    }
-  }
-
-  function renderizarTablaDashboard() {
-    const tbody = document.getElementById("tablaDashboardBody");
-    tbody.innerHTML = "";
-    const filtro = document.getElementById("filtroEstadoDashboard").value;
-    const busqueda = (document.getElementById("inputBuscarPlan")?.value || "").toLowerCase().trim();
-    const esAutorizadoBorrar = usuarioSesion && (usuarioSesion.rol === "FACILITADOR" || usuarioSesion.rol === "SISTEMAS");
-
-    baseDatos.forEach((plan, i) => {
-      evaluarEstadoPlan(plan);
-
-      if (filtro === "FINALIZADO" && plan.estado !== "FINALIZADO") return;
-      if (filtro === "APROBADO" && plan.estado !== "APROBADO") return;
-      if (filtro === "REVISADO" && plan.estado !== "REVISADO") return;
-      if (filtro === "BORRADOR" && plan.estado !== "BORRADOR") return;
-
-      if (busqueda) {
-        const textoFila = `${plan.numPdca} ${plan.titulo} ${plan.responsable}`.toLowerCase();
-        if (!textoFila.includes(busqueda)) return;
-      }
-
-      let badgeEstado = '<span class="badge bg-secondary">Borrador</span>';
-      if (plan.estado === "REVISADO") badgeEstado = '<span class="badge bg-warning text-dark">Revisado</span>';
-      if (plan.estado === "APROBADO") badgeEstado = '<span class="badge bg-info text-dark">Aprobado 🔒</span>';
-      if (plan.estado === "FINALIZADO") badgeEstado = '<span class="badge bg-success">Finalizado 🔒</span>';
-
-      const badgePdf = plan.pdfBase64 
-        ? '<span class="badge bg-primary">☁️ PDF Listo</span>' 
-        : '<span class="badge bg-light text-muted border">Sin PDF</span>';
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="fw-bold">${plan.numPdca || '<span class="text-muted fst-italic">Pendiente</span>'}</td>
-        <td><strong>${plan.titulo}</strong></td>
-        <td class="d-none d-md-table-cell">
-          <span class="d-block">${plan.responsable}</span>
-          <span class="text-muted small">Plazo: ${plan.deadline}</span>
-        </td>
-        <td class="text-center">${badgePdf}</td>
-        <td class="text-center">${badgeEstado}</td>
-        <td class="text-end">
-          <div class="d-flex justify-content-end gap-1">
-            <button class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" onclick="abrirPlanDesdeDashboard(${i})">
-              Abrir ➔
-            </button>
-            ${esAutorizadoBorrar ? `
-              <button class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold" onclick="eliminarPDCA(${i})" title="Borrar PDCA">
-                🗑️
-              </button>
-            ` : ''}
-          </div>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  function abrirPlanDesdeDashboard(index) {
-    indiceActual = index;
-    actualizarSelectDocumento(index);
-    cambiarVista("documento");
-  }
-
-  // ========================================================
-  // SINCRONIZACIÓN CLOUD LIMPIA
-  // ========================================================
-  function conectarCloudFirestore() {
-    const badge = document.getElementById("badgeCloudStatus");
-    if (!db) {
-      badge.className = "badge bg-warning text-dark";
-      badge.innerText = "🟡 Modo Local";
-      return;
-    }
-
-    db.collection("planes_pdca").onSnapshot((snapshot) => {
-      badge.className = "badge bg-success";
-      badge.innerText = "🟢 Cloud Activo";
-
-      const listaRemota = [];
-      snapshot.forEach(doc => {
-        listaRemota.push({ id: doc.id, ...doc.data() });
-      });
-
-      baseDatos = listaRemota;
-      guardarLocal();
-      actualizarSelectDocumento(indiceActual < baseDatos.length ? indiceActual : 0);
-      actualizarDashboard();
-      if (!document.getElementById("seccionDocumento").classList.contains("d-none")) {
-        if (baseDatos.length > 0) cargarPDCA(indiceActual);
-        else cambiarVista("dashboard");
-      }
-    }, (error) => {
-      badge.className = "badge bg-warning text-dark";
-      badge.innerText = "🟡 Modo Local";
-    });
-  }
-
-  function sincronizarPlanEnCloud(plan) {
-    guardarLocal();
-    if (!db) return;
-    try {
-      if (plan.id) {
-        db.collection("planes_pdca").doc(plan.id).set(plan).catch(e => console.warn(e));
-      } else {
-        db.collection("planes_pdca").add(plan).then(docRef => {
-          plan.id = docRef.id;
-          guardarLocal();
-        }).catch(e => console.warn(e));
-      }
-    } catch (e) {
-      console.warn("Sync error:", e);
-    }
-  }
-
-  function procesarArchivoLogo(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      const base64 = evt.target.result;
-      localStorage.setItem("pdca_logo_mba", base64);
-      aplicarLogoATodos(base64);
-      cargarPDCA(indiceActual);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function aplicarLogoATodos(src) {
-    document.getElementById("logoBarraFija").src = src;
-    document.getElementById("logoCardLogin").src = src;
-  }
-
-  function aplicarLogoFalso(imgEl) {
-    imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50'><text x='50%' y='65%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='16' fill='%23005f73'>Misión Buenos Aires</text></svg>";
-  }
-
-  function actualizarSelectDocumento(indice = 0) {
-    const select = document.getElementById("pdcaSelect");
-    select.innerHTML = "";
-    baseDatos.forEach((p, i) => {
-      const opt = document.createElement("option");
-      opt.value = i;
-      const numLabel = p.numPdca ? `[PDCA ${p.numPdca}]` : '[BORRADOR]';
-      const lockLabel = p.bloqueado ? ' 🔒' : '';
-      opt.innerText = `${numLabel} ${p.titulo}${lockLabel}`;
-      select.appendChild(opt);
-    });
-    select.value = indice;
-  }
-
-  function seleccionarPDCA(val) {
-    indiceActual = parseInt(val);
-    cargarPDCA(indiceActual);
-  }
-
-  function cargarPDCA(index) {
-    if (baseDatos.length === 0) return;
-    indiceActual = parseInt(index);
-    const plan = baseDatos[indiceActual];
-    renderizarDocumentoOficialPaginado(plan);
-  }
-
-  function abrirModalAccion(index) {
-    if (!usuarioSesion) return;
-    const plan = baseDatos[indiceActual];
-    if (plan.bloqueado) return;
-
-    const modalTitulo = document.getElementById("modalAccionTitulo");
-    const editIndexField = document.getElementById("accEditIndex");
-
-    if (index >= 0) {
-      const acc = plan.acciones[index];
-      modalTitulo.innerText = `Editar Acción N° ${acc.orden}`;
-      editIndexField.value = index;
-      document.getElementById("accQue").value = acc.que;
-      document.getElementById("accPorQue").value = acc.porQue;
-      document.getElementById("accComo").value = acc.como;
-      document.getElementById("accQuien").value = acc.quien;
-      document.getElementById("accCuanto").value = acc.cuanto || "";
-      document.getElementById("accDonde").value = acc.donde;
-      document.getElementById("accCuando").value = acc.cuando;
-      document.getElementById("accEstado").value = acc.estado;
-    } else {
-      modalTitulo.innerText = "Nueva Acción 5W2H";
-      editIndexField.value = "-1";
-      document.getElementById("formAccion5W2H").reset();
-      document.getElementById("accQuien").value = usuarioSesion.nombre;
-      document.getElementById("accDonde").value = "La Plata";
-      document.getElementById("accCuando").value = "A partir de hoy";
-    }
-    new bootstrap.Modal(document.getElementById('modalAccion5W2H')).show();
-  }
-
-  function guardarAccion5W2H(e) {
-    e.preventDefault();
-    const plan = baseDatos[indiceActual];
-    const index = parseInt(document.getElementById("accEditIndex").value);
-
-    const accionData = {
-      orden: index >= 0 ? plan.acciones[index].orden : (plan.acciones ? plan.acciones.length + 1 : 1),
-      que: document.getElementById("accQue").value.trim(),
-      porQue: document.getElementById("accPorQue").value.trim(),
-      como: document.getElementById("accComo").value.trim(),
-      quien: document.getElementById("accQuien").value.trim(),
-      cuanto: document.getElementById("accCuanto").value.trim(),
-      donde: document.getElementById("accDonde").value.trim(),
-      cuando: document.getElementById("accCuando").value.trim(),
-      estado: document.getElementById("accEstado").value
-    };
-
-    if (!plan.acciones) plan.acciones = [];
-    if (index >= 0) plan.acciones[index] = accionData;
-    else plan.acciones.push(accionData);
-
-    sincronizarPlanEnCloud(plan);
-    bootstrap.Modal.getInstance(document.getElementById('modalAccion5W2H')).hide();
-    renderizarDocumentoOficialPaginado(plan);
-  }
-
-  function abrirModalNuevoPDCA() {
-    if (!usuarioSesion) return;
-    new bootstrap.Modal(document.getElementById('modalNuevoPDCA')).show();
-  }
-
-  function guardarNuevoPDCA(e) {
-    e.preventDefault();
-    const nuevo = {
-      codDoc: document.getElementById("newCodDoc").value.trim(),
-      numPdca: "", 
-      paginaDoc: "Página 1 de 2",
-      titulo: document.getElementById("newTitulo").value.trim(),
-      politica: document.getElementById("newPolitica").value,
-      objetivo: document.getElementById("newObjetivo").value.trim(),
-      meta: document.getElementById("newMeta").value.trim(),
-      efecto: document.getElementById("newEfecto").value.trim(),
-      responsable: document.getElementById("newResponsable").value.trim(),
-      deadline: document.getElementById("newDeadline").value.trim(),
-      estado: "BORRADOR",
-      bloqueado: false,
-      fechaRevision: "",
-      revisadoPor: "",
-      fechaAprobacion: "",
-      aprobadoPor: "",
-      pdfBase64: null,
-      acciones: []
-    };
-
-    baseDatos.push(nuevo);
-    sincronizarPlanEnCloud(nuevo);
-    bootstrap.Modal.getInstance(document.getElementById('modalNuevoPDCA')).hide();
-    document.getElementById("formNuevoPDCA").reset();
-    
-    indiceActual = baseDatos.length - 1;
-    actualizarSelectDocumento(indiceActual);
-    cambiarVista("documento");
-  }
-
-  function abrirModalCambiarPolitica() {
-    const plan = baseDatos[indiceActual];
-    if (plan.bloqueado) return;
-    document.getElementById("selectPoliticaActiva").value = plan.politica;
-    new bootstrap.Modal(document.getElementById('modalPoliticaActiva')).show();
-  }
-
-  function guardarCambioPolitica() {
-    const plan = baseDatos[indiceActual];
-    plan.politica = document.getElementById("selectPoliticaActiva").value;
-    sincronizarPlanEnCloud(plan);
-    bootstrap.Modal.getInstance(document.getElementById('modalPoliticaActiva')).hide();
-    renderizarDocumentoOficialPaginado(plan);
-  }
-
-  function editarCampoPie(campo, mensaje) {
-    if (!usuarioSesion) return;
-    const plan = baseDatos[indiceActual];
-    if (plan.bloqueado) return;
-    const valorActual = plan[campo] || "";
-    const nuevoValor = prompt(mensaje, valorActual);
-    if (nuevoValor !== null) {
-      plan[campo] = nuevoValor.trim();
-      sincronizarPlanEnCloud(plan);
-      renderizarDocumentoOficialPaginado(plan);
-    }
-  }
-
-  function abrirModalAuditoriaIA(tipo = 'plan', indexAccion = -1) {
-    let apiKey = localStorage.getItem("gemini_api_key");
-    if (!apiKey) {
-      if (usuarioSesion && usuarioSesion.rol === "SISTEMAS") {
-        abrirConfigIntegraciones();
-      } else {
-        alert("Consulte al Operador de Sistemas para activar la API Key de Gemini.");
-      }
-      return;
-    }
-    const plan = baseDatos[indiceActual];
-    const select = document.getElementById("selectAmbitoAuditoria");
-    select.innerHTML = "";
-
-    const optPlan = document.createElement("option");
-    optPlan.value = "plan";
-    optPlan.innerText = `Plan Completo: ${plan.titulo}`;
-    select.appendChild(optPlan);
-
-    plan.acciones.forEach((acc, i) => {
-      const optAcc = document.createElement("option");
-      optAcc.value = `accion_${i}`;
-      optAcc.innerText = `Acción #${acc.orden}: ${acc.que.substring(0, 35)}...`;
-      select.appendChild(optAcc);
-    });
-
-    if (tipo === 'accion' && indexAccion >= 0) {
-      select.value = `accion_${indexAccion}`;
-      ejecutarAnalisisIA('accion', indexAccion);
-    } else {
-      select.value = "plan";
-      ejecutarAnalisisIA('plan', -1);
-    }
-
-    new bootstrap.Modal(document.getElementById('modalRespuestaGemini')).show();
-  }
-
-  function ejecutarAnalisisDesdeSelector(valor) {
-    if (valor === "plan") ejecutarAnalisisIA('plan', -1);
-    else if (valor.startsWith("accion_")) ejecutarAnalisisIA('accion', parseInt(valor.replace("accion_", "")));
-  }
-
-  async function ejecutarAnalisisIA(ambito, accionIdx) {
-    let apiKey = localStorage.getItem("gemini_api_key");
-    if (!apiKey) return;
-    const plan = baseDatos[indiceActual];
-    document.getElementById("geminiSpinner").style.display = "block";
-    document.getElementById("geminiContenido").innerText = "";
-
-    let promptAuditoria = "";
-    if (ambito === 'plan') {
-      document.getElementById("geminiSpinnerText").innerText = "Analizando plan con Gemini...";
-      let accionesTexto = (plan.acciones || []).map(a => `• Tarea ${a.orden}: ${a.que} | Resp: ${a.quien}`).join("\n");
-      promptAuditoria = `Actúa como auditor ISO 9001/IRAM 3810. Analiza este PDCA:\nTítulo: ${plan.titulo}\nMeta: ${plan.meta}\nObjetivo: ${plan.objetivo}\nAcciones:\n${accionesTexto}\nDictamen conciso: congruencia, riesgos y 2 mejoras 5W2H.`;
-    } else {
-      const acc = plan.acciones[accionIdx];
-      document.getElementById("geminiSpinnerText").innerText = `Analizando Acción #${acc.orden}...`;
-      promptAuditoria = `Actúa como auditor de calidad de transporte. Analiza esta acción puntual:\nPlan: ${plan.titulo}\nMeta: ${plan.meta}\nAcción #${acc.orden}: ${acc.que}\nCómo: ${acc.como}\nQuién: ${acc.quien}\nDictamen conciso: alineación, riesgos en taller/calle y propuesta de mejora.`;
-    }
-
-    const modelos = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.5-flash-lite", "gemini-flash-latest"];
-    let exito = false;
-    let errDetalle = "";
-
-    for (const mod of modelos) {
-      try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mod}:generateContent?key=${apiKey}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: [{ parts: [{ text: promptAuditoria }] }] })
-        });
-        if (!res.ok) {
-          const errData = await res.json().catch(() => null);
-          errDetalle = errData?.error?.message || `HTTP ${res.status}`;
-          continue;
-        }
-        const data = await res.json();
-        const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (texto) {
-          document.getElementById("geminiSpinner").style.display = "none";
-          document.getElementById("geminiContenido").innerText = `[Modelo: ${mod}]\n\n` + texto;
-          exito = true;
-          break;
-        }
-      } catch (err) {
-        errDetalle = err.message;
-      }
-    }
-
-    if (!exito) {
-      document.getElementById("geminiSpinner").style.display = "none";
-      document.getElementById("geminiContenido").innerText = `⚠️ Error IA: ${errDetalle}`;
-    }
-  }
-
-  // INICIALIZACIÓN
-  window.onload = function() {
-    const selNuevo = document.getElementById("newPolitica");
-    const selActiva = document.getElementById("selectPoliticaActiva");
-    selNuevo.innerHTML = "";
-    selActiva.innerHTML = "";
-    POLITICAS_2026.forEach(pol => {
-      const opt1 = document.createElement("option"); opt1.value = pol; opt1.innerText = pol; selNuevo.appendChild(opt1);
-      const opt2 = document.createElement("option"); opt2.value = pol; opt2.innerText = pol; selActiva.appendChild(opt2);
-    });
-
-    const logoGuardado = localStorage.getItem("pdca_logo_mba");
-    if (logoGuardado) aplicarLogoATodos(logoGuardado);
-
-    conectarColeccionUsuarios();
-    conectarCloudFirestore();
-
-    if (usuarioSesion) cambiarVista("dashboard");
-    else cambiarVista("login");
-  };
-</script>
-
-</body>
-</html>
+  async function
