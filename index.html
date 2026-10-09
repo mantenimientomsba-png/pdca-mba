@@ -30,6 +30,7 @@
       padding: 0;
     }
 
+    /* BARRA SUPERIOR FIJA */
     .top-navbar-mba {
       background-color: #ffffff;
       border-bottom: 2px solid #005f73;
@@ -42,6 +43,7 @@
       object-fit: contain;
     }
 
+    /* PESTAÑAS DEL DASHBOARD */
     .nav-tabs-custom {
       border-bottom: 2px solid #dee2e6;
       margin-bottom: 20px;
@@ -62,6 +64,7 @@
       background: none;
     }
 
+    /* TARJETAS DEL DASHBOARD */
     .kpi-card {
       border-radius: 10px;
       border: 1px solid rgba(0,0,0,0.06);
@@ -69,13 +72,16 @@
       background-color: #ffffff;
       transition: transform 0.15s ease;
     }
-    .kpi-card:hover { transform: translateY(-2px); }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+    }
     .kpi-numero {
       font-size: 2.1rem;
       font-weight: 700;
       line-height: 1.1;
     }
 
+    /* TARJETAS ESTILO PIZARRA */
     .card-pizarra {
       border-radius: 8px;
       border: 1px solid #e2e8f0;
@@ -110,6 +116,7 @@
       color: #1a202c;
     }
 
+    /* TABLERO KANBAN ESTILO TRELLO */
     .kanban-board {
       display: flex;
       gap: 16px;
@@ -158,8 +165,11 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0,0,0,0.12);
     }
-    .kanban-card.dragging { opacity: 0.4; }
+    .kanban-card.dragging {
+      opacity: 0.4;
+    }
 
+    /* CONTENEDOR Y HOJAS A4 VERTICALES */
     .contenedor-hojas-trabajo {
       display: flex;
       flex-direction: column;
@@ -180,6 +190,7 @@
       justify-content: flex-start;
     }
 
+    /* ENCABEZADO INSTITUCIONAL OFICIAL */
     .tabla-encabezado-oficial {
       width: 100%;
       border-collapse: collapse;
@@ -228,6 +239,7 @@
       white-space: nowrap;
     }
 
+    /* METADATOS DEL PLAN */
     .bloque-metadatos-plan { margin-bottom: 5px; }
     .doc-linea {
       margin-bottom: 3px;
@@ -237,6 +249,7 @@
     }
     .doc-label { font-weight: bold; color: #000; }
 
+    /* TABLA 5W2H */
     .tabla-contenedor-inner { width: 100%; margin-top: 3px; }
     .table-doc {
       width: 100%;
@@ -263,6 +276,7 @@
     .table-doc td.text-center, .table-doc th.text-center { text-align: center; }
     .col-como { white-space: pre-line; }
 
+    /* PIE DE FIRMAS */
     .bloque-pie-reglamentario {
       margin-top: auto;
       padding-top: 8px;
@@ -328,6 +342,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
 
+    /* IMPRESIÓN COMPACTA */
     @media print {
       @page {
         size: A4 portrait;
@@ -414,7 +429,7 @@
 <input type="file" id="inputLogoFile" accept="image/*" class="d-none" onchange="procesarArchivoLogo(event)">
 <input type="file" id="inputImportWord" accept=".docx" class="d-none" onchange="procesarArchivoWord(event)">
 
-<!-- 1. PANTALLA LOGIN Y REGISTRO -->
+<!-- 1. PANTALLA LOGIN Y REGISTRO (PORTAL LIMPIO) -->
 <div id="seccionLogin" class="container py-4 py-md-5">
   <div class="row justify-content-center">
     <div class="col-12 col-sm-8 col-md-5 col-lg-4">
@@ -427,7 +442,7 @@
           <form id="formLogin" onsubmit="ejecutarLogin(event)" class="text-start">
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Legajo o Email:</label>
-              <input type="text" class="form-control" id="loginIdentificador" placeholder="Escriba su legajo (ej: 3110)" required autofocus>
+              <input type="text" class="form-control" id="loginIdentificador" placeholder="ej: 3110 o usuario@misionba.com.ar" required autofocus>
             </div>
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Contraseña:</label>
@@ -765,7 +780,6 @@
         <button class="btn btn-sm btn-primary fw-semibold" onclick="abrirModalConfirmacionEmail()" title="Enviar o reenviar correo de asignación a los responsables">
           📧 Notificar por Email
         </button>
-        <!-- BOTÓN ACTUALIZADO: CONSULTA Y CHAT CON IA -->
         <button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirModalConsultorIA('plan')" title="Abrir chat de revisión y propuestas de mejora con IA">
           ✨ Revisión y Chat con IA
         </button>
@@ -796,12 +810,12 @@
 <!-- MODALES DEL SISTEMA                                      -->
 <!-- ======================================================== -->
 
-<!-- MODAL CONSULTOR IA INTERACTIVO (CHAT MULTI-TURNO COMPATIBLE CON CUALQUIER VERSIÓN DE GEMINI) -->
+<!-- MODAL CONSULTOR IA INTERACTIVO (OPTIMIZADO EN VELOCIDAD Y ESPAÑOL ARGENTINA) -->
 <div class="modal fade" id="modalRespuestaGemini" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header bg-dark text-white py-2 d-flex justify-content-between align-items-center">
-        <h6 class="modal-title m-0 fw-bold">✨ Asistente IA - Revisión y Chat de Mejora PDCA</h6>
+        <h6 class="modal-title m-0 fw-bold">✨ Asistente IA - Revisión y Propuestas PDCA</h6>
         <div class="d-flex align-items-center gap-2">
           <button type="button" class="btn btn-xs btn-outline-light py-0 px-2" style="font-size: 8pt;" onclick="reiniciarChatIA()" title="Reiniciar conversación">🔄 Reiniciar Chat</button>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -836,13 +850,13 @@
           <div id="geminiContenido" class="small lh-base"></div>
           <div id="geminiSpinner" class="text-center py-3 d-none">
             <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
-            <p class="small text-muted mt-2" id="geminiSpinnerText">Analizando y elaborando respuesta...</p>
+            <p class="small text-muted mt-2" id="geminiSpinnerText">Analizando y elaborando respuesta en segundos...</p>
           </div>
         </div>
 
         <!-- FORMULARIO DE MENSAJE -->
         <form onsubmit="ejecutarConsultaPersonalizadaIA(event)" class="d-flex gap-2">
-          <input type="text" class="form-control form-control-sm" id="inputPreguntaLibreIA" placeholder="Escribí tu consulta técnica... (ej: ¿Cómo mejoro la meta? o ¿Esta tarea atiende el problema?)" required autocomplete="off">
+          <input type="text" class="form-control form-control-sm" id="inputPreguntaLibreIA" placeholder="Escribí tu consulta técnica... (ej: ¿Cómo mejoro la meta? o ¿Qué opinás del método?)" required autocomplete="off">
           <button type="submit" class="btn btn-sm btn-primary fw-bold text-nowrap px-3" id="btnEnviarConsultaIA">
             Enviar ➔
           </button>
@@ -2731,6 +2745,9 @@
     event.target.value = "";
   }
 
+  // ==========================================
+  // FLUJO DE ESTADOS Y ACCIONES
+  // ==========================================
   function registrarRevisionPlan() {
     if (!usuarioSesion) return;
     const plan = baseDatos[indiceActual];
@@ -2843,6 +2860,9 @@
     return String(maximo + 1).padStart(4, '0') + '/' + anio;
   }
 
+  // ========================================================
+  // MODIFICACIÓN DE ESTADO DE ACCIONES
+  // ========================================================
   function rotarEstadoAccion(originalIndex) {
     if (!usuarioSesion) {
       alert("Inicie sesión con su Legajo para actualizar avances de tareas.");
@@ -2864,6 +2884,9 @@
     if (solapaActualDashboard === "kanban") renderizarTableroKanban();
   }
 
+  // ========================================================
+  // BORRAR PDCA: FACILITADOR Y SISTEMAS
+  // ========================================================
   async function eliminarPDCA(index) {
     if (!usuarioSesion || (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "SISTEMAS")) {
       alert("PERMISO DENEGADO: Solo el Facilitador de Mantenimiento o el Operador de Sistemas pueden eliminar planes.");
@@ -2921,6 +2944,9 @@
     }
   }
 
+  // ==========================================
+  // NAVEGACIÓN Y SESIÓN
+  // ==========================================
   function cambiarVista(vista) {
     const sLogin = document.getElementById("seccionLogin");
     const sDash = document.getElementById("seccionDashboard");
@@ -3261,19 +3287,19 @@
   }
 
   // ========================================================
-  // ASISTENTE / CHAT CONVERSACIONAL DE IA (MULTI-TURNO & MULTI-MODELO)
+  // ASISTENTE / CHAT CONVERSACIONAL DE IA (MULTI-TURNO & EN ESPAÑOL ARGENTINA)
   // ========================================================
   let chatIAHistoria = [];
 
   function construirContextoBasePDCA() {
     const plan = baseDatos[indiceActual];
-    let contexto = `Actúa como un experto Consultor Senior en Ingeniería de Transporte Público, Mantenimiento de Flota de Colectivos, Metodología PDCA, ISO 9001 e IRAM 3810.
-Estás en un CHAT INTERACTIVO con el equipo operativo de Misión Buenos Aires.
-Tu objetivo es analizar si el PDCA está bien planteado, detectar inconsistencias, evaluar riesgos y sugerir mejoras directas y prácticas para el taller y la operación de los colectivos.
+    let contexto = `Actuá como un experto Consultor Senior en Ingeniería de Transporte Público y Mantenimiento de Flota de Colectivos de Buenos Aires, Argentina (especialista en metodologías PDCA, normas ISO 9001 e IRAM 3810).
+Estás en un CHAT INTERACTIVO con el equipo de Misión Buenos Aires / La Central de Vicente López.
+Respondé SIEMPRE en Español de Argentina, con lenguaje técnico claro, constructivo y directamente aplicable al taller, cabeceras y tráfico de colectivos (usá términos como colectivos, choferes, gasoil, taller, fosa, cabeceras, líneas, etc.).
 
 INFORMACIÓN DEL PLAN PDCA ACTUAL:
-• Título / Objeto: ${plan.titulo}
-• Política Institucional: ${plan.politica}
+• Nombre / Objeto: ${plan.titulo}
+• Política Institucional 2026: ${plan.politica}
 • Objetivo: ${plan.objetivo}
 • Meta: ${plan.meta}
 • Efecto Esperado: ${plan.efecto}
@@ -3281,7 +3307,7 @@ INFORMACIÓN DEL PLAN PDCA ACTUAL:
 • Plazo (Dead Line): ${plan.deadline}
 • Estado: ${plan.estado}
 
-TAREAS 5W2H REGISTRADAS:\n`;
+TAREAS 5W2H ACTUALMENTE REGISTRADAS:\n`;
 
     (plan.acciones || []).forEach(a => {
       contexto += `• Tarea #${a.orden}: ¿Qué?: ${a.que} | ¿Por qué?: ${a.porQue} | ¿Cómo?: ${a.como} | Responsable: ${a.quien} | Lugar: ${a.donde} | Plazo: ${a.cuando} | Estado: ${a.estado}\n`;
@@ -3335,7 +3361,7 @@ TAREAS 5W2H REGISTRADAS:\n`;
     contenedor.innerHTML = `
       <div class="alert alert-info py-2 mb-3" style="font-size: 8.5pt;">
         👋 <strong>Asistente Técnico PDCA conectado:</strong> Tengo cargado el plan <em>"${plan.titulo}"</em>.<br>
-        Podés preguntarme si está bien planteado, pedirme propuestas de mejora para las acciones o consultar sobre riesgos operativos. Escribí tu duda abajo o elegí una consulta rápida.
+        Podés consultarme si está bien planteado, pedirme propuestas de mejora para las acciones o evaluar riesgos operativos. Escribí tu duda abajo o tocá una consulta rápida.
       </div>
     `;
     document.getElementById("inputPreguntaLibreIA").value = "";
@@ -3408,7 +3434,6 @@ TAREAS 5W2H REGISTRADAS:\n`;
     const ambito = document.getElementById("selectAmbitoAuditoria").value;
     let textoParaIA = preguntaTexto;
 
-    // Si es el primer mensaje de la conversación, inyectamos el contexto completo del PDCA
     if (chatIAHistoria.length === 0) {
       let contextoInicial = construirContextoBasePDCA();
       if (ambito.startsWith("accion_")) {
@@ -3425,14 +3450,13 @@ TAREAS 5W2H REGISTRADAS:\n`;
       textoParaIA = `[Enfocado en Tarea #${acc.orden}: ${acc.que}]\n${preguntaTexto}`;
     }
 
-    // Agregar mensaje del usuario a la historia
     chatIAHistoria.push({
       role: "user",
       parts: [{ text: textoParaIA }]
     });
 
-    // 3. Ejecución de la llamada a la API con resolución dinámica de modelos
-    const resultado = await llamarApiGeminiUniversal(apiKey, chatIAHistoria);
+    // 3. Ejecución directa y rápida con timeout de 8s (sin ListModels lento)
+    const resultado = await llamarApiGeminiRapida(apiKey, chatIAHistoria);
 
     spinner.classList.add("d-none");
     btnEnviar.disabled = false;
@@ -3441,7 +3465,6 @@ TAREAS 5W2H REGISTRADAS:\n`;
     msgBotDiv.className = "chat-ia-msg chat-ia-msg-bot";
 
     if (resultado.ok) {
-      // Guardar respuesta del modelo en el historial de chat
       chatIAHistoria.push({
         role: "model",
         parts: [{ text: resultado.texto }]
@@ -3458,12 +3481,11 @@ TAREAS 5W2H REGISTRADAS:\n`;
         <div>${formateado}</div>
       `;
     } else {
-      // Si falló, quitamos el último mensaje del usuario para que pueda reintentar
       chatIAHistoria.pop();
 
       let errorMsg = resultado.error || "No se pudo conectar con el servicio de IA.";
       if (errorMsg.toLowerCase().includes("high demand") || errorMsg.includes("503")) {
-        errorMsg = "Los servidores de Google AI Studio están experimentando una congestión temporal de alta demanda en la capa gratuita. Por favor, aguardá unos segundos y presioná Enviar nuevamente.";
+        errorMsg = "Los servidores de Google AI Studio experimentan alta demanda momentánea. Aguardá 5 segundos y presioná Enviar nuevamente.";
       } else if (errorMsg.toLowerCase().includes("api_key_invalid") || errorMsg.toLowerCase().includes("expired")) {
         errorMsg = "La API Key ingresada no es válida o expiró. Por favor verificala en '⚙ Config'.";
       }
@@ -3475,94 +3497,62 @@ TAREAS 5W2H REGISTRADAS:\n`;
     scrollBox.scrollTop = scrollBox.scrollHeight;
   }
 
-  // Motor de conexión universal con descubrimiento de modelos activos
-  async function llamarApiGeminiUniversal(apiKey, historiaContenidos) {
-    let modelosAProbar = [];
-
-    // Paso 1: Intentar consultar la lista oficial de modelos habilitados para tu API Key
+  // Motor optimizado: llamada directa con Timeout de 8s y fallback inmediato
+  async function fetchConTimeout(url, opciones, timeoutMs = 8000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
-      const resList = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-      if (resList.ok) {
-        const dataList = await resList.json();
-        if (dataList && dataList.models) {
-          const validos = dataList.models
-            .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
-            .map(m => m.name.replace("models/", ""));
+      const res = await fetch(url, { ...opciones, signal: controller.signal });
+      clearTimeout(timer);
+      return res;
+    } catch (err) {
+      clearTimeout(timer);
+      throw err;
+    }
+  }
 
-          const prioridades = [
-            "gemini-2.0-flash",
-            "gemini-1.5-flash",
-            "gemini-2.5-flash",
-            "gemini-2.0-flash-lite",
-            "gemini-1.5-pro",
-            "gemini-pro"
-          ];
+  async function llamarApiGeminiRapida(apiKey, historiaContenidos) {
+    // Modelos oficiales directos (los más rápidos y estables)
+    const modelos = ["gemini-2.0-flash", "gemini-1.5-flash"];
+    const versiones = ["v1beta", "v1"];
+    let ultimoError = "";
 
-          prioridades.forEach(p => {
-            if (validos.includes(p) && !modelosAProbar.includes(p)) modelosAProbar.push(p);
-          });
-          validos.forEach(v => {
-            if (!modelosAProbar.includes(v) && !v.includes("embedding") && !v.includes("aqa")) {
-              modelosAProbar.push(v);
+    for (const mod of modelos) {
+      for (const ver of versiones) {
+        try {
+          const endpoint = `https://generativelanguage.googleapis.com/${ver}/models/${mod}:generateContent?key=${apiKey}`;
+          const bodyPayload = JSON.stringify({
+            contents: historiaContenidos,
+            generationConfig: {
+              temperature: 0.6,
+              maxOutputTokens: 1200
             }
           });
-        }
-      }
-    } catch (e) {
-      console.warn("Fallo al listar modelos dinámicamente:", e);
-    }
 
-    // Paso 2: Si no se pudo listar por red, usar lista de contingencia garantizada
-    if (modelosAProbar.length === 0) {
-      modelosAProbar = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-2.5-flash", "gemini-pro"];
-    }
-
-    let ultimoError = "";
-    const versionesApi = ["v1beta", "v1"];
-
-    // Paso 3: Probar los modelos válidos encontrados
-    for (const version of versionesApi) {
-      for (const mod of modelosAProbar) {
-        try {
-          let res = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${mod}:generateContent?key=${apiKey}`, {
+          let res = await fetchConTimeout(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: historiaContenidos })
-          });
+            body: bodyPayload
+          }, 8000);
 
           if (!res.ok) {
             const errJson = await res.json().catch(() => null);
             ultimoError = errJson?.error?.message || `HTTP ${res.status}`;
-
-            // Reintento automático ante saturación 503 / High Demand
-            if (res.status === 503 || ultimoError.toLowerCase().includes("high demand")) {
-              await new Promise(r => setTimeout(r, 1200));
-              res = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${mod}:generateContent?key=${apiKey}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: historiaContenidos })
-              });
-              if (res.ok) {
-                const dataRetry = await res.json();
-                const texto = dataRetry.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (texto) return { ok: true, texto: texto, modelo: `${mod}` };
-              }
-            }
             continue;
           }
 
           const data = await res.json();
           const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
           if (texto) {
-            return { ok: true, texto: texto, modelo: `${mod}` };
+            return { ok: true, texto: texto, modelo: mod };
           }
         } catch (errNet) {
-          ultimoError = errNet.message;
+          ultimoError = errNet.name === "AbortError" ? "Tiempo de espera agotado (Timeout 8s). Probando siguiente..." : errNet.message;
         }
       }
     }
 
-    return { ok: false, error: ultimoError };
+    return { ok: false, error: ultimoError || "No se obtuvo respuesta rápida de la IA." };
   }
 
   function copiarConversacionChat() {
