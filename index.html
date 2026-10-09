@@ -1057,7 +1057,7 @@
         <div class="mb-2">
           <label class="form-label small fw-bold mb-1">Proveedor de IA:</label>
           <select class="form-select form-select-sm" id="selectProveedorIA" onchange="alternarCamposProveedorIA(this.value)">
-            <option value="groq">Groq Cloud (Llama 3.1 / 3.3 - Ultra Rápido y Gratis)</option>
+            <option value="groq">Groq Cloud (Llama 3.3 / 3.1 - Ultra Rápido y Gratis)</option>
             <option value="gemini">Google Gemini (AI Studio)</option>
           </select>
         </div>
@@ -1065,7 +1065,7 @@
         <div class="mb-2" id="grupoKeyGroq">
           <label class="form-label small fw-bold mb-1">API Key de Groq (Gratis en console.groq.com):</label>
           <input type="password" class="form-control form-control-sm" id="inputApiKeyGroq" placeholder="gsk_...">
-          <small class="text-muted" style="font-size: 7.5pt;">Detecta automáticamente los modelos habilitados de Llama en tu cuenta.</small>
+          <small class="text-muted" style="font-size: 7.5pt;">Modelos de texto oficiales: Llama 3.3 70B y Llama 3.1 8B Instant.</small>
         </div>
 
         <div class="mb-2 d-none" id="grupoKeyGemini">
@@ -2742,9 +2742,7 @@
           fechaAprobacion: numPdcaExtraido ? "01/10/2026" : "",
           aprobadoPor: numPdcaExtraido ? "Favio Graciette (Facilitador)" : "",
           pdfBase64: null,
-          acciones: accionesExtraidas.length > 0 ? accionesExtraidas : [
-            { orden: 1, que: "Revisión técnica de flota", porQue: "Carga inicial", como: "Auditoría", cuanto: "", quien: responsableExtraido, donde: "La Plata", cuando: deadlineExtraido, estado: "PENDIENTE" }
-          ]
+          acciones: []
         };
 
         baseDatos.push(nuevoPlan);
@@ -3482,23 +3480,26 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
 
     chatIAHistoria.push({ role: "user", content: textoMensaje });
 
+    // Ventana deslizante para no saturar cuota por minuto de Groq
+    if (chatIAHistoria.length > 8) {
+      chatIAHistoria = [chatIAHistoria[0], ...chatIAHistoria.slice(-6)];
+    }
+
     let respuestaFinal = "";
     let errorFinal = "";
     let nombreModelo = "";
 
     try {
       if (prov === "groq") {
-        // CASCADA DE MODELOS DE TEXTO EXCLUSIVOS EN GROQ (SIN MODELOS DE AUDIO)
+        // MODELOS OFICIALES ACTIVOS EN GROQ (SIN MODELOS DISCONTINUADOS)
         const messagesGroq = [
           { role: "system", content: "Sos un consultor de transporte y calidad de colectivos en Argentina. Respondé siempre en español argentino técnico." },
           ...chatIAHistoria.map(h => ({ role: h.role === "model" ? "assistant" : "user", content: h.content }))
         ];
 
         const modelosGroq = [
-          "llama-3.1-8b-instant",
-          "llama3-8b-8192",
-          "mixtral-8x7b-32768",
-          "gemma2-9b-it"
+          "llama-3.3-70b-versatile",
+          "llama-3.1-8b-instant"
         ];
 
         for (const mod of modelosGroq) {
@@ -3519,8 +3520,11 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
 
             if (!resGroq.ok) {
               const errData = await resGroq.json().catch(() => null);
+              if (resGroq.status === 429) {
+                throw new Error("Límite de velocidad por minuto alcanzado en Groq. Aguardá 15 segundos y reintentá.");
+              }
               errorFinal = errData?.error?.message || `HTTP ${resGroq.status}`;
-              console.warn(`Modelo ${mod} falló en Groq, probando siguiente...`);
+              console.warn(`Modelo ${mod} no disponible en Groq, probando alternativo...`);
               continue;
             }
 
@@ -3532,10 +3536,11 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
             }
           } catch (eGroq) {
             errorFinal = eGroq.message;
+            if (eGroq.message.includes("Límite de velocidad")) break;
           }
         }
       } else {
-        // GOOGLE GEMINI (v1beta CON AUTO-DESCUBRIMIENTO)
+        // GOOGLE GEMINI (v1beta)
         const contentsGemini = chatIAHistoria.map(h => ({
           role: h.role === "model" ? "model" : "user",
           parts: [{ text: h.content }]
@@ -3602,8 +3607,8 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
     } else {
       chatIAHistoria.pop();
       let errorMsg = errorFinal || "No se pudo obtener respuesta de la IA.";
-      if (errorMsg.toLowerCase().includes("requires terms acceptance")) {
-        errorMsg = "Uno de los modelos requería aceptación de términos. El sistema se actualizó para utilizar automáticamente Llama 3.1 8B Instant.";
+      if (errorMsg.includes("Límite de velocidad") || errorMsg.includes("429")) {
+        errorMsg = "Llegaste al límite temporal de consultas por minuto en la capa gratuita de Groq. Aguardá 15 segundos y presioná Enviar nuevamente.";
       } else if (errorMsg.toLowerCase().includes("high demand") || errorMsg.includes("503")) {
         errorMsg = "Servidores con alta demanda momentánea. Aguardá unos segundos y reintentá.";
       }
