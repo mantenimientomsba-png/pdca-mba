@@ -30,7 +30,6 @@
       padding: 0;
     }
 
-    /* BARRA SUPERIOR FIJA */
     .top-navbar-mba {
       background-color: #ffffff;
       border-bottom: 2px solid #005f73;
@@ -43,7 +42,6 @@
       object-fit: contain;
     }
 
-    /* PESTAÑAS DEL DASHBOARD */
     .nav-tabs-custom {
       border-bottom: 2px solid #dee2e6;
       margin-bottom: 20px;
@@ -64,7 +62,6 @@
       background: none;
     }
 
-    /* TARJETAS DEL DASHBOARD */
     .kpi-card {
       border-radius: 10px;
       border: 1px solid rgba(0,0,0,0.06);
@@ -72,16 +69,13 @@
       background-color: #ffffff;
       transition: transform 0.15s ease;
     }
-    .kpi-card:hover {
-      transform: translateY(-2px);
-    }
+    .kpi-card:hover { transform: translateY(-2px); }
     .kpi-numero {
       font-size: 2.1rem;
       font-weight: 700;
       line-height: 1.1;
     }
 
-    /* TARJETAS ESTILO PIZARRA */
     .card-pizarra {
       border-radius: 8px;
       border: 1px solid #e2e8f0;
@@ -116,7 +110,6 @@
       color: #1a202c;
     }
 
-    /* TABLERO KANBAN ESTILO TRELLO */
     .kanban-board {
       display: flex;
       gap: 16px;
@@ -165,11 +158,8 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0,0,0,0.12);
     }
-    .kanban-card.dragging {
-      opacity: 0.4;
-    }
+    .kanban-card.dragging { opacity: 0.4; }
 
-    /* CONTENEDOR Y HOJAS A4 VERTICALES */
     .contenedor-hojas-trabajo {
       display: flex;
       flex-direction: column;
@@ -190,7 +180,6 @@
       justify-content: flex-start;
     }
 
-    /* ENCABEZADO INSTITUCIONAL OFICIAL */
     .tabla-encabezado-oficial {
       width: 100%;
       border-collapse: collapse;
@@ -239,7 +228,6 @@
       white-space: nowrap;
     }
 
-    /* METADATOS DEL PLAN */
     .bloque-metadatos-plan { margin-bottom: 5px; }
     .doc-linea {
       margin-bottom: 3px;
@@ -249,7 +237,6 @@
     }
     .doc-label { font-weight: bold; color: #000; }
 
-    /* TABLA 5W2H */
     .tabla-contenedor-inner { width: 100%; margin-top: 3px; }
     .table-doc {
       width: 100%;
@@ -276,7 +263,6 @@
     .table-doc td.text-center, .table-doc th.text-center { text-align: center; }
     .col-como { white-space: pre-line; }
 
-    /* PIE DE FIRMAS */
     .bloque-pie-reglamentario {
       margin-top: auto;
       padding-top: 8px;
@@ -318,7 +304,6 @@
 
     .cursor-pointer { cursor: pointer; }
 
-    /* ESTILOS DEL CHAT IA */
     .chat-ia-msg {
       padding: 10px 14px;
       border-radius: 8px;
@@ -342,7 +327,6 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
 
-    /* IMPRESIÓN COMPACTA */
     @media print {
       @page {
         size: A4 portrait;
@@ -429,7 +413,7 @@
 <input type="file" id="inputLogoFile" accept="image/*" class="d-none" onchange="procesarArchivoLogo(event)">
 <input type="file" id="inputImportWord" accept=".docx" class="d-none" onchange="procesarArchivoWord(event)">
 
-<!-- 1. PANTALLA LOGIN Y REGISTRO (PORTAL LIMPIO) -->
+<!-- 1. PANTALLA LOGIN Y REGISTRO -->
 <div id="seccionLogin" class="container py-4 py-md-5">
   <div class="row justify-content-center">
     <div class="col-12 col-sm-8 col-md-5 col-lg-4">
@@ -442,7 +426,7 @@
           <form id="formLogin" onsubmit="ejecutarLogin(event)" class="text-start">
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Legajo o Email:</label>
-              <input type="text" class="form-control" id="loginIdentificador" placeholder="ej: 3110 o usuario@misionba.com.ar" required autofocus>
+              <input type="text" class="form-control" id="loginIdentificador" placeholder="Escriba su legajo (ej: 3110)" required autofocus>
             </div>
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Contraseña:</label>
@@ -810,7 +794,7 @@
 <!-- MODALES DEL SISTEMA                                      -->
 <!-- ======================================================== -->
 
-<!-- MODAL CONSULTOR IA INTERACTIVO (OPTIMIZADO EN VELOCIDAD Y ESPAÑOL ARGENTINA) -->
+<!-- MODAL CONSULTOR IA INTERACTIVO (CON SELECTOR DE PROVEEDOR GEMINI / GROQ) -->
 <div class="modal fade" id="modalRespuestaGemini" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -850,7 +834,7 @@
           <div id="geminiContenido" class="small lh-base"></div>
           <div id="geminiSpinner" class="text-center py-3 d-none">
             <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
-            <p class="small text-muted mt-2" id="geminiSpinnerText">Analizando y elaborando respuesta en segundos...</p>
+            <p class="small text-muted mt-2" id="geminiSpinnerText">Analizando y elaborando respuesta...</p>
           </div>
         </div>
 
@@ -1045,16 +1029,16 @@
   </div>
 </div>
 
-<!-- MODAL INTEGRACIONES (SOLO SISTEMAS) -->
+<!-- MODAL INTEGRACIONES (SOLO SISTEMAS: EMAILJS + SELECTOR DE IA) -->
 <div class="modal fade" id="modalConfigIntegraciones" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header bg-secondary text-white py-2">
-        <h6 class="modal-title m-0 fw-bold">⚙ Configuración de EmailJS y Gemini (Exclusivo Sistemas)</h6>
+        <h6 class="modal-title m-0 fw-bold">⚙ Configuración de EmailJS e Inteligencia Artificial</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body py-3">
-        <h6 class="fw-bold text-dark border-bottom pb-1 small">📧 Configuración EmailJS (Envío de Correos)</h6>
+        <h6 class="fw-bold text-dark border-bottom pb-1 small">📧 Configuración EmailJS (Notificaciones)</h6>
         <div class="mb-2">
           <label class="form-label small fw-bold mb-1">Service ID:</label>
           <input type="text" class="form-control form-control-sm" id="inputEmailJsServiceId" placeholder="ej: service_qegwiyh">
@@ -1068,10 +1052,25 @@
           <input type="text" class="form-control form-control-sm" id="inputEmailJsPublicKey" placeholder="ej: vl0LNjFsArj315Skm">
         </div>
 
-        <h6 class="fw-bold text-dark border-bottom pb-1 small pt-2">✨ Inteligencia Artificial</h6>
+        <h6 class="fw-bold text-dark border-bottom pb-1 small pt-2">✨ Motor de Inteligencia Artificial</h6>
         <div class="mb-2">
-          <label class="form-label small fw-bold mb-1">API Key de Gemini:</label>
+          <label class="form-label small fw-bold mb-1">Proveedor de IA:</label>
+          <select class="form-select form-select-sm" id="selectProveedorIA" onchange="alternarCamposProveedorIA(this.value)">
+            <option value="gemini">Google Gemini (Oficial)</option>
+            <option value="groq">Groq Cloud (Llama 3.3 70B - Ultra Rápido)</option>
+          </select>
+        </div>
+        
+        <div class="mb-2" id="grupoKeyGemini">
+          <label class="form-label small fw-bold mb-1">API Key de Google Gemini (AI Studio):</label>
           <input type="password" class="form-control form-control-sm" id="inputApiKeyGemini" placeholder="AIzaSy...">
+          <small class="text-muted" style="font-size: 7.5pt;">Endpoint fijado en v1beta (gemini-2.0-flash / gemini-1.5-flash).</small>
+        </div>
+
+        <div class="mb-2 d-none" id="grupoKeyGroq">
+          <label class="form-label small fw-bold mb-1">API Key de Groq (Gratis en console.groq.com):</label>
+          <input type="password" class="form-control form-control-sm" id="inputApiKeyGroq" placeholder="gsk_...">
+          <small class="text-muted" style="font-size: 7.5pt;">Ejecuta Llama 3.3 70B con respuesta en menos de 1 segundo.</small>
         </div>
       </div>
       <div class="modal-footer py-1">
@@ -1710,6 +1709,18 @@
     alert("¡EVIDENCIA GUARDADA CON ÉXITO!\n\nEl descargo y archivo adjunto quedaron registrados en la base de datos.");
   }
 
+  function alternarCamposProveedorIA(proveedor) {
+    const gGemini = document.getElementById("grupoKeyGemini");
+    const gGroq = document.getElementById("grupoKeyGroq");
+    if (proveedor === "groq") {
+      gGemini.classList.add("d-none");
+      gGroq.classList.remove("d-none");
+    } else {
+      gGemini.classList.remove("d-none");
+      gGroq.classList.add("d-none");
+    }
+  }
+
   function abrirConfigIntegraciones() {
     if (!usuarioSesion || usuarioSesion.rol !== "SISTEMAS") {
       alert("ACCESO DENEGADO: La configuración técnica es exclusiva del perfil de SISTEMAS.");
@@ -1718,7 +1729,13 @@
     document.getElementById("inputEmailJsServiceId").value = localStorage.getItem("emailjs_service_id") || "service_qegwiyh";
     document.getElementById("inputEmailJsTemplateId").value = localStorage.getItem("emailjs_template_id") || "template_pdca";
     document.getElementById("inputEmailJsPublicKey").value = localStorage.getItem("emailjs_public_key") || "vl0LNjFsArj315Skm";
+    
+    const prov = localStorage.getItem("ia_proveedor_activo") || "gemini";
+    document.getElementById("selectProveedorIA").value = prov;
     document.getElementById("inputApiKeyGemini").value = localStorage.getItem("gemini_api_key") || "";
+    document.getElementById("inputApiKeyGroq").value = localStorage.getItem("groq_api_key") || "";
+    alternarCamposProveedorIA(prov);
+
     new bootstrap.Modal(document.getElementById('modalConfigIntegraciones')).show();
   }
 
@@ -1727,12 +1744,16 @@
     const sId = document.getElementById("inputEmailJsServiceId").value.trim();
     const tId = document.getElementById("inputEmailJsTemplateId").value.trim();
     const pKey = document.getElementById("inputEmailJsPublicKey").value.trim();
-    const apiKey = document.getElementById("inputApiKeyGemini").value.trim();
+    const prov = document.getElementById("selectProveedorIA").value;
+    const keyGemini = document.getElementById("inputApiKeyGemini").value.trim();
+    const keyGroq = document.getElementById("inputApiKeyGroq").value.trim();
 
     localStorage.setItem("emailjs_service_id", sId);
     localStorage.setItem("emailjs_template_id", tId);
     localStorage.setItem("emailjs_public_key", pKey);
-    if (apiKey) localStorage.setItem("gemini_api_key", apiKey);
+    localStorage.setItem("ia_proveedor_activo", prov);
+    if (keyGemini) localStorage.setItem("gemini_api_key", keyGemini);
+    if (keyGroq) localStorage.setItem("groq_api_key", keyGroq);
 
     bootstrap.Modal.getInstance(document.getElementById('modalConfigIntegraciones')).hide();
     alert("Parámetros de Sistemas actualizados correctamente.");
@@ -2745,9 +2766,6 @@
     event.target.value = "";
   }
 
-  // ==========================================
-  // FLUJO DE ESTADOS Y ACCIONES
-  // ==========================================
   function registrarRevisionPlan() {
     if (!usuarioSesion) return;
     const plan = baseDatos[indiceActual];
@@ -2860,9 +2878,6 @@
     return String(maximo + 1).padStart(4, '0') + '/' + anio;
   }
 
-  // ========================================================
-  // MODIFICACIÓN DE ESTADO DE ACCIONES
-  // ========================================================
   function rotarEstadoAccion(originalIndex) {
     if (!usuarioSesion) {
       alert("Inicie sesión con su Legajo para actualizar avances de tareas.");
@@ -2884,9 +2899,6 @@
     if (solapaActualDashboard === "kanban") renderizarTableroKanban();
   }
 
-  // ========================================================
-  // BORRAR PDCA: FACILITADOR Y SISTEMAS
-  // ========================================================
   async function eliminarPDCA(index) {
     if (!usuarioSesion || (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "SISTEMAS")) {
       alert("PERMISO DENEGADO: Solo el Facilitador de Mantenimiento o el Operador de Sistemas pueden eliminar planes.");
@@ -2944,9 +2956,6 @@
     }
   }
 
-  // ==========================================
-  // NAVEGACIÓN Y SESIÓN
-  // ==========================================
   function cambiarVista(vista) {
     const sLogin = document.getElementById("seccionLogin");
     const sDash = document.getElementById("seccionDashboard");
@@ -3287,42 +3296,38 @@
   }
 
   // ========================================================
-  // ASISTENTE / CHAT CONVERSACIONAL DE IA (MULTI-TURNO & EN ESPAÑOL ARGENTINA)
+  // ASISTENTE / CHAT CONVERSACIONAL DE IA (MULTI-PROVEEDOR: GEMINI / GROQ)
   // ========================================================
   let chatIAHistoria = [];
 
-  function construirContextoBasePDCA() {
+  function construirPromptSistemaArgentina() {
     const plan = baseDatos[indiceActual];
-    let contexto = `Actuá como un experto Consultor Senior en Ingeniería de Transporte Público y Mantenimiento de Flota de Colectivos de Buenos Aires, Argentina (especialista en metodologías PDCA, normas ISO 9001 e IRAM 3810).
-Estás en un CHAT INTERACTIVO con el equipo de Misión Buenos Aires / La Central de Vicente López.
-Respondé SIEMPRE en Español de Argentina, con lenguaje técnico claro, constructivo y directamente aplicable al taller, cabeceras y tráfico de colectivos (usá términos como colectivos, choferes, gasoil, taller, fosa, cabeceras, líneas, etc.).
+    return `Actuá como un Ingeniero Senior y Consultor de Calidad en Transporte Público de Pasajeros de Buenos Aires, Argentina (especialista en metodologías PDCA, ISO 9001 e IRAM 3810).
+Estás en un chat técnico con el equipo de La Central de Vicente López / Misión Buenos Aires.
+Respondé SIEMPRE en Español de Argentina (usá terminología local: colectivos, choferes, gasoil, cabecera, fosa, taller, tráfico, etc.).
+Sé conciso, propositivo, práctico y fundamentá con rigor técnico.
 
-INFORMACIÓN DEL PLAN PDCA ACTUAL:
-• Nombre / Objeto: ${plan.titulo}
-• Política Institucional 2026: ${plan.politica}
+PLAN PDCA ACTUALMENTE CARGADO:
+• Título: ${plan.titulo}
+• Política: ${plan.politica}
 • Objetivo: ${plan.objetivo}
 • Meta: ${plan.meta}
 • Efecto Esperado: ${plan.efecto}
 • Responsable: ${plan.responsable}
-• Plazo (Dead Line): ${plan.deadline}
-• Estado: ${plan.estado}
-
-TAREAS 5W2H ACTUALMENTE REGISTRADAS:\n`;
-
-    (plan.acciones || []).forEach(a => {
-      contexto += `• Tarea #${a.orden}: ¿Qué?: ${a.que} | ¿Por qué?: ${a.porQue} | ¿Cómo?: ${a.como} | Responsable: ${a.quien} | Lugar: ${a.donde} | Plazo: ${a.cuando} | Estado: ${a.estado}\n`;
-    });
-
-    return contexto;
+• Dead Line: ${plan.deadline}
+• Acciones 5W2H:
+${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.porQue} | Cómo: ${a.como} \vert{} Resp:${a.quien} | Lugar: ${a.donde} \vert{} Plazo:${a.cuando})`).join('\n')}`;
   }
 
   function abrirModalConsultorIA(tipo = 'plan', indexAccion = -1) {
-    let apiKey = localStorage.getItem("gemini_api_key");
+    const prov = localStorage.getItem("ia_proveedor_activo") || "gemini";
+    const apiKey = prov === "groq" ? localStorage.getItem("groq_api_key") : localStorage.getItem("gemini_api_key");
+
     if (!apiKey) {
       if (usuarioSesion && usuarioSesion.rol === "SISTEMAS") {
         abrirConfigIntegraciones();
       } else {
-        alert("Consulte al Operador de Sistemas para configurar la API Key de Gemini en '⚙ Config'.");
+        alert("Consulte al Operador de Sistemas para configurar la API Key de " + (prov === "groq" ? "Groq" : "Gemini") + " en '⚙ Config'.");
       }
       return;
     }
@@ -3357,10 +3362,12 @@ TAREAS 5W2H ACTUALMENTE REGISTRADAS:\n`;
     chatIAHistoria = [];
     const contenedor = document.getElementById("geminiContenido");
     const plan = baseDatos[indiceActual];
+    const prov = localStorage.getItem("ia_proveedor_activo") || "gemini";
+    const provNombre = prov === "groq" ? "Groq (Llama 3.3 70B)" : "Google Gemini";
     
     contenedor.innerHTML = `
       <div class="alert alert-info py-2 mb-3" style="font-size: 8.5pt;">
-        👋 <strong>Asistente Técnico PDCA conectado:</strong> Tengo cargado el plan <em>"${plan.titulo}"</em>.<br>
+        👋 <strong>Asistente Técnico PDCA conectado (${provNombre}):</strong> Tengo cargado el plan <em>"${plan.titulo}"</em>.<br>
         Podés consultarme si está bien planteado, pedirme propuestas de mejora para las acciones o evaluar riesgos operativos. Escribí tu duda abajo o tocá una consulta rápida.
       </div>
     `;
@@ -3408,96 +3415,6 @@ TAREAS 5W2H ACTUALMENTE REGISTRADAS:\n`;
     enviarMensajeAlChatIA(pregunta);
   }
 
-  async function enviarMensajeAlChatIA(preguntaTexto) {
-    const apiKey = localStorage.getItem("gemini_api_key");
-    if (!apiKey) {
-      alert("Falta configurar la API Key de Gemini en '⚙ Config'.");
-      return;
-    }
-
-    const contenedor = document.getElementById("geminiContenido");
-    const spinner = document.getElementById("geminiSpinner");
-    const btnEnviar = document.getElementById("btnEnviarConsultaIA");
-    const scrollBox = document.getElementById("geminiChatContainer");
-
-    // 1. Mostrar mensaje del usuario en pantalla
-    const msgUserDiv = document.createElement("div");
-    msgUserDiv.className = "chat-ia-msg chat-ia-msg-user";
-    msgUserDiv.innerHTML = `<strong>👤 Consulta:</strong><br>${preguntaTexto.replace(/\n/g, '<br>')}`;
-    contenedor.appendChild(msgUserDiv);
-    scrollBox.scrollTop = scrollBox.scrollHeight;
-
-    spinner.classList.remove("d-none");
-    btnEnviar.disabled = true;
-
-    // 2. Preparar payload con historial conversacional multi-turno
-    const ambito = document.getElementById("selectAmbitoAuditoria").value;
-    let textoParaIA = preguntaTexto;
-
-    if (chatIAHistoria.length === 0) {
-      let contextoInicial = construirContextoBasePDCA();
-      if (ambito.startsWith("accion_")) {
-        const idx = parseInt(ambito.replace("accion_", ""));
-        const plan = baseDatos[indiceActual];
-        const acc = plan.acciones[idx];
-        contextoInicial += `\nNOTA: El usuario está enfocado puntualmente en la Tarea #${acc.orden}: "${acc.que}".`;
-      }
-      textoParaIA = `${contextoInicial}\n\nPregunta inicial del usuario:\n"${preguntaTexto}"`;
-    } else if (ambito.startsWith("accion_")) {
-      const idx = parseInt(ambito.replace("accion_", ""));
-      const plan = baseDatos[indiceActual];
-      const acc = plan.acciones[idx];
-      textoParaIA = `[Enfocado en Tarea #${acc.orden}: ${acc.que}]\n${preguntaTexto}`;
-    }
-
-    chatIAHistoria.push({
-      role: "user",
-      parts: [{ text: textoParaIA }]
-    });
-
-    // 3. Ejecución directa y rápida con timeout de 8s (sin ListModels lento)
-    const resultado = await llamarApiGeminiRapida(apiKey, chatIAHistoria);
-
-    spinner.classList.add("d-none");
-    btnEnviar.disabled = false;
-
-    const msgBotDiv = document.createElement("div");
-    msgBotDiv.className = "chat-ia-msg chat-ia-msg-bot";
-
-    if (resultado.ok) {
-      chatIAHistoria.push({
-        role: "model",
-        parts: [{ text: resultado.texto }]
-      });
-
-      const formateado = resultado.texto
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\n/g, '<br>');
-
-      msgBotDiv.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center mb-1">
-          <strong class="text-primary">✨ Consultor IA (${resultado.modelo}):</strong>
-        </div>
-        <div>${formateado}</div>
-      `;
-    } else {
-      chatIAHistoria.pop();
-
-      let errorMsg = resultado.error || "No se pudo conectar con el servicio de IA.";
-      if (errorMsg.toLowerCase().includes("high demand") || errorMsg.includes("503")) {
-        errorMsg = "Los servidores de Google AI Studio experimentan alta demanda momentánea. Aguardá 5 segundos y presioná Enviar nuevamente.";
-      } else if (errorMsg.toLowerCase().includes("api_key_invalid") || errorMsg.toLowerCase().includes("expired")) {
-        errorMsg = "La API Key ingresada no es válida o expiró. Por favor verificala en '⚙ Config'.";
-      }
-
-      msgBotDiv.innerHTML = `<span class="text-danger">⚠️ ${errorMsg}</span>`;
-    }
-
-    contenedor.appendChild(msgBotDiv);
-    scrollBox.scrollTop = scrollBox.scrollHeight;
-  }
-
-  // Motor optimizado: llamada directa con Timeout de 8s y fallback inmediato
   async function fetchConTimeout(url, opciones, timeoutMs = 8000) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -3511,48 +3428,152 @@ TAREAS 5W2H ACTUALMENTE REGISTRADAS:\n`;
     }
   }
 
-  async function llamarApiGeminiRapida(apiKey, historiaContenidos) {
-    // Modelos oficiales directos (los más rápidos y estables)
-    const modelos = ["gemini-2.0-flash", "gemini-1.5-flash"];
-    const versiones = ["v1beta", "v1"];
-    let ultimoError = "";
+  async function enviarMensajeAlChatIA(preguntaTexto) {
+    const prov = localStorage.getItem("ia_proveedor_activo") || "gemini";
+    const apiKey = prov === "groq" ? localStorage.getItem("groq_api_key") : localStorage.getItem("gemini_api_key");
 
-    for (const mod of modelos) {
-      for (const ver of versiones) {
-        try {
-          const endpoint = `https://generativelanguage.googleapis.com/${ver}/models/${mod}:generateContent?key=${apiKey}`;
-          const bodyPayload = JSON.stringify({
-            contents: historiaContenidos,
-            generationConfig: {
-              temperature: 0.6,
-              maxOutputTokens: 1200
-            }
-          });
-
-          let res = await fetchConTimeout(endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: bodyPayload
-          }, 8000);
-
-          if (!res.ok) {
-            const errJson = await res.json().catch(() => null);
-            ultimoError = errJson?.error?.message || `HTTP ${res.status}`;
-            continue;
-          }
-
-          const data = await res.json();
-          const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (texto) {
-            return { ok: true, texto: texto, modelo: mod };
-          }
-        } catch (errNet) {
-          ultimoError = errNet.name === "AbortError" ? "Tiempo de espera agotado (Timeout 8s). Probando siguiente..." : errNet.message;
-        }
-      }
+    if (!apiKey) {
+      alert("Falta configurar la API Key en '⚙ Config'.");
+      return;
     }
 
-    return { ok: false, error: ultimoError || "No se obtuvo respuesta rápida de la IA." };
+    const contenedor = document.getElementById("geminiContenido");
+    const spinner = document.getElementById("geminiSpinner");
+    const btnEnviar = document.getElementById("btnEnviarConsultaIA");
+    const scrollBox = document.getElementById("geminiChatContainer");
+
+    const msgUserDiv = document.createElement("div");
+    msgUserDiv.className = "chat-ia-msg chat-ia-msg-user";
+    msgUserDiv.innerHTML = `<strong>👤 Consulta:</strong><br>${preguntaTexto.replace(/\n/g, '<br>')}`;
+    contenedor.appendChild(msgUserDiv);
+    scrollBox.scrollTop = scrollBox.scrollHeight;
+
+    spinner.classList.remove("d-none");
+    btnEnviar.disabled = true;
+
+    const ambito = document.getElementById("selectAmbitoAuditoria").value;
+    let textoMensaje = preguntaTexto;
+
+    if (chatIAHistoria.length === 0) {
+      const promptSys = construirPromptSistemaArgentina();
+      let extra = "";
+      if (ambito.startsWith("accion_")) {
+        const idx = parseInt(ambito.replace("accion_", ""));
+        const acc = baseDatos[indiceActual].acciones[idx];
+        extra = `\n[Enfocado puntualmente en Tarea #${acc.orden}: ${acc.que}]`;
+      }
+      textoMensaje = `${promptSys}${extra}\n\nConsulta inicial:\n"${preguntaTexto}"`;
+    } else if (ambito.startsWith("accion_")) {
+      const idx = parseInt(ambito.replace("accion_", ""));
+      const acc = baseDatos[indiceActual].acciones[idx];
+      textoMensaje = `[Enfocado en Tarea #${acc.orden}: ${acc.que}]\n${preguntaTexto}`;
+    }
+
+    chatIAHistoria.push({ role: "user", content: textoMensaje });
+
+    let respuestaFinal = "";
+    let errorFinal = "";
+    let nombreModelo = "";
+
+    try {
+      if (prov === "groq") {
+        // LLAMADA A GROQ (OPENAI COMPATIBLE - ULTRA RÁPIDO)
+        const messagesGroq = [
+          { role: "system", content: "Sos un experto consultor de mantenimiento de colectivos y calidad ISO 9001/IRAM 3810 en Argentina. Respondé siempre en español argentino técnico." },
+          ...chatIAHistoria.map(h => ({ role: h.role === "model" ? "assistant" : "user", content: h.content }))
+        ];
+
+        const resGroq = await fetchConTimeout("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: messagesGroq,
+            temperature: 0.6,
+            max_tokens: 1200
+          })
+        }, 8000);
+
+        if (!resGroq.ok) {
+          const errData = await resGroq.json().catch(() => null);
+          throw new Error(errData?.error?.message || `Error Groq HTTP ${resGroq.status}`);
+        }
+        const dataGroq = await resGroq.json();
+        respuestaFinal = dataGroq.choices?.[0]?.message?.content || "";
+        nombreModelo = "Groq Llama 3.3";
+      } else {
+        // LLAMADA A GEMINI (EXCLUSIVAMENTE v1beta PARA EVITAR 404 DE v1)
+        const contentsGemini = chatIAHistoria.map(h => ({
+          role: h.role === "model" ? "model" : "user",
+          parts: [{ text: h.content }]
+        }));
+
+        const modelosGemini = ["gemini-2.0-flash", "gemini-1.5-flash"];
+        for (const mod of modelosGemini) {
+          try {
+            const urlGemini = `https://generativelanguage.googleapis.com/v1beta/models/${mod}:generateContent?key=${apiKey}`;
+            const resGem = await fetchConTimeout(urlGemini, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                contents: contentsGemini,
+                generationConfig: { temperature: 0.6, maxOutputTokens: 1200 }
+              })
+            }, 8000);
+
+            if (!resGem.ok) {
+              const errG = await resGem.json().catch(() => null);
+              errorFinal = errG?.error?.message || `HTTP ${resGem.status}`;
+              continue;
+            }
+
+            const dataGem = await resGem.json();
+            respuestaFinal = dataGem.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            if (respuestaFinal) {
+              nombreModelo = `Gemini (${mod})`;
+              break;
+            }
+          } catch (eG) {
+            errorFinal = eG.message;
+          }
+        }
+      }
+    } catch (errGeneral) {
+      errorFinal = errGeneral.message;
+    }
+
+    spinner.classList.add("d-none");
+    btnEnviar.disabled = false;
+
+    const msgBotDiv = document.createElement("div");
+    msgBotDiv.className = "chat-ia-msg chat-ia-msg-bot";
+
+    if (respuestaFinal) {
+      chatIAHistoria.push({ role: "model", content: respuestaFinal });
+      const formateado = respuestaFinal
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+
+      msgBotDiv.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <strong class="text-primary">✨ Consultor IA (${nombreModelo}):</strong>
+        </div>
+        <div>${formateado}</div>
+      `;
+    } else {
+      chatIAHistoria.pop();
+      let errorMsg = errorFinal || "No se pudo obtener respuesta de la IA.";
+      if (errorMsg.toLowerCase().includes("high demand") || errorMsg.includes("503")) {
+        errorMsg = "Los servidores de Google experimentan alta demanda momentánea. Aguardá 5 segundos y presioná Enviar nuevamente.";
+      }
+      msgBotDiv.innerHTML = `<span class="text-danger">⚠️ ${errorMsg}</span>`;
+    }
+
+    contenedor.appendChild(msgBotDiv);
+    scrollBox.scrollTop = scrollBox.scrollHeight;
   }
 
   function copiarConversacionChat() {
@@ -3565,7 +3586,6 @@ TAREAS 5W2H ACTUALMENTE REGISTRADAS:\n`;
     alert("¡Conversación copiada al portapapeles!");
   }
 
-  // INICIALIZACIÓN INMEDIATA
   function inicializarApp() {
     const selNuevo = document.getElementById("newPolitica");
     const selActiva = document.getElementById("selectPoliticaActiva");
