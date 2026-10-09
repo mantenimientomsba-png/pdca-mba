@@ -30,7 +30,6 @@
       padding: 0;
     }
 
-    /* BARRA SUPERIOR FIJA */
     .top-navbar-mba {
       background-color: #ffffff;
       border-bottom: 2px solid #005f73;
@@ -43,7 +42,6 @@
       object-fit: contain;
     }
 
-    /* PESTAÑAS DEL DASHBOARD */
     .nav-tabs-custom {
       border-bottom: 2px solid #dee2e6;
       margin-bottom: 20px;
@@ -64,7 +62,6 @@
       background: none;
     }
 
-    /* TARJETAS DEL DASHBOARD */
     .kpi-card {
       border-radius: 10px;
       border: 1px solid rgba(0,0,0,0.06);
@@ -72,16 +69,13 @@
       background-color: #ffffff;
       transition: transform 0.15s ease;
     }
-    .kpi-card:hover {
-      transform: translateY(-2px);
-    }
+    .kpi-card:hover { transform: translateY(-2px); }
     .kpi-numero {
       font-size: 2.1rem;
       font-weight: 700;
       line-height: 1.1;
     }
 
-    /* TARJETAS ESTILO PIZARRA */
     .card-pizarra {
       border-radius: 8px;
       border: 1px solid #e2e8f0;
@@ -116,7 +110,6 @@
       color: #1a202c;
     }
 
-    /* TABLERO KANBAN ESTILO TRELLO */
     .kanban-board {
       display: flex;
       gap: 16px;
@@ -165,11 +158,8 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0,0,0,0.12);
     }
-    .kanban-card.dragging {
-      opacity: 0.4;
-    }
+    .kanban-card.dragging { opacity: 0.4; }
 
-    /* CONTENEDOR Y HOJAS A4 VERTICALES */
     .contenedor-hojas-trabajo {
       display: flex;
       flex-direction: column;
@@ -190,7 +180,6 @@
       justify-content: flex-start;
     }
 
-    /* ENCABEZADO INSTITUCIONAL OFICIAL */
     .tabla-encabezado-oficial {
       width: 100%;
       border-collapse: collapse;
@@ -239,7 +228,6 @@
       white-space: nowrap;
     }
 
-    /* METADATOS DEL PLAN */
     .bloque-metadatos-plan { margin-bottom: 5px; }
     .doc-linea {
       margin-bottom: 3px;
@@ -249,7 +237,6 @@
     }
     .doc-label { font-weight: bold; color: #000; }
 
-    /* TABLA 5W2H */
     .tabla-contenedor-inner { width: 100%; margin-top: 3px; }
     .table-doc {
       width: 100%;
@@ -276,7 +263,6 @@
     .table-doc td.text-center, .table-doc th.text-center { text-align: center; }
     .col-como { white-space: pre-line; }
 
-    /* PIE DE FIRMAS */
     .bloque-pie-reglamentario {
       margin-top: auto;
       padding-top: 8px;
@@ -342,7 +328,6 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
 
-    /* IMPRESIÓN COMPACTA */
     @media print {
       @page {
         size: A4 portrait;
@@ -790,7 +775,6 @@
         <button class="btn btn-sm btn-outline-success fw-semibold d-none" id="btnMarcarFinalizado" onclick="finalizarPlanPDCA()">🏁 Finalizar Plan</button>
         <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanAutorizado()">🔓 Reabrir Edición</button>
         
-        <!-- SOLO BOTÓN IMPRIMIR NATIVO -->
         <button class="btn btn-sm btn-secondary fw-semibold" onclick="window.print()" title="Imprimir directo o guardar en PDF">
           🖨️ Imprimir
         </button>
@@ -811,7 +795,7 @@
 <!-- MODALES DEL SISTEMA                                      -->
 <!-- ======================================================== -->
 
-<!-- MODAL CONSULTOR IA INTERACTIVO (CHAT CONVERSACIONAL) -->
+<!-- MODAL CONSULTOR IA INTERACTIVO (CON AUTO-DETECCIÓN DINÁMICA DE MODELOS) -->
 <div class="modal fade" id="modalRespuestaGemini" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -857,7 +841,7 @@
 
         <!-- FORMULARIO DE MENSAJE -->
         <form onsubmit="ejecutarConsultaPersonalizadaIA(event)" class="d-flex gap-2">
-          <input type="text" class="form-control form-control-sm" id="inputPreguntaLibreIA" placeholder="Escribí tu consulta técnica... (ej: ¿Cómo mejoro la meta? o ¿Qué opinás de la tarea 1?)" required autocomplete="off">
+          <input type="text" class="form-control form-control-sm" id="inputPreguntaLibreIA" placeholder="Escribí tu consulta técnica... (ej: ¿Cómo mejoro la meta? o ¿Qué opinás del método?)" required autocomplete="off">
           <button type="submit" class="btn btn-sm btn-primary fw-bold text-nowrap px-3" id="btnEnviarConsultaIA">
             Enviar ➔
           </button>
@@ -1046,7 +1030,7 @@
   </div>
 </div>
 
-<!-- MODAL INTEGRACIONES (SOLO SISTEMAS) -->
+<!-- MODAL INTEGRACIONES (SOLO SISTEMAS: EMAILJS + SELECTOR DE IA) -->
 <div class="modal fade" id="modalConfigIntegraciones" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -1071,23 +1055,23 @@
 
         <h6 class="fw-bold text-dark border-bottom pb-1 small pt-2">✨ Motor de Inteligencia Artificial</h6>
         <div class="mb-2">
-          <label class="form-label small fw-bold mb-1">Proveedor de IA activo:</label>
+          <label class="form-label small fw-bold mb-1">Proveedor de IA:</label>
           <select class="form-select form-select-sm" id="selectProveedorIA" onchange="alternarCamposProveedorIA(this.value)">
+            <option value="groq">Groq Cloud (Llama 3.1 / 3.3 - Ultra Rápido y Gratis)</option>
             <option value="gemini">Google Gemini (AI Studio)</option>
-            <option value="groq">Groq Cloud (Llama 3.3 70B - Ultra Rápido)</option>
           </select>
         </div>
         
-        <div class="mb-2" id="grupoKeyGemini">
-          <label class="form-label small fw-bold mb-1">API Key de Google Gemini (AI Studio):</label>
-          <input type="password" class="form-control form-control-sm" id="inputApiKeyGemini" placeholder="AIzaSy...">
-          <small class="text-muted" style="font-size: 7.5pt;">El sistema detecta automáticamente qué modelo tiene activo tu clave.</small>
-        </div>
-
-        <div class="mb-2 d-none" id="grupoKeyGroq">
+        <div class="mb-2" id="grupoKeyGroq">
           <label class="form-label small fw-bold mb-1">API Key de Groq (Gratis en console.groq.com):</label>
           <input type="password" class="form-control form-control-sm" id="inputApiKeyGroq" placeholder="gsk_...">
-          <small class="text-muted" style="font-size: 7.5pt;">Modelo Llama 3.3 70B: respuesta en 1 segundo sin errores de versión.</small>
+          <small class="text-muted" style="font-size: 7.5pt;">Detecta automáticamente los modelos habilitados de Llama en tu cuenta.</small>
+        </div>
+
+        <div class="mb-2 d-none" id="grupoKeyGemini">
+          <label class="form-label small fw-bold mb-1">API Key de Google Gemini (AI Studio):</label>
+          <input type="password" class="form-control form-control-sm" id="inputApiKeyGemini" placeholder="AIzaSy...">
+          <small class="text-muted" style="font-size: 7.5pt;">Detecta automáticamente qué modelo tiene activo tu clave vía ListModels.</small>
         </div>
       </div>
       <div class="modal-footer py-1">
@@ -1100,19 +1084,17 @@
 
 <!-- MODAL CAMBIAR POLÍTICA -->
 <div class="modal fade" id="modalPoliticaActiva" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-dark text-white py-2">
-        <h6 class="modal-title m-0 fw-bold">Seleccionar Política 2026</h6>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body py-2">
-        <select class="form-select form-select-sm" id="selectPoliticaActiva"></select>
-      </div>
-      <div class="modal-footer py-1">
-        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-sm btn-primary fw-bold" onclick="guardarCambioPolitica()">Aplicar</button>
-      </div>
+  <div class="modal-dialog modal-content">
+    <div class="modal-header bg-dark text-white py-2">
+      <h6 class="modal-title m-0 fw-bold">Seleccionar Política 2026</h6>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    </div>
+    <div class="modal-body py-2">
+      <select class="form-select form-select-sm" id="selectPoliticaActiva"></select>
+    </div>
+    <div class="modal-footer py-1">
+      <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      <button type="submit" class="btn btn-sm btn-primary fw-bold" onclick="guardarCambioPolitica()">Aplicar</button>
     </div>
   </div>
 </div>
@@ -1747,7 +1729,7 @@
     document.getElementById("inputEmailJsTemplateId").value = localStorage.getItem("emailjs_template_id") || "template_pdca";
     document.getElementById("inputEmailJsPublicKey").value = localStorage.getItem("emailjs_public_key") || "vl0LNjFsArj315Skm";
     
-    const prov = localStorage.getItem("ia_proveedor_activo") || "gemini";
+    const prov = localStorage.getItem("ia_proveedor_activo") || "groq";
     document.getElementById("selectProveedorIA").value = prov;
     document.getElementById("inputApiKeyGemini").value = localStorage.getItem("gemini_api_key") || "";
     document.getElementById("inputApiKeyGroq").value = localStorage.getItem("groq_api_key") || "";
@@ -2895,9 +2877,6 @@
     return String(maximo + 1).padStart(4, '0') + '/' + anio;
   }
 
-  // ========================================================
-  // MODIFICACIÓN DE ESTADO DE ACCIONES
-  // ========================================================
   function rotarEstadoAccion(originalIndex) {
     if (!usuarioSesion) {
       alert("Inicie sesión con su Legajo para actualizar avances de tareas.");
@@ -2919,9 +2898,6 @@
     if (solapaActualDashboard === "kanban") renderizarTableroKanban();
   }
 
-  // ========================================================
-  // BORRAR PDCA: FACILITADOR Y SISTEMAS
-  // ========================================================
   async function eliminarPDCA(index) {
     if (!usuarioSesion || (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "SISTEMAS")) {
       alert("PERMISO DENEGADO: Solo el Facilitador de Mantenimiento o el Operador de Sistemas pueden eliminar planes.");
@@ -2979,9 +2955,6 @@
     }
   }
 
-  // ==========================================
-  // NAVEGACIÓN Y SESIÓN
-  // ==========================================
   function cambiarVista(vista) {
     const sLogin = document.getElementById("seccionLogin");
     const sDash = document.getElementById("seccionDashboard");
@@ -3346,10 +3319,9 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
   }
 
   function abrirModalConsultorIA(tipo = 'plan', indexAccion = -1) {
-    let prov = localStorage.getItem("ia_proveedor_activo") || "gemini";
+    let prov = localStorage.getItem("ia_proveedor_activo") || "groq";
     let apiKey = prov === "groq" ? localStorage.getItem("groq_api_key") : localStorage.getItem("gemini_api_key");
 
-    // Si no hay clave de Groq pero sí de Gemini, priorizar Gemini
     if (prov === "groq" && !apiKey && localStorage.getItem("gemini_api_key")) {
       prov = "gemini";
       apiKey = localStorage.getItem("gemini_api_key");
@@ -3395,8 +3367,8 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
     chatIAHistoria = [];
     const contenedor = document.getElementById("geminiContenido");
     const plan = baseDatos[indiceActual];
-    const prov = localStorage.getItem("ia_proveedor_activo") || "gemini";
-    const provNombre = prov === "groq" ? "Groq (Llama 3.3 70B)" : "Google Gemini";
+    const prov = localStorage.getItem("ia_proveedor_activo") || "groq";
+    const provNombre = prov === "groq" ? "Groq (Llama Instantáneo)" : "Google Gemini";
     
     contenedor.innerHTML = `
       <div class="alert alert-info py-2 mb-3" style="font-size: 8.5pt;">
@@ -3462,7 +3434,7 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
   }
 
   async function enviarMensajeAlChatIA(preguntaTexto) {
-    let prov = localStorage.getItem("ia_proveedor_activo") || "gemini";
+    let prov = localStorage.getItem("ia_proveedor_activo") || "groq";
     let apiKey = prov === "groq" ? localStorage.getItem("groq_api_key") : localStorage.getItem("gemini_api_key");
 
     if (prov === "groq" && !apiKey && localStorage.getItem("gemini_api_key")) {
@@ -3516,6 +3488,46 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
 
     try {
       if (prov === "groq") {
+        // 1. DETECCIÓN INTELIGENTE DE MODELOS GROQ
+        let modelosDisponiblesGroq = [];
+        try {
+          const resModels = await fetchConTimeout("https://api.groq.com/openai/v1/models", {
+            headers: { "Authorization": `Bearer ${apiKey}` }
+          }, 4000);
+          if (resModels.ok) {
+            const dataModels = await resModels.json();
+            modelosDisponiblesGroq = (dataModels.data || []).map(m => m.id);
+          }
+        } catch (eGroqModels) {
+          console.warn("Fallo listModels Groq:", eGroqModels);
+        }
+
+        // Si no listó, usar el catálogo estándar universal
+        if (modelosDisponiblesGroq.length === 0) {
+          modelosDisponiblesGroq = [
+            "llama-3.1-8b-instant",
+            "llama-3.3-70b-versatile",
+            "mixtral-8x7b-32768",
+            "gemma2-9b-it"
+          ];
+        }
+
+        // Prioridad: llama-3.1-8b-instant funciona en el 100% de las cuentas gratuitas
+        const prioridadesGroq = [
+          "llama-3.1-8b-instant",
+          "llama-3.3-70b-versatile",
+          "mixtral-8x7b-32768",
+          "gemma2-9b-it"
+        ];
+
+        let modeloGroqElegido = modelosDisponiblesGroq[0];
+        for (const p of prioridadesGroq) {
+          if (modelosDisponiblesGroq.includes(p)) {
+            modeloGroqElegido = p;
+            break;
+          }
+        }
+
         const messagesGroq = [
           { role: "system", content: "Sos un consultor de transporte y calidad de colectivos en Argentina. Respondé siempre en español argentino técnico." },
           ...chatIAHistoria.map(h => ({ role: h.role === "model" ? "assistant" : "user", content: h.content }))
@@ -3528,7 +3540,7 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
             "Authorization": `Bearer ${apiKey}`
           },
           body: JSON.stringify({
-            model: "llama-3.3-70b-versatile",
+            model: modeloGroqElegido,
             messages: messagesGroq,
             temperature: 0.6,
             max_tokens: 1200
@@ -3541,43 +3553,41 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
         }
         const dataGroq = await resGroq.json();
         respuestaFinal = dataGroq.choices?.[0]?.message?.content || "";
-        nombreModelo = "Groq (Llama 3.3)";
+        nombreModelo = `Groq (${modeloGroqElegido})`;
       } else {
-        // GOOGLE GEMINI CON LISTMODELS REAL
+        // 2. DETECCIÓN DINÁMICA DE MODELOS GEMINI VIA ListModels
         const contentsGemini = chatIAHistoria.map(h => ({
           role: h.role === "model" ? "model" : "user",
           parts: [{ text: h.content }]
         }));
 
-        let modelosHabilitados = [];
+        let modelosValidosGemini = [];
         try {
           const resList = await fetchConTimeout(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, { method: "GET" }, 4000);
           if (resList.ok) {
             const dataList = await resList.json();
             if (dataList && dataList.models) {
-              modelosHabilitados = dataList.models
+              modelosValidosGemini = dataList.models
                 .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
                 .map(m => m.name.replace("models/", ""));
             }
           }
         } catch (eList) {
-          console.warn("Fallo al listar modelos:", eList);
+          console.warn("Fallo listModels Gemini:", eList);
         }
 
-        // Si no listó, usar catálogo de respaldo seguro
-        if (modelosHabilitados.length === 0) {
-          modelosHabilitados = ["gemini-2.0-flash", "gemini-1.5-flash-latest", "gemini-pro", "gemini-1.5-flash"];
+        if (modelosValidosGemini.length === 0) {
+          modelosValidosGemini = ["gemini-1.5-flash-latest", "gemini-pro", "gemini-2.0-flash"];
         }
 
-        // Elegir el primer modelo disponible por orden de prioridad
         const prioridades = ["2.0-flash", "flash-latest", "1.5-flash", "pro"];
-        let modeloElegido = modelosHabilitados[0];
+        let modeloGeminiElegido = modelosValidosGemini[0];
         for (const p of prioridades) {
-          const match = modelosHabilitados.find(m => m.includes(p));
-          if (match) { modeloElegido = match; break; }
+          const match = modelosValidosGemini.find(m => m.includes(p));
+          if (match) { modeloGeminiElegido = match; break; }
         }
 
-        const urlGemini = `https://generativelanguage.googleapis.com/v1beta/models/${modeloElegido}:generateContent?key=${apiKey}`;
+        const urlGemini = `https://generativelanguage.googleapis.com/v1beta/models/${modeloGeminiElegido}:generateContent?key=${apiKey}`;
         const resGem = await fetchConTimeout(urlGemini, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -3594,7 +3604,7 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
 
         const dataGem = await resGem.json();
         respuestaFinal = dataGem.candidates?.[0]?.content?.parts?.[0]?.text || "";
-        nombreModelo = `Gemini (${modeloElegido})`;
+        nombreModelo = `Gemini (${modeloGeminiElegido})`;
       }
     } catch (errGeneral) {
       errorFinal = errGeneral.message;
@@ -3621,10 +3631,10 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
     } else {
       chatIAHistoria.pop();
       let errorMsg = errorFinal || "No se pudo obtener respuesta de la IA.";
-      if (errorMsg.toLowerCase().includes("not found")) {
-        errorMsg = "Tu API Key de Google no tiene habilitada la biblioteca Generative Language o tiene permisos restringidos. Te recomendamos generar una API Key gratuita en console.groq.com (opción Groq en ⚙ Config) para respuesta instantánea.";
+      if (errorMsg.toLowerCase().includes("not found") || errorMsg.toLowerCase().includes("does not exist")) {
+        errorMsg = "El modelo solicitado no está activo en esta clave de API. El sistema intentó detectar alternativas pero el acceso fue rechazado. Verifique los permisos de la clave en el panel.";
       } else if (errorMsg.toLowerCase().includes("high demand") || errorMsg.includes("503")) {
-        errorMsg = "Servidores de Google con alta demanda momentánea. Aguardá unos segundos y reintentá.";
+        errorMsg = "Servidores con alta demanda momentánea. Aguardá unos segundos y volvé a presionar Enviar.";
       }
       msgBotDiv.innerHTML = `<span class="text-danger">⚠️ ${errorMsg}</span>`;
     }
