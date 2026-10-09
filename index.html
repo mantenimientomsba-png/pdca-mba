@@ -20,96 +20,186 @@
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <!-- ESTILOS OFICIALES SALESFORCE LIGHTNING DESIGN SYSTEM (SLDS) -->
   <style>
+    :root {
+      --slds-brand-blue: #0176D3;
+      --slds-brand-dark: #0B2240;
+      --slds-bg-page: #F3F5F8;
+      --slds-card-bg: #FFFFFF;
+      --slds-border: #DDDBDA;
+      --slds-text-main: #181818;
+      --slds-text-muted: #706E6B;
+      --slds-success: #04844B;
+      --slds-warning: #FE9339;
+      --slds-danger: #EA001E;
+      --slds-info: #0176D3;
+    }
+
     body {
-      background-color: #f1f3f6;
-      font-family: Calibri, 'Segoe UI', Arial, sans-serif;
-      font-size: 10pt;
-      color: #212529;
+      background-color: var(--slds-bg-page);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 9.5pt;
+      color: var(--slds-text-main);
       margin: 0;
       padding: 0;
     }
 
+    /* BARRA SUPERIOR FIJA - ESTILO SALESFORCE APP BAR */
     .top-navbar-mba {
-      background-color: #ffffff;
-      border-bottom: 2px solid #005f73;
-      padding: 8px 18px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      background-color: #FFFFFF;
+      border-bottom: 2px solid var(--slds-brand-blue);
+      padding: 8px 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
     .brand-logo-img {
-      max-height: 42px;
+      max-height: 40px;
       max-width: 150px;
       object-fit: contain;
     }
 
+    /* BOTONES ESTILO SALESFORCE LIGHTNING */
+    .btn-primary {
+      background-color: var(--slds-brand-blue) !important;
+      border-color: var(--slds-brand-blue) !important;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+    .btn-primary:hover {
+      background-color: #014486 !important;
+      border-color: #014486 !important;
+    }
+    .btn-outline-primary {
+      color: var(--slds-brand-blue) !important;
+      border-color: var(--slds-brand-blue) !important;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+    .btn-outline-primary:hover {
+      background-color: var(--slds-brand-blue) !important;
+      color: #FFFFFF !important;
+    }
+    .btn-success {
+      background-color: var(--slds-success) !important;
+      border-color: var(--slds-success) !important;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+    .btn-success:hover {
+      background-color: #026337 !important;
+      border-color: #026337 !important;
+    }
+
+    /* SOLAPAS DASHBOARD ESTILO SALESFORCE TABS */
     .nav-tabs-custom {
-      border-bottom: 2px solid #dee2e6;
-      margin-bottom: 20px;
+      border-bottom: 1px solid var(--slds-border);
+      margin-bottom: 22px;
+      gap: 4px;
     }
     .nav-tabs-custom .nav-link {
-      color: #495057;
+      color: var(--slds-text-muted);
       font-weight: 600;
       font-size: 10pt;
       border: none;
       border-bottom: 3px solid transparent;
-      padding: 8px 18px;
+      padding: 10px 20px;
       border-radius: 0;
       cursor: pointer;
+      background: none;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+    .nav-tabs-custom .nav-link:hover {
+      color: var(--slds-brand-blue);
     }
     .nav-tabs-custom .nav-link.active {
-      color: #005f73;
-      border-bottom: 3px solid #005f73;
+      color: var(--slds-brand-blue);
+      border-bottom: 3px solid var(--slds-brand-blue);
       background: none;
     }
 
+    /* TARJETAS KPI ESTILO SALESFORCE LIGHTNING CARDS */
     .kpi-card {
-      border-radius: 10px;
-      border: 1px solid rgba(0,0,0,0.06);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      background-color: #ffffff;
-      transition: transform 0.15s ease;
+      border-radius: 6px;
+      border: 1px solid var(--slds-border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      background-color: #FFFFFF;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .kpi-card:hover { transform: translateY(-2px); }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
     .kpi-numero {
-      font-size: 2.1rem;
+      font-size: 2.2rem;
       font-weight: 700;
       line-height: 1.1;
+      color: var(--slds-brand-dark);
     }
 
+    /* TARJETAS PIZARRA */
     .card-pizarra {
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      background-color: #ffffff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      border-radius: 6px;
+      border: 1px solid var(--slds-border);
+      background-color: #FFFFFF;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
     .card-pizarra-header {
-      padding: 8px 14px;
-      border-bottom: 1px solid #edf2f7;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--slds-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 9pt;
-      font-weight: 600;
-      color: #2d3748;
+      font-weight: 700;
+      color: var(--slds-brand-dark);
+      background-color: #FAFBFD;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
     }
     .badge-filtro-pizarra {
-      background-color: #ebf8ff;
-      color: #3182ce;
+      background-color: #E8F4FD;
+      color: var(--slds-brand-blue);
       border-radius: 4px;
-      padding: 2px 6px;
+      padding: 3px 8px;
       font-size: 7.5pt;
       font-weight: 700;
     }
     .card-pizarra-body {
-      padding: 16px 14px;
+      padding: 18px 16px;
       text-align: center;
     }
     .numero-pizarra {
-      font-size: 2.3rem;
+      font-size: 2.4rem;
       font-weight: 700;
-      color: #1a202c;
+      color: var(--slds-brand-dark);
     }
 
+    /* TABLAS ESTILO SALESFORCE DATA TABLE */
+    .table-salesforce {
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--slds-border);
+      background: #FFFFFF;
+    }
+    .table-salesforce thead th {
+      background-color: #FAFBFD;
+      color: var(--slds-text-muted);
+      font-weight: 700;
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--slds-border);
+      padding: 10px 12px;
+    }
+    .table-salesforce tbody tr {
+      transition: background-color 0.15s ease;
+      border-bottom: 1px solid #F0F1F3;
+    }
+    .table-salesforce tbody tr:hover {
+      background-color: #F8FAFD;
+    }
+
+    /* TABLERO KANBAN ESTILO SALESFORCE PIPELINE */
     .kanban-board {
       display: flex;
       gap: 16px;
@@ -120,15 +210,15 @@
     .kanban-col {
       flex: 1;
       min-width: 310px;
-      background-color: #ebedf0;
-      border-radius: 8px;
+      background-color: #EEF4F8;
+      border-radius: 6px;
       padding: 12px;
-      border-top: 4px solid #ccc;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      border-top: 4px solid var(--slds-border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
-    .kanban-col-pendiente { border-top-color: #ef476f; }
-    .kanban-col-encurso { border-top-color: #ffb703; }
-    .kanban-col-listo { border-top-color: #06d6a0; }
+    .kanban-col-pendiente { border-top-color: var(--slds-danger); }
+    .kanban-col-encurso { border-top-color: var(--slds-warning); }
+    .kanban-col-listo { border-top-color: var(--slds-success); }
 
     .kanban-col-header {
       display: flex;
@@ -136,8 +226,10 @@
       align-items: center;
       margin-bottom: 12px;
       font-weight: 700;
-      font-size: 9.5pt;
-      color: #2b2d42;
+      font-size: 9pt;
+      color: var(--slds-brand-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     .kanban-card-list {
       display: flex;
@@ -146,20 +238,22 @@
       min-height: 150px;
     }
     .kanban-card {
-      background-color: #ffffff;
-      border-radius: 6px;
-      padding: 10px 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      border: 1px solid #e2e8f0;
+      background-color: #FFFFFF;
+      border-radius: 5px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--slds-border);
       cursor: grab;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
     .kanban-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 8px rgba(1, 118, 211, 0.12);
+      border-color: #BAE0FD;
     }
     .kanban-card.dragging { opacity: 0.4; }
 
+    /* CONTENEDOR Y HOJAS A4 VERTICALES (REGLAMENTARIAS BLANCO Y NEGRO PARA AUDITORÍA) */
     .contenedor-hojas-trabajo {
       display: flex;
       flex-direction: column;
@@ -168,16 +262,17 @@
       margin-bottom: 50px;
     }
     .hoja-a4 {
-      background-color: #ffffff;
+      background-color: #FFFFFF;
       width: 210mm;
       min-height: 297mm;
       padding: 8mm 12mm 8mm 12mm;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
       box-sizing: border-box;
       position: relative;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+      font-family: Calibri, 'Segoe UI', Arial, sans-serif;
     }
 
     .tabla-encabezado-oficial {
@@ -304,27 +399,28 @@
 
     .cursor-pointer { cursor: pointer; }
 
+    /* ESTILOS DEL CHAT IA */
     .chat-ia-msg {
-      padding: 10px 14px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      font-size: 9pt;
-      line-height: 1.45;
+      padding: 11px 15px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      font-size: 9.5pt;
+      line-height: 1.5;
     }
     .chat-ia-msg-user {
-      background-color: #e0f2fe;
-      border: 1px solid #bae6fd;
-      color: #0369a1;
-      margin-left: 30px;
+      background-color: #E8F4FD;
+      border: 1px solid #BAE0FD;
+      color: #014486;
+      margin-left: 35px;
       border-bottom-right-radius: 2px;
     }
     .chat-ia-msg-bot {
-      background-color: #ffffff;
-      border: 1px solid #e2e8f0;
-      color: #1e293b;
-      margin-right: 30px;
+      background-color: #FFFFFF;
+      border: 1px solid var(--slds-border);
+      color: var(--slds-text-main);
+      margin-right: 35px;
       border-bottom-left-radius: 2px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
     @media print {
@@ -379,24 +475,24 @@
 </head>
 <body>
 
-<!-- BARRA INSTITUCIONAL PERMANENTE -->
+<!-- BARRA INSTITUCIONAL PERMANENTE - SALESFORCE LIGHTNING STYLE -->
 <nav class="top-navbar-mba no-print d-flex justify-content-between align-items-center">
   <div class="d-flex align-items-center gap-2">
     <div onclick="document.getElementById('inputLogoFile').click()" title="Cambiar logo" class="cursor-pointer">
       <img id="logoBarraFija" src="logo.png" alt="Misión Buenos Aires" class="brand-logo-img" onerror="aplicarLogoFalso(this)">
     </div>
-    <div class="vr my-1 d-none d-md-block"></div>
+    <div class="vr my-1 d-none d-md-block" style="color: var(--slds-border);"></div>
     <div class="d-none d-sm-block">
-      <span class="fw-bold text-dark d-block lh-1 small">GESTIÓN INTEGRADA DE CALIDAD</span>
+      <span class="fw-bold d-block lh-1 small" style="color: var(--slds-brand-dark);">GESTIÓN INTEGRADA DE CALIDAD</span>
       <span class="text-muted" style="font-size: 7pt;">Misión Buenos Aires / La Central de Vicente López S.A.C.</span>
     </div>
   </div>
 
   <div class="d-flex align-items-center gap-2">
-    <span id="badgeCloudStatus" class="badge bg-secondary" style="font-size: 7.5pt;">Iniciando...</span>
+    <span id="badgeCloudStatus" class="badge" style="font-size: 7.5pt; background-color: #ECEBEA; color: #5C5B5A;">Iniciando...</span>
     <div id="usuarioInfoNavbar" class="d-none align-items-center gap-2">
-      <span class="small text-dark fw-semibold d-none d-md-inline" id="txtNavbarUsuario"></span>
-      <button class="btn btn-sm btn-outline-danger py-0 px-2 small d-none" id="btnAdminUsuariosNavbar" onclick="abrirModalGestionUsuarios()">👥 Usuarios TI</button>
+      <span class="small fw-semibold d-none d-md-inline" id="txtNavbarUsuario" style="color: var(--slds-brand-dark);"></span>
+      <button class="btn btn-sm btn-outline-secondary py-0 px-2 small d-none" id="btnAdminUsuariosNavbar" onclick="abrirModalGestionUsuarios()">👥 Usuarios TI</button>
       <button class="btn btn-sm btn-outline-danger py-0 px-2 small" onclick="cerrarSesion()">Salir</button>
     </div>
   </div>
@@ -413,29 +509,29 @@
 <input type="file" id="inputLogoFile" accept="image/*" class="d-none" onchange="procesarArchivoLogo(event)">
 <input type="file" id="inputImportWord" accept=".docx" class="d-none" onchange="procesarArchivoWord(event)">
 
-<!-- 1. PANTALLA LOGIN Y REGISTRO -->
+<!-- 1. PANTALLA LOGIN Y REGISTRO (PORTAL LIMPIO SALESFORCE) -->
 <div id="seccionLogin" class="container py-4 py-md-5">
   <div class="row justify-content-center">
     <div class="col-12 col-sm-8 col-md-5 col-lg-4">
-      <div class="card shadow-sm border-0 rounded-3 mt-2 mt-md-3">
+      <div class="card shadow-sm rounded-3 mt-2 mt-md-3" style="border: 1px solid var(--slds-border); background-color: #FFFFFF;">
         <div class="card-body p-4 text-center">
           <img id="logoCardLogin" src="logo.png" alt="Misión Buenos Aires" class="brand-logo-img mb-3" style="max-height: 50px;" onerror="aplicarLogoFalso(this)">
-          <h5 class="fw-bold text-dark mb-1">Acceso al Sistema PDCA</h5>
+          <h5 class="fw-bold mb-1" style="color: var(--slds-brand-dark);">Acceso al Sistema PDCA</h5>
           <p class="text-muted small mb-3">Ingrese con su Legajo o Correo Electrónico</p>
 
           <form id="formLogin" onsubmit="ejecutarLogin(event)" class="text-start">
             <div class="mb-3">
-              <label class="form-label small fw-bold mb-1">Legajo o Email:</label>
-              <input type="text" class="form-control" id="loginIdentificador" placeholder="ej: 3110 o usuario@misionba.com.ar" required autofocus>
+              <label class="form-label small fw-bold mb-1" style="color: var(--slds-text-muted);">Legajo o Email:</label>
+              <input type="text" class="form-control" id="loginIdentificador" placeholder="ej: 3110 o usuario@misionba.com.ar" required autofocus style="border-color: var(--slds-border);">
             </div>
             <div class="mb-3">
-              <label class="form-label small fw-bold mb-1">Contraseña:</label>
-              <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" required>
+              <label class="form-label small fw-bold mb-1" style="color: var(--slds-text-muted);">Contraseña:</label>
+              <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" required style="border-color: var(--slds-border);">
             </div>
             <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">Ingresar al Sistema</button>
           </form>
 
-          <hr class="my-3">
+          <hr class="my-3" style="border-color: var(--slds-border);">
 
           <div class="text-center">
             <button class="btn btn-sm btn-outline-success w-100 fw-bold" onclick="abrirModalRegistro()">
@@ -452,10 +548,10 @@
 <div id="seccionDashboard" class="container-fluid container-md py-3 py-md-4 d-none">
 
   <!-- BANNER EXCLUSIVO DE SISTEMAS -->
-  <div id="panelBannerSistemas" class="alert alert-dark border-0 shadow-sm d-none mb-3 py-2 px-3">
+  <div id="panelBannerSistemas" class="alert alert-dark border-0 shadow-sm d-none mb-3 py-2 px-3" style="background-color: var(--slds-brand-dark);">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
       <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-danger px-2 py-1">🛠️ OPERADOR DE SISTEMAS</span>
+        <span class="badge px-2 py-1" style="background-color: var(--slds-danger);">🛠️ OPERADOR DE SISTEMAS</span>
         <span class="text-white small">Gestión técnica exclusiva de cuentas, roles y parámetros de EmailJS/IA</span>
       </div>
       <div class="d-flex gap-2">
@@ -468,18 +564,18 @@
   <!-- CABECERA DEL DASHBOARD -->
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <div>
-      <h5 class="fw-bold m-0 text-dark" id="dashSaludoUsuario">Bienvenido</h5>
+      <h5 class="fw-bold m-0" id="dashSaludoUsuario" style="color: var(--slds-brand-dark);">Bienvenido</h5>
       <p class="text-muted small m-0" id="dashSubtituloRol">Panel de control de planes e indicadores de calidad</p>
     </div>
     <div class="d-flex gap-2 flex-wrap">
       <button class="btn btn-outline-secondary btn-sm fw-semibold d-none" id="btnAdminUsuariosDash" onclick="abrirModalGestionUsuarios()">
         👥 Usuarios y Permisos
       </button>
-      <button class="btn btn-outline-info btn-sm fw-semibold d-none" id="btnConfigIntegracionesDash" onclick="abrirConfigIntegraciones()">
+      <button class="btn btn-outline-primary btn-sm fw-semibold d-none" id="btnConfigIntegracionesDash" onclick="abrirConfigIntegraciones()">
         ⚙ Config (EmailJS & IA)
       </button>
       
-      <button class="btn btn-outline-success btn-sm fw-semibold" onclick="document.getElementById('inputImportWord').click()" title="Adjuntar archivo Word .docx con plantilla PDCA">
+      <button class="btn btn-outline-secondary btn-sm fw-semibold" onclick="document.getElementById('inputImportWord').click()" title="Adjuntar archivo Word .docx con plantilla PDCA">
         📎 Importar Word (.docx)
       </button>
       <button class="btn btn-primary btn-sm fw-semibold" onclick="abrirModalNuevoPDCA()">+ Nuevo PDCA</button>
@@ -509,50 +605,50 @@
   <div id="vistaSolapaRegistro">
     <div class="row g-2 g-md-3 mb-4">
       <div class="col-6 col-md-3">
-        <div class="card kpi-card p-3 border-start border-4 border-primary">
+        <div class="card kpi-card p-3 border-start border-4" style="border-left-color: var(--slds-brand-blue) !important;">
           <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Total Planes</span>
           <div class="d-flex justify-content-between align-items-center mt-1">
-            <span class="kpi-numero text-dark" id="kpiTotalPlanes">0</span>
-            <span class="badge bg-primary-subtle text-primary small" style="font-size: 7pt;">Oficiales</span>
+            <span class="kpi-numero" id="kpiTotalPlanes">0</span>
+            <span class="badge" style="background-color: #E8F4FD; color: var(--slds-brand-blue); font-size: 7pt;">Oficiales</span>
           </div>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="card kpi-card p-3 border-start border-4 border-warning">
+        <div class="card kpi-card p-3 border-start border-4" style="border-left-color: var(--slds-warning) !important;">
           <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">En Borrador / Revisión</span>
           <div class="d-flex justify-content-between align-items-center mt-1">
-            <span class="kpi-numero text-warning" id="kpiEnProceso">0</span>
-            <span class="badge bg-warning-subtle text-warning small" style="font-size: 7pt;">Pendientes</span>
+            <span class="kpi-numero" id="kpiEnProceso" style="color: var(--slds-warning);">0</span>
+            <span class="badge" style="background-color: #FFF3E8; color: #B56100; font-size: 7pt;">Pendientes</span>
           </div>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="card kpi-card p-3 border-start border-4 border-info">
+        <div class="card kpi-card p-3 border-start border-4" style="border-left-color: var(--slds-brand-blue) !important;">
           <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Aprobados (En Curso)</span>
           <div class="d-flex justify-content-between align-items-center mt-1">
-            <span class="kpi-numero text-info" id="kpiAprobados">0</span>
-            <span class="badge bg-info-subtle text-info small" style="font-size: 7pt;">Activos</span>
+            <span class="kpi-numero" id="kpiAprobados" style="color: var(--slds-brand-blue);">0</span>
+            <span class="badge" style="background-color: #E8F4FD; color: var(--slds-brand-blue); font-size: 7pt;">Activos</span>
           </div>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="card kpi-card p-3 border-start border-4 border-success">
+        <div class="card kpi-card p-3 border-start border-4" style="border-left-color: var(--slds-success) !important;">
           <span class="text-muted small text-uppercase fw-bold" style="font-size: 7.5pt;">Finalizados (Dead Line)</span>
           <div class="d-flex justify-content-between align-items-center mt-1">
-            <span class="kpi-numero text-success" id="kpiFinalizados">0</span>
-            <span class="badge bg-success-subtle text-success small" style="font-size: 7pt;">Cerrados</span>
+            <span class="kpi-numero" id="kpiFinalizados" style="color: var(--slds-success);">0</span>
+            <span class="badge" style="background-color: #EBF7EE; color: var(--slds-success); font-size: 7pt;">Cerrados</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- TABLA DE PLANES CON BUSCADOR -->
-    <div class="card shadow-sm border-0 rounded-3 mb-4">
-      <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <h6 class="fw-bold m-0 text-dark">Planes Registrados</h6>
+    <div class="card shadow-sm border-0 rounded-3 mb-4" style="border: 1px solid var(--slds-border) !important;">
+      <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="border-bottom: 1px solid var(--slds-border);">
+        <h6 class="fw-bold m-0" style="color: var(--slds-brand-dark);">Planes Registrados</h6>
         <div class="d-flex gap-2 align-items-center">
-          <input type="text" class="form-control form-control-sm" id="inputBuscarPlan" placeholder="🔍 Buscar por nombre o N°..." style="width: 200px;" onkeyup="renderizarTablaDashboard()">
-          <select class="form-select form-select-sm" id="filtroEstadoDashboard" style="width: 170px;" onchange="renderizarTablaDashboard()">
+          <input type="text" class="form-control form-control-sm" id="inputBuscarPlan" placeholder="🔍 Buscar por nombre o N°..." style="width: 200px; border-color: var(--slds-border);" onkeyup="renderizarTablaDashboard()">
+          <select class="form-select form-select-sm" id="filtroEstadoDashboard" style="width: 170px; border-color: var(--slds-border);" onchange="renderizarTablaDashboard()">
             <option value="TODOS">Todos los estados</option>
             <option value="BORRADOR">Borradores</option>
             <option value="REVISADO">Revisados</option>
@@ -562,8 +658,8 @@
         </div>
       </div>
       <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0" style="font-size: 9pt;">
-          <thead class="table-light">
+        <table class="table table-salesforce align-middle mb-0" style="font-size: 9pt;">
+          <thead>
             <tr>
               <th style="width: 13%;">PDCA</th>
               <th style="width: 33%;">Nombre / Objeto del Plan</th>
@@ -589,7 +685,7 @@
             <span class="badge-filtro-pizarra">PDCA</span>
           </div>
           <div class="card-pizarra-body">
-            <div class="numero-pizarra text-dark" id="pizTotalPDCA">0</div>
+            <div class="numero-pizarra" id="pizTotalPDCA">0</div>
           </div>
         </div>
       </div>
@@ -600,7 +696,7 @@
             <span class="badge-filtro-pizarra">PDCA</span>
           </div>
           <div class="card-pizarra-body">
-            <div class="numero-pizarra text-warning" id="pizEnCursoPDCA">0</div>
+            <div class="numero-pizarra" id="pizEnCursoPDCA" style="color: var(--slds-warning);">0</div>
           </div>
         </div>
       </div>
@@ -611,7 +707,7 @@
             <span class="badge-filtro-pizarra">PDCA</span>
           </div>
           <div class="card-pizarra-body">
-            <div class="numero-pizarra text-danger" id="pizBorradorPDCA">0</div>
+            <div class="numero-pizarra" id="pizBorradorPDCA" style="color: var(--slds-danger);">0</div>
           </div>
         </div>
       </div>
@@ -622,7 +718,7 @@
             <span class="badge-filtro-pizarra">PDCA</span>
           </div>
           <div class="card-pizarra-body">
-            <div class="numero-pizarra text-success" id="pizListoPDCA">0</div>
+            <div class="numero-pizarra" id="pizListoPDCA" style="color: var(--slds-success);">0</div>
           </div>
         </div>
       </div>
@@ -663,10 +759,10 @@
         <div class="card card-pizarra p-3 text-center">
           <span class="text-muted small fw-bold text-uppercase">Cumplimiento Global de Planes</span>
           <div class="my-2">
-            <span class="display-6 fw-bold text-primary" id="pizPorcentajeCumplimientoPDCA">0%</span>
+            <span class="display-6 fw-bold" id="pizPorcentajeCumplimientoPDCA" style="color: var(--slds-brand-blue);">0%</span>
           </div>
-          <div class="progress" style="height: 8px;">
-            <div class="progress-bar bg-success" id="pizBarraCumplimientoPDCA" style="width: 0%"></div>
+          <div class="progress" style="height: 8px; background-color: #E5E7EB;">
+            <div class="progress-bar" id="pizBarraCumplimientoPDCA" style="width: 0%; background-color: var(--slds-success);"></div>
           </div>
           <small class="text-muted mt-2 d-block" id="pizDetalleAvancePDCA">0 de 0 planes formalmente cerrados</small>
         </div>
@@ -683,17 +779,17 @@
   <!-- VISTA 3: TABLERO KANBAN & CRONOGRAMA -->
   <div id="vistaSolapaKanban" class="d-none">
     
-    <div class="card shadow-sm border-0 rounded-3 mb-3 p-3 bg-white">
+    <div class="card shadow-sm rounded-3 mb-3 p-3 bg-white" style="border: 1px solid var(--slds-border);">
       <div class="row g-2 align-items-center">
         <div class="col-12 col-md-6">
           <label class="form-label small fw-bold mb-1 text-muted">Filtrar tareas por Plan PDCA:</label>
-          <select class="form-select form-select-sm" id="filtroKanbanPDCA" onchange="renderizarTableroKanban()">
+          <select class="form-select form-select-sm" id="filtroKanbanPDCA" style="border-color: var(--slds-border);" onchange="renderizarTableroKanban()">
             <option value="TODOS">Todos los Planes PDCA (Vista Global)</option>
           </select>
         </div>
         <div class="col-12 col-md-6">
           <label class="form-label small fw-bold mb-1 text-muted">Filtrar por Responsable:</label>
-          <input type="text" class="form-control form-control-sm" id="filtroKanbanResp" placeholder="Escriba un nombre..." onkeyup="renderizarTableroKanban()">
+          <input type="text" class="form-control form-control-sm" id="filtroKanbanResp" placeholder="Escriba un nombre..." style="border-color: var(--slds-border);" onkeyup="renderizarTableroKanban()">
         </div>
       </div>
     </div>
@@ -702,7 +798,7 @@
       <div class="kanban-col kanban-col-pendiente" ondragover="event.preventDefault()" ondrop="soltarTarjetaKanban(event, 'PENDIENTE')">
         <div class="kanban-col-header">
           <span>🔴 PENDIENTE / DETENIDO</span>
-          <span class="badge bg-danger rounded-pill" id="kbCountPendiente">0</span>
+          <span class="badge rounded-pill" id="kbCountPendiente" style="background-color: var(--slds-danger);">0</span>
         </div>
         <div class="kanban-card-list" id="kbListaPendiente"></div>
       </div>
@@ -710,7 +806,7 @@
       <div class="kanban-col kanban-col-encurso" ondragover="event.preventDefault()" ondrop="soltarTarjetaKanban(event, 'EN_PROCESO')">
         <div class="kanban-col-header">
           <span>🟡 EN CURSO</span>
-          <span class="badge bg-warning text-dark rounded-pill" id="kbCountEnCurso">0</span>
+          <span class="badge rounded-pill text-white" id="kbCountEnCurso" style="background-color: var(--slds-warning);">0</span>
         </div>
         <div class="kanban-card-list" id="kbListaEnCurso"></div>
       </div>
@@ -718,20 +814,20 @@
       <div class="kanban-col kanban-col-listo" ondragover="event.preventDefault()" ondrop="soltarTarjetaKanban(event, 'COMPLETADA')">
         <div class="kanban-col-header">
           <span>🟢 LISTO / COMPLETADA</span>
-          <span class="badge bg-success rounded-pill" id="kbCountListo">0</span>
+          <span class="badge rounded-pill" id="kbCountListo" style="background-color: var(--slds-success);">0</span>
         </div>
         <div class="kanban-card-list" id="kbListaListo"></div>
       </div>
     </div>
 
-    <div class="card shadow-sm border-0 rounded-3 mb-4">
-      <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h6 class="fw-bold m-0 text-dark">📅 Cronograma de Seguimiento y Avance de Tareas</h6>
-        <span class="badge bg-light text-muted border small">Línea de tiempo</span>
+    <div class="card shadow-sm border-0 rounded-3 mb-4" style="border: 1px solid var(--slds-border) !important;">
+      <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center" style="border-bottom: 1px solid var(--slds-border);">
+        <h6 class="fw-bold m-0" style="color: var(--slds-brand-dark);">📅 Cronograma de Seguimiento y Avance de Tareas</h6>
+        <span class="badge border small text-muted" style="background-color: #FAFBFD;">Línea de tiempo</span>
       </div>
       <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0" style="font-size: 8.5pt;">
-          <thead class="table-light">
+        <table class="table table-salesforce align-middle mb-0" style="font-size: 8.5pt;">
+          <thead>
             <tr>
               <th style="width: 15%;">Plan PDCA</th>
               <th style="width: 25%;">Tarea (¿Qué?)</th>
@@ -757,7 +853,7 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 px-md-2">
       <div class="d-flex align-items-center gap-2">
         <button class="btn btn-sm btn-outline-dark fw-semibold" onclick="cambiarVista('dashboard')">⬅ Volver</button>
-        <select id="pdcaSelect" class="form-select form-select-sm" style="max-width: 280px;" onchange="seleccionarPDCA(this.value)"></select>
+        <select id="pdcaSelect" class="form-select form-select-sm" style="max-width: 280px; border-color: var(--slds-border);" onchange="seleccionarPDCA(this.value)"></select>
         <button class="btn btn-sm btn-outline-danger fw-semibold d-none" id="btnBorrarPlanDoc" onclick="eliminarPDCAActual()" title="Eliminar definitivamente este PDCA">🗑️ Borrar Plan</button>
       </div>
       <div class="d-flex align-items-center gap-1 flex-wrap">
@@ -767,9 +863,9 @@
         <button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirModalConsultorIA('plan')" title="Abrir chat de revisión y propuestas de mejora con IA">
           ✨ Revisión y Chat con IA
         </button>
-        <span id="badgeEstadoPantalla" class="badge bg-secondary">BORRADOR</span>
+        <span id="badgeEstadoPantalla" class="badge" style="background-color: #ECEBEA; color: #5C5B5A;">BORRADOR</span>
         
-        <button class="btn btn-sm btn-outline-warning fw-semibold" id="btnRevisarPlan" onclick="registrarRevisionPlan()">📝 Revisar Plan</button>
+        <button class="btn btn-sm btn-outline-warning fw-semibold text-dark" id="btnRevisarPlan" onclick="registrarRevisionPlan()">📝 Revisar Plan</button>
         <button class="btn btn-sm btn-success fw-semibold" id="btnAprobarPlan" onclick="aprobarPlanFacilitador()">✔ Aprobar y Asignar N° (Facilitador)</button>
         <button class="btn btn-sm btn-outline-success fw-semibold d-none" id="btnMarcarFinalizado" onclick="finalizarPlanPDCA()">🏁 Finalizar Plan</button>
         <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanAutorizado()">🔓 Reabrir Edición</button>
@@ -782,7 +878,7 @@
   </div>
 
   <div class="container-fluid px-1 px-md-3 py-3">
-    <div id="bannerBloqueo" class="alert alert-danger py-2 mb-2 no-print d-none" style="max-width: 210mm; margin: auto; font-size: 8.5pt;">
+    <div id="bannerBloqueo" class="alert py-2 mb-2 no-print d-none" style="max-width: 210mm; margin: auto; font-size: 8.5pt; background-color: #FEEAEA; border: 1px solid #FCA5A5; color: #991B1B;">
       <strong>🔒 PLAN OFICIAL FORMALIZADO:</strong> Aprobado por Facilitador / Calidad para asegurar trazabilidad. <em>El progreso de las tareas (En curso / Listo) permanece modificable haciendo clic sobre cada estado o desde el Tablero Kanban.</em>
     </div>
 
@@ -794,11 +890,11 @@
 <!-- MODALES DEL SISTEMA                                      -->
 <!-- ======================================================== -->
 
-<!-- MODAL CONSULTOR IA INTERACTIVO (CON AUTO-DETECCIÓN DINÁMICA DE MODELOS) -->
+<!-- MODAL CONSULTOR IA INTERACTIVO (SLDS POLISHED) -->
 <div class="modal fade" id="modalRespuestaGemini" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-dark text-white py-2 d-flex justify-content-between align-items-center">
+    <div class="modal-content" style="border: 1px solid var(--slds-border); border-radius: 6px;">
+      <div class="modal-header py-2 text-white d-flex justify-content-between align-items-center" style="background-color: var(--slds-brand-dark);">
         <h6 class="modal-title m-0 fw-bold">✨ Asistente IA - Revisión y Propuestas PDCA</h6>
         <div class="d-flex align-items-center gap-2">
           <button type="button" class="btn btn-xs btn-outline-light py-0 px-2" style="font-size: 8pt;" onclick="reiniciarChatIA()" title="Reiniciar conversación">🔄 Reiniciar Chat</button>
@@ -806,9 +902,9 @@
         </div>
       </div>
       <div class="modal-body py-3">
-        <div class="bg-light p-2 rounded border mb-2">
-          <label class="form-label small fw-bold m-0 text-dark">Alcance de la consulta:</label>
-          <select class="form-select form-select-sm mt-1" id="selectAmbitoAuditoria" onchange="seleccionarAmbitoConsulta(this.value)"></select>
+        <div class="p-2 rounded border mb-2" style="background-color: #FAFBFD; border-color: var(--slds-border) !important;">
+          <label class="form-label small fw-bold m-0" style="color: var(--slds-brand-dark);">Alcance de la consulta:</label>
+          <select class="form-select form-select-sm mt-1" id="selectAmbitoAuditoria" style="border-color: var(--slds-border);" onchange="seleccionarAmbitoConsulta(this.value)"></select>
         </div>
 
         <div class="mb-3">
@@ -830,7 +926,7 @@
         </div>
 
         <!-- CONTENEDOR DE CONVERSACIÓN DE CHAT -->
-        <div id="geminiChatContainer" class="p-3 border rounded bg-light mb-3" style="min-height: 250px; max-height: 50vh; overflow-y: auto;">
+        <div id="geminiChatContainer" class="p-3 border rounded mb-3" style="min-height: 250px; max-height: 50vh; overflow-y: auto; background-color: #F8FAFC; border-color: var(--slds-border) !important;">
           <div id="geminiContenido" class="small lh-base"></div>
           <div id="geminiSpinner" class="text-center py-3 d-none">
             <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
@@ -840,13 +936,13 @@
 
         <!-- FORMULARIO DE MENSAJE -->
         <form onsubmit="ejecutarConsultaPersonalizadaIA(event)" class="d-flex gap-2">
-          <input type="text" class="form-control form-control-sm" id="inputPreguntaLibreIA" placeholder="Escribí tu consulta técnica... (ej: ¿Cómo mejoro la meta? o ¿Qué opinás del método?)" required autocomplete="off">
+          <input type="text" class="form-control form-control-sm" id="inputPreguntaLibreIA" placeholder="Escribí tu consulta técnica... (ej: ¿Cómo mejoro la meta? o ¿Qué opinás del método?)" required autocomplete="off" style="border-color: var(--slds-border);">
           <button type="submit" class="btn btn-sm btn-primary fw-bold text-nowrap px-3" id="btnEnviarConsultaIA">
             Enviar ➔
           </button>
         </form>
       </div>
-      <div class="modal-footer py-1">
+      <div class="modal-footer py-1" style="border-top: 1px solid var(--slds-border);">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         <button type="button" class="btn btn-sm btn-outline-primary" onclick="copiarConversacionChat()">📋 Copiar Conversación</button>
       </div>
@@ -857,8 +953,8 @@
 <!-- MODAL EXCLUSIVO DE EVIDENCIA DE CUMPLIMIENTO (KANBAN) -->
 <div class="modal fade" id="modalEvidenciaKanban" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-md">
-    <div class="modal-content">
-      <div class="modal-header bg-dark text-white py-2">
+    <div class="modal-content" style="border: 1px solid var(--slds-border); border-radius: 6px;">
+      <div class="modal-header py-2 text-white" style="background-color: var(--slds-brand-dark);">
         <h6 class="modal-title m-0 fw-bold" id="lblModalEvidenciaTitulo">📎 Evidencia de Cumplimiento</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -869,7 +965,7 @@
         <input type="hidden" id="evNombreArchivo" value="">
 
         <div class="modal-body py-3">
-          <div class="bg-light p-2 rounded border mb-3 small">
+          <div class="p-2 rounded border mb-3 small" style="background-color: #FAFBFD; border-color: var(--slds-border) !important;">
             <div><strong id="evPlanTitulo">PDCA</strong></div>
             <div class="text-muted" id="evTareaTexto">Tarea</div>
             <div class="text-muted mt-1" id="evResponsableTexto">Resp: --</div>
@@ -879,7 +975,7 @@
             <label class="form-label small fw-bold mb-1">
               📝 Observaciones técnicas / Justificación de la acción:
             </label>
-            <textarea class="form-control form-control-sm" id="evTextoObservacion" rows="3" placeholder="Ej: OT #14580 cerrada en taller Barracas. Se realizó la prueba y no presenta pérdidas..."></textarea>
+            <textarea class="form-control form-control-sm" id="evTextoObservacion" rows="3" placeholder="Ej: OT #14580 cerrada en taller Barracas. Se realizó la prueba y no presenta pérdidas..." style="border-color: var(--slds-border);"></textarea>
             <small class="text-muted" style="font-size: 7.5pt;">Opcional: detalle de número de orden de trabajo, remito o resultado del control.</small>
           </div>
 
@@ -887,11 +983,11 @@
             <label class="form-label small fw-bold mb-1">
               📷 Adjuntar foto o documento de comprobante:
             </label>
-            <input type="file" class="form-control form-control-sm" id="inputArchivoEvidencia" accept="image/*,.pdf" onchange="procesarArchivoEvidencia(event)">
+            <input type="file" class="form-control form-control-sm" id="inputArchivoEvidencia" accept="image/*,.pdf" style="border-color: var(--slds-border);" onchange="procesarArchivoEvidencia(event)">
             <small class="text-muted" style="font-size: 7.5pt;">Formatos: Fotos (JPG, PNG) o PDF. El sistema optimiza imágenes pesadas automáticamente.</small>
           </div>
 
-          <div id="contenedorPreviewEvidencia" class="p-2 border rounded bg-white text-center d-none mb-2">
+          <div id="contenedorPreviewEvidencia" class="p-2 border rounded bg-white text-center d-none mb-2" style="border-color: var(--slds-border) !important;">
             <div id="previewFotoEvidenciaCont" class="mb-2 d-none">
               <img id="imgPreviewEvidencia" src="" alt="Comprobante" style="max-height: 140px; max-width: 100%; border-radius: 4px; object-fit: contain;">
             </div>
@@ -907,7 +1003,7 @@
           <div id="infoRegistroEvidencia" class="small text-muted fst-italic mt-2 d-none" style="font-size: 7.5pt;"></div>
         </div>
 
-        <div class="modal-footer py-2">
+        <div class="modal-footer py-2" style="border-top: 1px solid var(--slds-border);">
           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="submit" class="btn btn-sm btn-success fw-bold px-3">💾 Guardar Evidencia</button>
         </div>
@@ -919,8 +1015,8 @@
 <!-- MODAL PREVIO DE NOTIFICACIÓN POR EMAIL -->
 <div class="modal fade" id="modalEnvioEmailPDCA" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white py-2">
+    <div class="modal-content" style="border: 1px solid var(--slds-border); border-radius: 6px;">
+      <div class="modal-header text-white py-2" style="background-color: var(--slds-brand-blue);">
         <h6 class="modal-title m-0 fw-bold">📧 Notificación de PDCA por Correo Electrónico (EmailJS)</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -931,7 +1027,7 @@
 
         <div class="table-responsive mb-3">
           <table class="table table-sm table-bordered align-middle mb-0" style="font-size: 8.5pt;">
-            <thead class="table-light">
+            <thead style="background-color: #FAFBFD;">
               <tr>
                 <th style="width: 25%;">Responsable</th>
                 <th style="width: 25%;">Rol en Plan</th>
@@ -942,12 +1038,12 @@
           </table>
         </div>
 
-        <div class="alert alert-light border small text-muted py-2 mb-0" style="font-size: 8pt;">
+        <div class="alert alert-light border small text-muted py-2 mb-0" style="font-size: 8pt; border-color: var(--slds-border) !important;">
           <strong>Remitente:</strong> Cuenta configurada en EmailJS (Service ID: <code id="txtServiceIdActual">--</code>)<br>
           <strong>Plantilla:</strong> <code id="txtTemplateIdActual">--</code>
         </div>
       </div>
-      <div class="modal-footer py-2">
+      <div class="modal-footer py-2" style="border-top: 1px solid var(--slds-border);">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <button type="submit" class="btn btn-sm btn-success fw-bold px-3" id="btnEjecutarEnvioEmail" onclick="ejecutarEnvioEmailConfirmado()">
           ✉️ Enviar Notificaciones Ahora
@@ -960,8 +1056,8 @@
 <!-- MODAL REGISTRO DE USUARIOS -->
 <div class="modal fade" id="modalRegistroUsuario" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-dark text-white py-2">
+    <div class="modal-content" style="border: 1px solid var(--slds-border); border-radius: 6px;">
+      <div class="modal-header py-2 text-white" style="background-color: var(--slds-brand-dark);">
         <h6 class="modal-title m-0 fw-bold">Registro de Personal - Sistema PDCA</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -969,25 +1065,25 @@
         <div class="modal-body py-3">
           <div class="mb-2">
             <label class="form-label small fw-bold mb-1">Nombre y Apellido:</label>
-            <input type="text" class="form-control form-control-sm" id="regNombre" placeholder="ej: Juan Araujo" required>
+            <input type="text" class="form-control form-control-sm" id="regNombre" placeholder="ej: Juan Araujo" required style="border-color: var(--slds-border);">
           </div>
           <div class="mb-2">
             <label class="form-label small fw-bold mb-1">Correo Electrónico:</label>
-            <input type="email" class="form-control form-control-sm" id="regEmail" placeholder="ej: jaraujo@misionba.com.ar" required>
+            <input type="email" class="form-control form-control-sm" id="regEmail" placeholder="ej: jaraujo@misionba.com.ar" required style="border-color: var(--slds-border);">
           </div>
           <div class="mb-2">
             <label class="form-label small fw-bold mb-1">N° de Legajo:</label>
-            <input type="text" class="form-control form-control-sm" id="regLegajo" placeholder="ej: 4055" required>
+            <input type="text" class="form-control form-control-sm" id="regLegajo" placeholder="ej: 4055" required style="border-color: var(--slds-border);">
           </div>
           <div class="mb-3">
             <label class="form-label small fw-bold mb-1">Contraseña:</label>
-            <input type="password" class="form-control form-control-sm" id="regClave" placeholder="Mínimo 4 caracteres" required>
+            <input type="password" class="form-control form-control-sm" id="regClave" placeholder="Mínimo 4 caracteres" required style="border-color: var(--slds-border);">
           </div>
-          <div class="alert alert-info py-2 small mb-0" style="font-size: 7.5pt;">
+          <div class="alert alert-info py-2 small mb-0" style="font-size: 7.5pt; background-color: #E8F4FD; border-color: #BAE0FD; color: #014486;">
             * Los nuevos usuarios se crean inicialmente con perfil <strong>MONITOR</strong>. El Operador de Sistemas asignará los permisos correspondientes.
           </div>
         </div>
-        <div class="modal-footer py-1">
+        <div class="modal-footer py-1" style="border-top: 1px solid var(--slds-border);">
           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
           <button type="submit" class="btn btn-sm btn-success fw-bold">Completar Registro</button>
         </div>
@@ -999,8 +1095,8 @@
 <!-- MODAL GESTIÓN DE USUARIOS Y PERMISOS (SOLO SISTEMAS) -->
 <div class="modal fade" id="modalGestionUsuarios" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-dark text-white py-2">
+    <div class="modal-content" style="border: 1px solid var(--slds-border); border-radius: 6px;">
+      <div class="modal-header py-2 text-white" style="background-color: var(--slds-brand-dark);">
         <h6 class="modal-title m-0 fw-bold">👥 Administración de Usuarios y Permisos TI (Exclusivo Sistemas)</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -1008,7 +1104,7 @@
         <p class="text-muted small mb-2">Base de datos de personas habilitadas para operar, revisar o aprobar en Firestore:</p>
         <div class="table-responsive">
           <table class="table table-sm table-hover align-middle mb-0" style="font-size: 8.5pt;">
-            <thead class="table-light">
+            <thead style="background-color: #FAFBFD;">
               <tr>
                 <th>Legajo</th>
                 <th>Nombre</th>
@@ -1022,7 +1118,7 @@
           </table>
         </div>
       </div>
-      <div class="modal-footer py-1">
+      <div class="modal-footer py-1" style="border-top: 1px solid var(--slds-border);">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
@@ -1032,30 +1128,30 @@
 <!-- MODAL INTEGRACIONES (SOLO SISTEMAS: EMAILJS + SELECTOR DE IA) -->
 <div class="modal fade" id="modalConfigIntegraciones" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-secondary text-white py-2">
+    <div class="modal-content" style="border: 1px solid var(--slds-border); border-radius: 6px;">
+      <div class="modal-header py-2 text-white" style="background-color: var(--slds-brand-dark);">
         <h6 class="modal-title m-0 fw-bold">⚙ Configuración de EmailJS e Inteligencia Artificial</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body py-3">
-        <h6 class="fw-bold text-dark border-bottom pb-1 small">📧 Configuración EmailJS (Notificaciones)</h6>
+        <h6 class="fw-bold border-bottom pb-1 small" style="color: var(--slds-brand-dark); border-color: var(--slds-border) !important;">📧 Configuración EmailJS (Notificaciones)</h6>
         <div class="mb-2">
           <label class="form-label small fw-bold mb-1">Service ID:</label>
-          <input type="text" class="form-control form-control-sm" id="inputEmailJsServiceId" placeholder="ej: service_qegwiyh">
+          <input type="text" class="form-control form-control-sm" id="inputEmailJsServiceId" placeholder="ej: service_qegwiyh" style="border-color: var(--slds-border);">
         </div>
         <div class="mb-2">
           <label class="form-label small fw-bold mb-1">Template ID:</label>
-          <input type="text" class="form-control form-control-sm" id="inputEmailJsTemplateId" placeholder="ej: template_pdca">
+          <input type="text" class="form-control form-control-sm" id="inputEmailJsTemplateId" placeholder="ej: template_pdca" style="border-color: var(--slds-border);">
         </div>
         <div class="mb-3">
           <label class="form-label small fw-bold mb-1">Public Key (User ID):</label>
-          <input type="text" class="form-control form-control-sm" id="inputEmailJsPublicKey" placeholder="ej: vl0LNjFsArj315Skm">
+          <input type="text" class="form-control form-control-sm" id="inputEmailJsPublicKey" placeholder="ej: vl0LNjFsArj315Skm" style="border-color: var(--slds-border);">
         </div>
 
-        <h6 class="fw-bold text-dark border-bottom pb-1 small pt-2">✨ Motor de Inteligencia Artificial</h6>
+        <h6 class="fw-bold border-bottom pb-1 small pt-2" style="color: var(--slds-brand-dark); border-color: var(--slds-border) !important;">✨ Motor de Inteligencia Artificial</h6>
         <div class="mb-2">
           <label class="form-label small fw-bold mb-1">Proveedor de IA:</label>
-          <select class="form-select form-select-sm" id="selectProveedorIA" onchange="alternarCamposProveedorIA(this.value)">
+          <select class="form-select form-select-sm" id="selectProveedorIA" style="border-color: var(--slds-border);" onchange="alternarCamposProveedorIA(this.value)">
             <option value="groq">Groq Cloud (GPT-OSS / Llama - Ultra Rápido y Gratis)</option>
             <option value="gemini">Google Gemini (AI Studio)</option>
           </select>
@@ -1063,17 +1159,17 @@
         
         <div class="mb-2" id="grupoKeyGroq">
           <label class="form-label small fw-bold mb-1">API Key de Groq (Gratis en console.groq.com):</label>
-          <input type="password" class="form-control form-control-sm" id="inputApiKeyGroq" placeholder="gsk_...">
+          <input type="password" class="form-control form-control-sm" id="inputApiKeyGroq" placeholder="gsk_..." style="border-color: var(--slds-border);">
           <small class="text-muted" style="font-size: 7.5pt;">Modelos de texto oficiales: openai/gpt-oss-20b y openai/gpt-oss-120b.</small>
         </div>
 
         <div class="mb-2 d-none" id="grupoKeyGemini">
           <label class="form-label small fw-bold mb-1">API Key de Google Gemini (AI Studio):</label>
-          <input type="password" class="form-control form-control-sm" id="inputApiKeyGemini" placeholder="AIzaSy...">
+          <input type="password" class="form-control form-control-sm" id="inputApiKeyGemini" placeholder="AIzaSy..." style="border-color: var(--slds-border);">
           <small class="text-muted" style="font-size: 7.5pt;">Modelos oficiales activos: gemini-2.5-flash y gemini-2.0-flash.</small>
         </div>
       </div>
-      <div class="modal-footer py-1">
+      <div class="modal-footer py-1" style="border-top: 1px solid var(--slds-border);">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         <button type="submit" class="btn btn-sm btn-primary fw-bold" onclick="guardarIntegraciones()">Guardar Configuración</button>
       </div>
@@ -1083,15 +1179,15 @@
 
 <!-- MODAL CAMBIAR POLÍTICA -->
 <div class="modal fade" id="modalPoliticaActiva" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-content">
-    <div class="modal-header bg-dark text-white py-2">
+  <div class="modal-dialog modal-content" style="border: 1px solid var(--slds-border); border-radius: 6px;">
+    <div class="modal-header py-2 text-white" style="background-color: var(--slds-brand-dark);">
       <h6 class="modal-title m-0 fw-bold">Seleccionar Política 2026</h6>
       <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
     </div>
     <div class="modal-body py-2">
-      <select class="form-select form-select-sm" id="selectPoliticaActiva"></select>
+      <select class="form-select form-select-sm" id="selectPoliticaActiva" style="border-color: var(--slds-border);"></select>
     </div>
-    <div class="modal-footer py-1">
+    <div class="modal-footer py-1" style="border-top: 1px solid var(--slds-border);">
       <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
       <button type="submit" class="btn btn-sm btn-primary fw-bold" onclick="guardarCambioPolitica()">Aplicar</button>
     </div>
@@ -1101,8 +1197,8 @@
 <!-- MODAL ACCIÓN 5W2H -->
 <div class="modal fade" id="modalAccion5W2H" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white py-2">
+    <div class="modal-content" style="border: 1px solid var(--slds-border); border-radius: 6px;">
+      <div class="modal-header text-white py-2" style="background-color: var(--slds-brand-blue);">
         <h6 class="modal-title m-0 fw-bold" id="modalAccionTitulo">Editar Acción 5W2H</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -1112,35 +1208,35 @@
           <div class="row g-2">
             <div class="col-12">
               <label class="form-label small fw-bold mb-1">¿Qué? (Tarea):</label>
-              <textarea class="form-control form-control-sm" id="accQue" rows="2" required></textarea>
+              <textarea class="form-control form-control-sm" id="accQue" rows="2" required style="border-color: var(--slds-border);"></textarea>
             </div>
             <div class="col-12">
               <label class="form-label small fw-bold mb-1">¿Por qué?:</label>
-              <textarea class="form-control form-control-sm" id="accPorQue" rows="2" required></textarea>
+              <textarea class="form-control form-control-sm" id="accPorQue" rows="2" required style="border-color: var(--slds-border);"></textarea>
             </div>
             <div class="col-12">
               <label class="form-label small fw-bold mb-1">¿Cómo? (Procedimiento):</label>
-              <textarea class="form-control form-control-sm" id="accComo" rows="4" required></textarea>
+              <textarea class="form-control form-control-sm" id="accComo" rows="4" required style="border-color: var(--slds-border);"></textarea>
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label small fw-bold mb-1">¿Quién? (Responsable):</label>
-              <input type="text" class="form-control form-control-sm" id="accQuien" required>
+              <input type="text" class="form-control form-control-sm" id="accQuien" required style="border-color: var(--slds-border);">
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label small fw-bold mb-1">¿Cuánto?:</label>
-              <input type="text" class="form-control form-control-sm" id="accCuanto">
+              <input type="text" class="form-control form-control-sm" id="accCuanto" style="border-color: var(--slds-border);">
             </div>
             <div class="col-6 col-md-4">
               <label class="form-label small fw-bold mb-1">¿Dónde?:</label>
-              <input type="text" class="form-control form-control-sm" id="accDonde" required>
+              <input type="text" class="form-control form-control-sm" id="accDonde" required style="border-color: var(--slds-border);">
             </div>
             <div class="col-6 col-md-4">
               <label class="form-label small fw-bold mb-1">¿Cuándo?:</label>
-              <input type="text" class="form-control form-control-sm" id="accCuando" required>
+              <input type="text" class="form-control form-control-sm" id="accCuando" required style="border-color: var(--slds-border);">
             </div>
             <div class="col-12 col-md-4">
               <label class="form-label small fw-bold mb-1">Estado de Ejecución:</label>
-              <select class="form-select form-select-sm" id="accEstado">
+              <select class="form-select form-select-sm" id="accEstado" style="border-color: var(--slds-border);">
                 <option value="PENDIENTE">PENDIENTE / DETENIDO</option>
                 <option value="EN_PROCESO">EN CURSO</option>
                 <option value="COMPLETADA">LISTO</option>
@@ -1148,7 +1244,7 @@
             </div>
           </div>
         </div>
-        <div class="modal-footer py-1">
+        <div class="modal-footer py-1" style="border-top: 1px solid var(--slds-border);">
           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
           <button type="submit" class="btn btn-sm btn-success fw-bold">Guardar</button>
         </div>
@@ -1160,8 +1256,8 @@
 <!-- MODAL NUEVO PDCA -->
 <div class="modal fade" id="modalNuevoPDCA" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header bg-dark text-white py-2">
+    <div class="modal-content" style="border: 1px solid var(--slds-border); border-radius: 6px;">
+      <div class="modal-header py-2 text-white" style="background-color: var(--slds-brand-dark);">
         <h6 class="modal-title m-0 fw-bold">Nuevo Plan PDCA (Borrador)</h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -1170,47 +1266,47 @@
           <div class="row g-2">
             <div class="col-6 col-md-5">
               <label class="form-label fw-bold small mb-1">CÓD.:</label>
-              <input type="text" class="form-control form-control-sm" id="newCodDoc" value="01-9999-99-99-99-9999-PD-00-01-02" required>
+              <input type="text" class="form-control form-control-sm" id="newCodDoc" value="01-9999-99-99-99-9999-PD-00-01-02" required style="border-color: var(--slds-border);">
             </div>
             <div class="col-6 col-md-4">
               <label class="form-label fw-bold small mb-1">PDCA N° (Correlativo):</label>
-              <input type="text" class="form-control form-control-sm bg-light" id="newNumPdca" value="Se asignará al aprobar" readonly>
+              <input type="text" class="form-control form-control-sm bg-light" id="newNumPdca" value="Se asignará al aprobar" readonly style="border-color: var(--slds-border);">
             </div>
             <div class="col-12 col-md-3">
               <label class="form-label fw-bold small mb-1">Página:</label>
-              <input type="text" class="form-control form-control-sm" id="newPaginaDoc" value="Página 1 de 2" required>
+              <input type="text" class="form-control form-control-sm" id="newPaginaDoc" value="Página 1 de 2" required style="border-color: var(--slds-border);">
             </div>
             <div class="col-12">
               <label class="form-label fw-bold small mb-1">Nombre / Objeto del PDCA (Cabecera):</label>
-              <input type="text" class="form-control form-control-sm" id="newTitulo" placeholder="ej: Optimizar el uso del combustible. Línea 129" required>
+              <input type="text" class="form-control form-control-sm" id="newTitulo" placeholder="ej: Optimizar el uso del combustible. Línea 129" required style="border-color: var(--slds-border);">
             </div>
             <div class="col-12">
               <label class="form-label fw-bold small mb-1 text-primary">Política 2026:</label>
-              <select class="form-select form-select-sm" id="newPolitica" required></select>
+              <select class="form-select form-select-sm" id="newPolitica" required style="border-color: var(--slds-border);"></select>
             </div>
             <div class="col-12">
               <label class="form-label fw-bold small mb-1">Objetivo:</label>
-              <textarea class="form-control form-control-sm" id="newObjetivo" rows="2" required></textarea>
+              <textarea class="form-control form-control-sm" id="newObjetivo" rows="2" required style="border-color: var(--slds-border);"></textarea>
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label fw-bold small mb-1">Meta:</label>
-              <input type="text" class="form-control form-control-sm" id="newMeta" required>
+              <input type="text" class="form-control form-control-sm" id="newMeta" required style="border-color: var(--slds-border);">
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label fw-bold small mb-1">Efecto Esperado:</label>
-              <input type="text" class="form-control form-control-sm" id="newEfecto" required>
+              <input type="text" class="form-control form-control-sm" id="newEfecto" required style="border-color: var(--slds-border);">
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label fw-bold small mb-1">Responsable:</label>
-              <input type="text" class="form-control form-control-sm" id="newResponsable" required>
+              <input type="text" class="form-control form-control-sm" id="newResponsable" required style="border-color: var(--slds-border);">
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label fw-bold small mb-1">Dead Line:</label>
-              <input type="text" class="form-control form-control-sm" id="newDeadline" placeholder="31/10/2026" required>
+              <input type="text" class="form-control form-control-sm" id="newDeadline" placeholder="31/10/2026" required style="border-color: var(--slds-border);">
             </div>
           </div>
         </div>
-        <div class="modal-footer py-1">
+        <div class="modal-footer py-1" style="border-top: 1px solid var(--slds-border);">
           <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
           <button type="submit" class="btn btn-sm btn-success fw-semibold">Guardar y Abrir Plan</button>
         </div>
@@ -1343,8 +1439,10 @@
     contBases.innerHTML = "";
     Object.keys(planesPorPolitica).forEach(p => {
       const badge = document.createElement("span");
-      badge.className = "badge bg-light text-dark border px-3 py-2";
+      badge.className = "badge text-dark border px-3 py-2";
       badge.style.fontSize = "8.5pt";
+      badge.style.backgroundColor = "#FAFBFD";
+      badge.style.borderColor = "var(--slds-border)";
       badge.innerHTML = `📌 <strong>${p}</strong>: ${planesPorPolitica[p]} plan(es)`;
       contBases.appendChild(badge);
     });
@@ -1363,7 +1461,7 @@
           labels: ['En curso (Aprobados)', 'Borrador / Revisión', 'Finalizados'],
           datasets: [{
             data: totalPlanes > 0 ? [enCurso, borradorRevision, finalizados] : [0, 0, 1],
-            backgroundColor: ['#ffb703', '#ef476f', '#06d6a0'],
+            backgroundColor: ['#FE9339', '#EA001E', '#04844B'],
             borderWidth: 2,
             borderColor: '#ffffff'
           }]
@@ -1377,9 +1475,9 @@
       });
 
       document.getElementById("chartEstadoLeyenda").innerHTML = `
-        <span><span style="color:#ffb703;">●</span> En curso: ${pEnCurso}%</span>
-        <span><span style="color:#ef476f;">●</span> Borrador/Rev: ${pBorrador}%</span>
-        <span><span style="color:#06d6a0;">●</span> Finalizado: ${pFinal}%</span>
+        <span><span style="color:#FE9339;">●</span> En curso: ${pEnCurso}%</span>
+        <span><span style="color:#EA001E;">●</span> Borrador/Rev: ${pBorrador}%</span>
+        <span><span style="color:#04844B;">●</span> Finalizado: ${pFinal}%</span>
       `;
     }
 
@@ -1397,7 +1495,7 @@
           datasets: [{
             label: 'Planes asignados',
             data: datosResp.length > 0 ? datosResp : [0],
-            backgroundColor: '#3b82f6',
+            backgroundColor: '#0176D3',
             borderRadius: 4
           }]
         },
@@ -1478,10 +1576,10 @@
         
         card.innerHTML = `
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <span class="badge bg-dark-subtle text-dark border small" style="font-size: 7pt;">${badgePdca}</span>
+            <span class="badge border small" style="font-size: 7pt; background-color: #E8F4FD; color: #0176D3; border-color: #BAE0FD !important;">${badgePdca}</span>
             <small class="text-muted fw-bold">#${acc.orden}</small>
           </div>
-          <div class="fw-bold mb-1" style="font-size: 8.5pt; color: #1e293b;">${acc.que}</div>
+          <div class="fw-bold mb-1" style="font-size: 8.5pt; color: #181818;">${acc.que}</div>
           <div class="small text-muted mb-2" style="font-size: 7.5pt;">
             👤 <strong>${acc.quien}</strong> | 📍 ${acc.donde} (${acc.cuando})
           </div>
@@ -1495,10 +1593,10 @@
             </button>
           </div>
 
-          <div class="d-flex justify-content-between align-items-center pt-1 border-top">
+          <div class="d-flex justify-content-between align-items-center pt-1 border-top" style="border-color: #F0F1F3 !important;">
             <div class="btn-group btn-group-sm">
               ${est !== 'PENDIENTE' ? `<button class="btn btn-xs btn-outline-danger py-0 px-1" style="font-size: 7pt;" onclick="cambiarEstadoAccionDirecto(${pIdx}, ${aIdx}, 'PENDIENTE')" title="Mover a Pendiente">⬅</button>` : ''}
-              ${est !== 'EN_PROCESO' ? `<button class="btn btn-xs btn-outline-warning py-0 px-1" style="font-size: 7pt;" onclick="cambiarEstadoAccionDirecto(${pIdx}, ${aIdx}, 'EN_PROCESO')" title="Mover a En Curso">⏳ En curso</button>` : ''}
+              ${est !== 'EN_PROCESO' ? `<button class="btn btn-xs btn-outline-warning py-0 px-1 text-dark" style="font-size: 7pt;" onclick="cambiarEstadoAccionDirecto(${pIdx}, ${aIdx}, 'EN_PROCESO')" title="Mover a En Curso">⏳ En curso</button>` : ''}
               ${est !== 'COMPLETADA' ? `<button class="btn btn-xs btn-outline-success py-0 px-1" style="font-size: 7pt;" onclick="cambiarEstadoAccionDirecto(${pIdx}, ${aIdx}, 'COMPLETADA')" title="Mover a Listo">✔ Listo</button>` : ''}
             </div>
           </div>
@@ -1527,11 +1625,11 @@
           <td><strong>${badgePdca}</strong><br><small class="text-muted">${plan.titulo.substring(0, 25)}...</small></td>
           <td>${acc.que}</td>
           <td><strong>${acc.quien}</strong></td>
-          <td><span class="badge bg-light text-dark border">${acc.cuando}</span></td>
+          <td><span class="badge border text-dark" style="background-color: #FAFBFD;">${acc.cuando}</span></td>
           <td><span class="badge ${est === 'COMPLETADA' ? 'bg-success' : (est === 'EN_PROCESO' ? 'bg-warning text-dark' : 'bg-danger')}">${textoEstado}</span></td>
           <td>
-            <div class="progress" style="height: 14px;">
-              <div class="progress-bar ${colorBarra} progress-bar-striped" style="width: ${porcentajeBarra}">${porcentajeBarra}</div>
+            <div class="progress" style="height: 12px; background-color: #E5E7EB;">
+              <div class="progress-bar ${colorBarra}" style="width: ${porcentajeBarra}">${porcentajeBarra}</div>
             </div>
           </td>
         `;
@@ -1818,9 +1916,9 @@
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td><strong>${d.nombre}</strong></td>
-        <td><span class="badge bg-light text-dark border">${d.rolPlan}</span></td>
+        <td><span class="badge border text-dark" style="background-color: #FAFBFD;">${d.rolPlan}</span></td>
         <td>
-          <input type="email" class="form-control form-control-sm py-1" id="inputDestEmail_${idx}" value="${d.email}" required>
+          <input type="email" class="form-control form-control-sm py-1" id="inputDestEmail_${idx}" value="${d.email}" required style="border-color: var(--slds-border);">
         </td>
       `;
       tbody.appendChild(tr);
@@ -2046,8 +2144,8 @@
     const esSistemas = (usuarioSesion.rol === "SISTEMAS");
     const esFacilitador = (usuarioSesion.rol === "FACILITADOR");
 
-    const badgeColor = esSistemas ? "bg-danger" : (esFacilitador ? "bg-success" : "bg-secondary");
-    document.getElementById("txtNavbarUsuario").innerHTML = `👤 <strong>${usuarioSesion.nombre}</strong> <span class="badge ${badgeColor}">${usuarioSesion.rol}</span>`;
+    const badgeColor = esSistemas ? "background-color: var(--slds-danger); color: #fff;" : (esFacilitador ? "background-color: var(--slds-success); color: #fff;" : "background-color: #E8F4FD; color: #0176D3;");
+    document.getElementById("txtNavbarUsuario").innerHTML = `👤 <strong>${usuarioSesion.nombre}</strong> <span class="badge" style="${badgeColor}">${usuarioSesion.rol}</span>`;
     document.getElementById("dashSaludoUsuario").innerText = `Hola, ${usuarioSesion.nombre}`;
     document.getElementById("dashSubtituloRol").innerText = `Rol: ${usuarioSesion.rol} (Legajo: ${usuarioSesion.legajo})`;
 
@@ -2095,7 +2193,7 @@
         <td><strong>${u.nombre}</strong></td>
         <td>${u.email || '<span class="text-muted">Sin email</span>'}</td>
         <td>
-          <select class="form-select form-select-sm py-0" onchange="cambiarRolUsuario(${index}, this.value)">
+          <select class="form-select form-select-sm py-0" style="border-color: var(--slds-border);" onchange="cambiarRolUsuario(${index}, this.value)">
             <option value="MONITOR" ${u.rol === 'MONITOR' ? 'selected' : ''}>MONITOR (Carga y avances)</option>
             <option value="GERENTE" ${u.rol === 'GERENTE' ? 'selected' : ''}>GERENTE (Revisión técnica)</option>
             <option value="FACILITADOR" ${u.rol === 'FACILITADOR' ? 'selected' : ''}>FACILITADOR (Revisa, Aprueba, Borra y Finaliza)</option>
@@ -2106,7 +2204,7 @@
           <span class="badge ${u.estado === 'ACTIVO' ? 'bg-success' : 'bg-danger'}">${u.estado || 'ACTIVO'}</span>
         </td>
         <td class="text-end">
-          <button class="btn btn-xs btn-outline-warning py-0 px-1 me-1" onclick="cambiarClaveUsuario(${index})" title="Cambiar Contraseña">🔑</button>
+          <button class="btn btn-xs btn-outline-warning py-0 px-1 me-1 text-dark" onclick="cambiarClaveUsuario(${index})" title="Cambiar Contraseña">🔑</button>
           <button class="btn btn-xs btn-outline-danger py-0 px-1" onclick="alternarEstadoUsuario(${index})" title="Habilitar/Bloquear">
             ${u.estado === 'BLOQUEADO' ? '✔' : '🚫'}
           </button>
@@ -2357,7 +2455,7 @@
                 ${!estaBloqueado ? `
                   <button class="btn btn-xs btn-outline-primary py-0 px-1" style="font-size: 7pt;" onclick="abrirModalAccion(${acc.idx})" title="Editar detalle">✏</button>
                 ` : ''}
-                <button class="btn btn-xs btn-outline-info py-0 px-1 fw-bold" style="font-size: 7pt;" onclick="abrirModalConsultorIA('accion', ${acc.idx})" title="Consultar cómo mejorar esta acción con IA">✨</button>
+                <button class="btn btn-xs btn-outline-info py-0 px-1 fw-bold text-dark" style="font-size: 7pt;" onclick="abrirModalConsultorIA('accion', ${acc.idx})" title="Consultar cómo mejorar esta acción con IA">✨</button>
               </div>
             </td>
             <td style="width: 15%;"><strong>${acc.que}</strong></td>
@@ -2452,7 +2550,9 @@
         btnFin.classList.add("d-none");
       } else {
         badge.innerText = "APROBADO (BLOQUEADO)";
-        badge.className = "badge bg-info text-dark";
+        badge.className = "badge";
+        badge.style.backgroundColor = "#E8F4FD";
+        badge.style.color = "#0176D3";
         if (esFacilitador) btnFin.classList.remove("d-none");
         else btnFin.classList.add("d-none");
       }
@@ -2469,20 +2569,26 @@
 
       if (plan.estado === "BORRADOR") {
         badge.innerText = "BORRADOR";
-        badge.className = "badge bg-secondary";
+        badge.className = "badge";
+        badge.style.backgroundColor = "#ECEBEA";
+        badge.style.color = "#5C5B5A";
         if (esFacilitador || esGerente || esSistemas) btnRev.classList.remove("d-none");
         else btnRev.classList.add("d-none");
         if (esFacilitador) btnApr.classList.remove("d-none");
         else btnApr.classList.add("d-none");
       } else if (plan.estado === "REVISADO") {
         badge.innerText = "REVISADO";
-        badge.className = "badge bg-warning text-dark";
+        badge.className = "badge text-dark";
+        badge.style.backgroundColor = "#FFF3E8";
+        badge.style.color = "#B56100";
         btnRev.classList.add("d-none");
         if (esFacilitador) btnApr.classList.remove("d-none");
         else btnApr.classList.add("d-none");
       } else {
         badge.innerText = plan.estado;
-        badge.className = "badge bg-info text-dark";
+        badge.className = "badge";
+        badge.style.backgroundColor = "#E8F4FD";
+        badge.style.color = "#0176D3";
       }
     }
   }
@@ -3023,19 +3129,19 @@
         if (!textoFila.includes(busqueda)) return;
       }
 
-      let badgeEstado = '<span class="badge bg-secondary">Borrador</span>';
-      if (plan.estado === "REVISADO") badgeEstado = '<span class="badge bg-warning text-dark">Revisado</span>';
-      if (plan.estado === "APROBADO") badgeEstado = '<span class="badge bg-info text-dark">Aprobado 🔒</span>';
-      if (plan.estado === "FINALIZADO") badgeEstado = '<span class="badge bg-success">Finalizado 🔒</span>';
+      let badgeEstado = '<span class="badge" style="background-color: #ECEBEA; color: #5C5B5A;">Borrador</span>';
+      if (plan.estado === "REVISADO") badgeEstado = '<span class="badge text-dark" style="background-color: #FFF3E8; color: #B56100;">Revisado</span>';
+      if (plan.estado === "APROBADO") badgeEstado = '<span class="badge" style="background-color: #E8F4FD; color: #0176D3;">Aprobado 🔒</span>';
+      if (plan.estado === "FINALIZADO") badgeEstado = '<span class="badge" style="background-color: #EBF7EE; color: #04844B;">Finalizado 🔒</span>';
 
       const badgePdf = plan.pdfBase64 
-        ? '<span class="badge bg-primary">☁️ PDF Listo</span>' 
-        : '<span class="badge bg-light text-muted border">Sin PDF</span>';
+        ? '<span class="badge" style="background-color: #E8F4FD; color: #0176D3;">☁️ PDF Listo</span>' 
+        : '<span class="badge border text-muted" style="background-color: #FAFBFD;">Sin PDF</span>';
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td class="fw-bold">${plan.numPdca || '<span class="text-muted fst-italic">Pendiente</span>'}</td>
-        <td><strong>${plan.titulo}</strong></td>
+        <td class="fw-bold" style="color: var(--slds-brand-blue);">${plan.numPdca || '<span class="text-muted fst-italic">Pendiente</span>'}</td>
+        <td><strong style="color: var(--slds-brand-dark);">${plan.titulo}</strong></td>
         <td class="d-none d-md-table-cell">
           <span class="d-block">${plan.responsable}</span>
           <span class="text-muted small">Plazo: ${plan.deadline}</span>
@@ -3069,7 +3175,9 @@
     const badge = document.getElementById("badgeCloudStatus");
     if (!db) {
       if (badge) {
-        badge.className = "badge bg-warning text-dark";
+        badge.className = "badge";
+        badge.style.backgroundColor = "#FFF3E8";
+        badge.style.color = "#B56100";
         badge.innerText = "🟡 Modo Local";
       }
       return;
@@ -3077,7 +3185,9 @@
 
     db.collection("planes_pdca").onSnapshot((snapshot) => {
       if (badge) {
-        badge.className = "badge bg-success";
+        badge.className = "badge";
+        badge.style.backgroundColor = "#EBF7EE";
+        badge.style.color = "#04844B";
         badge.innerText = "🟢 Cloud Activo";
       }
 
@@ -3097,7 +3207,9 @@
     }, (error) => {
       console.warn("Firestore offline/fallback:", error);
       if (badge) {
-        badge.className = "badge bg-warning text-dark";
+        badge.className = "badge";
+        badge.style.backgroundColor = "#FFF3E8";
+        badge.style.color = "#B56100";
         badge.innerText = "🟡 Modo Local";
       }
     });
@@ -3139,7 +3251,7 @@
   }
 
   function aplicarLogoFalso(imgEl) {
-    imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50'><text x='50%' y='65%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='16' fill='%23005f73'>Misión Buenos Aires</text></svg>";
+    imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50'><text x='50%' y='65%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='16' fill='%230176D3'>Misión Buenos Aires</text></svg>";
   }
 
   function actualizarSelectDocumento(indice = 0) {
@@ -3365,10 +3477,10 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}: ${a.que} (Por qué: ${a
     const contenedor = document.getElementById("geminiContenido");
     const plan = baseDatos[indiceActual];
     const prov = localStorage.getItem("ia_proveedor_activo") || "groq";
-    const provNombre = prov === "groq" ? "Groq (GPT-OSS / Llama)" : "Google Gemini";
+    const provNombre = prov === "groq" ? "Groq (Ultra Rápido)" : "Google Gemini";
     
     contenedor.innerHTML = `
-      <div class="alert alert-info py-2 mb-3" style="font-size: 8.5pt;">
+      <div class="alert py-2 mb-3" style="font-size: 8.5pt; background-color: #E8F4FD; border: 1px solid #BAE0FD; color: #014486;">
         👋 <strong>Asistente Técnico PDCA conectado (${provNombre}):</strong> Tengo cargado el plan <em>"${plan.titulo}"</em>.<br>
         Podés consultarme si está bien planteado, pedirme propuestas de mejora para las acciones o evaluar riesgos operativos. Escribí tu duda abajo o tocá una consulta rápida.
       </div>
@@ -3479,6 +3591,7 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}: ${a.que} (Por qué: ${a
 
     chatIAHistoria.push({ role: "user", content: textoMensaje });
 
+    // Mantener ventana de contexto optimizada
     if (chatIAHistoria.length > 8) {
       chatIAHistoria = [chatIAHistoria[0], ...chatIAHistoria.slice(-6)];
     }
@@ -3489,7 +3602,7 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}: ${a.que} (Por qué: ${a
 
     try {
       if (prov === "groq") {
-        // 1. DETECCIÓN DINÁMICA DE MODELOS DE TEXTO REALES EN GROQ
+        // AUTO-DETECCIÓN DE MODELOS DE TEXTO HABILITADOS EN GROQ
         let modelosGroq = [];
         try {
           const resModels = await fetchConTimeout("https://api.groq.com/openai/v1/models", {
@@ -3498,7 +3611,7 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}: ${a.que} (Por qué: ${a
           if (resModels.ok) {
             const dataModels = await resModels.json();
             const todos = (dataModels.data || []).map(m => m.id);
-            // Filtrar exclusivamente modelos de chat de texto
+            // Filtrar solo modelos de texto conversacional activos (excluyendo audio y guardias)
             modelosGroq = todos.filter(id => {
               const s = id.toLowerCase();
               return !s.includes("whisper") && !s.includes("orpheus") && !s.includes("guard") && !s.includes("tts") && !s.includes("embed") && !s.includes("canopylabs");
@@ -3508,11 +3621,9 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}: ${a.que} (Por qué: ${a
           console.warn("Fallo listModels Groq:", eGList);
         }
 
-        // Si no listó, usar el catálogo de producción actual de Groq
         if (modelosGroq.length === 0) {
           modelosGroq = ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b"];
         } else {
-          // Reordenar priorizando los modelos de texto más veloces de producción
           const preferidos = ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b"];
           const ordenados = [];
           for (const p of preferidos) {
@@ -3567,7 +3678,7 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}: ${a.que} (Por qué: ${a
           }
         }
       } else {
-        // 2. GOOGLE GEMINI (v1beta CON MODELOS VIGENTES)
+        // GOOGLE GEMINI (v1beta CON MODELOS VIGENTES 2.5 / 2.0)
         const contentsGemini = chatIAHistoria.map(h => ({
           role: h.role === "model" ? "model" : "user",
           parts: [{ text: h.content }]
@@ -3589,10 +3700,10 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}: ${a.que} (Por qué: ${a
         }
 
         if (modelosValidosGemini.length === 0) {
-          modelosValidosGemini = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-3.5-flash-lite"];
+          modelosValidosGemini = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-pro"];
         }
 
-        const prioridades = ["2.5-flash", "2.0-flash", "3.5-flash-lite", "pro"];
+        const prioridades = ["2.5-flash", "2.0-flash", "flash", "pro"];
         let modeloGeminiElegido = modelosValidosGemini[0];
         for (const p of prioridades) {
           const match = modelosValidosGemini.find(m => m.includes(p));
@@ -3644,7 +3755,7 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}: ${a.que} (Por qué: ${a
       chatIAHistoria.pop();
       let errorMsg = errorFinal || "No se pudo obtener respuesta de la IA.";
       if (errorMsg.includes("Límite de velocidad") || errorMsg.includes("429")) {
-        errorMsg = "Llegaste al límite temporal de consultas por minuto de la capa gratuita. Aguardá 15 segundos y presioná Enviar nuevamente.";
+        errorMsg = "Llegaste al límite temporal de consultas por minuto en Groq. Aguardá 15 segundos y presioná Enviar nuevamente.";
       } else if (errorMsg.toLowerCase().includes("high demand") || errorMsg.includes("503")) {
         errorMsg = "Servidores con alta demanda momentánea. Aguardá unos segundos y reintentá.";
       }
@@ -3682,7 +3793,9 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}: ${a.que} (Por qué: ${a
     setTimeout(() => {
       const badge = document.getElementById("badgeCloudStatus");
       if (badge && badge.innerText === "Iniciando...") {
-        badge.className = "badge bg-warning text-dark";
+        badge.className = "badge";
+        badge.style.backgroundColor = "#FFF3E8";
+        badge.style.color = "#B56100";
         badge.innerText = "🟡 Modo Local";
       }
     }, 1500);
