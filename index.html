@@ -304,7 +304,6 @@
 
     .cursor-pointer { cursor: pointer; }
 
-    /* ESTILOS DEL CHAT IA */
     .chat-ia-msg {
       padding: 10px 14px;
       border-radius: 8px;
@@ -1057,7 +1056,7 @@
         <div class="mb-2">
           <label class="form-label small fw-bold mb-1">Proveedor de IA:</label>
           <select class="form-select form-select-sm" id="selectProveedorIA" onchange="alternarCamposProveedorIA(this.value)">
-            <option value="groq">Groq Cloud (Llama 3.3 / 3.1 - Ultra Rápido y Gratis)</option>
+            <option value="groq">Groq Cloud (GPT-OSS / Llama - Ultra Rápido y Gratis)</option>
             <option value="gemini">Google Gemini (AI Studio)</option>
           </select>
         </div>
@@ -1065,13 +1064,13 @@
         <div class="mb-2" id="grupoKeyGroq">
           <label class="form-label small fw-bold mb-1">API Key de Groq (Gratis en console.groq.com):</label>
           <input type="password" class="form-control form-control-sm" id="inputApiKeyGroq" placeholder="gsk_...">
-          <small class="text-muted" style="font-size: 7.5pt;">Modelos de texto oficiales: Llama 3.3 70B y Llama 3.1 8B Instant.</small>
+          <small class="text-muted" style="font-size: 7.5pt;">Modelos de texto oficiales: openai/gpt-oss-20b y openai/gpt-oss-120b.</small>
         </div>
 
         <div class="mb-2 d-none" id="grupoKeyGemini">
           <label class="form-label small fw-bold mb-1">API Key de Google Gemini (AI Studio):</label>
           <input type="password" class="form-control form-control-sm" id="inputApiKeyGemini" placeholder="AIzaSy...">
-          <small class="text-muted" style="font-size: 7.5pt;">Detecta automáticamente qué modelo tiene activo tu clave vía ListModels.</small>
+          <small class="text-muted" style="font-size: 7.5pt;">Modelos oficiales activos: gemini-2.5-flash y gemini-2.0-flash.</small>
         </div>
       </div>
       <div class="modal-footer py-1">
@@ -3313,7 +3312,7 @@ PLAN PDCA ACTUALMENTE CARGADO:
 • Responsable: ${plan.responsable}
 • Dead Line: ${plan.deadline}
 • Acciones 5W2H:
-${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.porQue} | Cómo: ${a.como} \vert{} Resp:${a.quien} | Lugar: ${a.donde} \vert{} Plazo:${a.cuando})`).join('\n')}`;
+${(plan.acciones || []).map(a => `  - Tarea #${a.orden}: ${a.que} (Por qué: ${a.porQue} | Cómo: ${a.como} | Resp: ${a.quien} | Lugar: ${a.donde} | Plazo: ${a.cuando})`).join('\n')}`;
   }
 
   function abrirModalConsultorIA(tipo = 'plan', indexAccion = -1) {
@@ -3366,7 +3365,7 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
     const contenedor = document.getElementById("geminiContenido");
     const plan = baseDatos[indiceActual];
     const prov = localStorage.getItem("ia_proveedor_activo") || "groq";
-    const provNombre = prov === "groq" ? "Groq (Llama Instantáneo)" : "Google Gemini";
+    const provNombre = prov === "groq" ? "Groq (GPT-OSS / Llama)" : "Google Gemini";
     
     contenedor.innerHTML = `
       <div class="alert alert-info py-2 mb-3" style="font-size: 8.5pt;">
@@ -3480,7 +3479,6 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
 
     chatIAHistoria.push({ role: "user", content: textoMensaje });
 
-    // Ventana deslizante para no saturar cuota por minuto de Groq
     if (chatIAHistoria.length > 8) {
       chatIAHistoria = [chatIAHistoria[0], ...chatIAHistoria.slice(-6)];
     }
@@ -3491,15 +3489,44 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
 
     try {
       if (prov === "groq") {
-        // MODELOS OFICIALES ACTIVOS EN GROQ (SIN MODELOS DISCONTINUADOS)
+        // 1. DETECCIÓN DINÁMICA DE MODELOS DE TEXTO REALES EN GROQ
+        let modelosGroq = [];
+        try {
+          const resModels = await fetchConTimeout("https://api.groq.com/openai/v1/models", {
+            headers: { "Authorization": `Bearer ${apiKey}` }
+          }, 4000);
+          if (resModels.ok) {
+            const dataModels = await resModels.json();
+            const todos = (dataModels.data || []).map(m => m.id);
+            // Filtrar exclusivamente modelos de chat de texto
+            modelosGroq = todos.filter(id => {
+              const s = id.toLowerCase();
+              return !s.includes("whisper") && !s.includes("orpheus") && !s.includes("guard") && !s.includes("tts") && !s.includes("embed") && !s.includes("canopylabs");
+            });
+          }
+        } catch (eGList) {
+          console.warn("Fallo listModels Groq:", eGList);
+        }
+
+        // Si no listó, usar el catálogo de producción actual de Groq
+        if (modelosGroq.length === 0) {
+          modelosGroq = ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b"];
+        } else {
+          // Reordenar priorizando los modelos de texto más veloces de producción
+          const preferidos = ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "qwen/qwen3.8-27b"];
+          const ordenados = [];
+          for (const p of preferidos) {
+            if (modelosGroq.includes(p)) ordenados.push(p);
+          }
+          for (const m of modelosGroq) {
+            if (!ordenados.includes(m)) ordenados.push(m);
+          }
+          modelosGroq = ordenados;
+        }
+
         const messagesGroq = [
           { role: "system", content: "Sos un consultor de transporte y calidad de colectivos en Argentina. Respondé siempre en español argentino técnico." },
           ...chatIAHistoria.map(h => ({ role: h.role === "model" ? "assistant" : "user", content: h.content }))
-        ];
-
-        const modelosGroq = [
-          "llama-3.3-70b-versatile",
-          "llama-3.1-8b-instant"
         ];
 
         for (const mod of modelosGroq) {
@@ -3524,7 +3551,7 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
                 throw new Error("Límite de velocidad por minuto alcanzado en Groq. Aguardá 15 segundos y reintentá.");
               }
               errorFinal = errData?.error?.message || `HTTP ${resGroq.status}`;
-              console.warn(`Modelo ${mod} no disponible en Groq, probando alternativo...`);
+              console.warn(`Modelo ${mod} falló en Groq, probando siguiente...`);
               continue;
             }
 
@@ -3540,47 +3567,56 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
           }
         }
       } else {
-        // GOOGLE GEMINI (v1beta)
+        // 2. GOOGLE GEMINI (v1beta CON MODELOS VIGENTES)
         const contentsGemini = chatIAHistoria.map(h => ({
           role: h.role === "model" ? "model" : "user",
           parts: [{ text: h.content }]
         }));
 
-        const modelosGemini = [
-          "gemini-2.0-flash",
-          "gemini-1.5-flash-latest",
-          "gemini-pro",
-          "gemini-1.5-flash"
-        ];
-
-        for (const mod of modelosGemini) {
-          try {
-            const urlGemini = `https://generativelanguage.googleapis.com/v1beta/models/${mod}:generateContent?key=${apiKey}`;
-            const resGem = await fetchConTimeout(urlGemini, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                contents: contentsGemini,
-                generationConfig: { temperature: 0.6, maxOutputTokens: 1200 }
-              })
-            }, 8000);
-
-            if (!resGem.ok) {
-              const errG = await resGem.json().catch(() => null);
-              errorFinal = errG?.error?.message || `HTTP ${resGem.status}`;
-              continue;
+        let modelosValidosGemini = [];
+        try {
+          const resList = await fetchConTimeout(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, { method: "GET" }, 4000);
+          if (resList.ok) {
+            const dataList = await resList.json();
+            if (dataList && dataList.models) {
+              modelosValidosGemini = dataList.models
+                .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+                .map(m => m.name.replace("models/", ""));
             }
-
-            const dataGem = await resGem.json();
-            respuestaFinal = dataGem.candidates?.[0]?.content?.parts?.[0]?.text || "";
-            if (respuestaFinal) {
-              nombreModelo = `Gemini (${mod})`;
-              break;
-            }
-          } catch (eG) {
-            errorFinal = eG.message;
           }
+        } catch (eList) {
+          console.warn("Fallo listModels Gemini:", eList);
         }
+
+        if (modelosValidosGemini.length === 0) {
+          modelosValidosGemini = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-3.5-flash-lite"];
+        }
+
+        const prioridades = ["2.5-flash", "2.0-flash", "3.5-flash-lite", "pro"];
+        let modeloGeminiElegido = modelosValidosGemini[0];
+        for (const p of prioridades) {
+          const match = modelosValidosGemini.find(m => m.includes(p));
+          if (match) { modeloGeminiElegido = match; break; }
+        }
+
+        const urlGemini = `https://generativelanguage.googleapis.com/v1beta/models/${modeloGeminiElegido}:generateContent?key=${apiKey}`;
+        const resGem = await fetchConTimeout(urlGemini, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: contentsGemini,
+            generationConfig: { temperature: 0.6, maxOutputTokens: 1200 }
+          })
+        }, 8000);
+
+        if (!resGem.ok) {
+          const errG = await resGem.json().catch(() => null);
+          throw new Error(errG?.error?.message || `HTTP ${resGem.status}`);
+        }
+
+        const dataGem = await resGem.json();
+        respuestaFinal = dataGem.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        nombreModelo = `Gemini (${modeloGeminiElegido})`;
       }
     } catch (errGeneral) {
       errorFinal = errGeneral.message;
@@ -3608,7 +3644,7 @@ ${(plan.acciones || []).map(a => `  - Tarea #${a.orden}:${a.que} (Por qué: ${a.
       chatIAHistoria.pop();
       let errorMsg = errorFinal || "No se pudo obtener respuesta de la IA.";
       if (errorMsg.includes("Límite de velocidad") || errorMsg.includes("429")) {
-        errorMsg = "Llegaste al límite temporal de consultas por minuto en la capa gratuita de Groq. Aguardá 15 segundos y presioná Enviar nuevamente.";
+        errorMsg = "Llegaste al límite temporal de consultas por minuto de la capa gratuita. Aguardá 15 segundos y presioná Enviar nuevamente.";
       } else if (errorMsg.toLowerCase().includes("high demand") || errorMsg.includes("503")) {
         errorMsg = "Servidores con alta demanda momentánea. Aguardá unos segundos y reintentá.";
       }
