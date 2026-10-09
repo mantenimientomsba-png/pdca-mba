@@ -30,7 +30,6 @@
       padding: 0;
     }
 
-    /* BARRA SUPERIOR FIJA */
     .top-navbar-mba {
       background-color: #ffffff;
       border-bottom: 2px solid #005f73;
@@ -43,7 +42,6 @@
       object-fit: contain;
     }
 
-    /* PESTAÑAS DEL DASHBOARD */
     .nav-tabs-custom {
       border-bottom: 2px solid #dee2e6;
       margin-bottom: 20px;
@@ -64,7 +62,6 @@
       background: none;
     }
 
-    /* TARJETAS DEL DASHBOARD */
     .kpi-card {
       border-radius: 10px;
       border: 1px solid rgba(0,0,0,0.06);
@@ -72,16 +69,13 @@
       background-color: #ffffff;
       transition: transform 0.15s ease;
     }
-    .kpi-card:hover {
-      transform: translateY(-2px);
-    }
+    .kpi-card:hover { transform: translateY(-2px); }
     .kpi-numero {
       font-size: 2.1rem;
       font-weight: 700;
       line-height: 1.1;
     }
 
-    /* TARJETAS ESTILO PIZARRA */
     .card-pizarra {
       border-radius: 8px;
       border: 1px solid #e2e8f0;
@@ -116,7 +110,6 @@
       color: #1a202c;
     }
 
-    /* TABLERO KANBAN ESTILO TRELLO */
     .kanban-board {
       display: flex;
       gap: 16px;
@@ -165,11 +158,8 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0,0,0,0.12);
     }
-    .kanban-card.dragging {
-      opacity: 0.4;
-    }
+    .kanban-card.dragging { opacity: 0.4; }
 
-    /* CONTENEDOR Y HOJAS A4 VERTICALES */
     .contenedor-hojas-trabajo {
       display: flex;
       flex-direction: column;
@@ -190,7 +180,6 @@
       justify-content: flex-start;
     }
 
-    /* ENCABEZADO INSTITUCIONAL OFICIAL */
     .tabla-encabezado-oficial {
       width: 100%;
       border-collapse: collapse;
@@ -239,7 +228,6 @@
       white-space: nowrap;
     }
 
-    /* METADATOS DEL PLAN */
     .bloque-metadatos-plan { margin-bottom: 5px; }
     .doc-linea {
       margin-bottom: 3px;
@@ -249,7 +237,6 @@
     }
     .doc-label { font-weight: bold; color: #000; }
 
-    /* TABLA 5W2H */
     .tabla-contenedor-inner { width: 100%; margin-top: 3px; }
     .table-doc {
       width: 100%;
@@ -276,7 +263,6 @@
     .table-doc td.text-center, .table-doc th.text-center { text-align: center; }
     .col-como { white-space: pre-line; }
 
-    /* PIE DE FIRMAS */
     .bloque-pie-reglamentario {
       margin-top: auto;
       padding-top: 8px;
@@ -318,7 +304,7 @@
 
     .cursor-pointer { cursor: pointer; }
 
-    /* CAJA DE CHAT / CONSULTORÍA IA */
+    /* ESTILOS DEL CHAT IA */
     .chat-ia-msg {
       padding: 10px 14px;
       border-radius: 8px;
@@ -330,17 +316,18 @@
       background-color: #e0f2fe;
       border: 1px solid #bae6fd;
       color: #0369a1;
-      margin-left: 20px;
+      margin-left: 30px;
+      border-bottom-right-radius: 2px;
     }
     .chat-ia-msg-bot {
       background-color: #ffffff;
       border: 1px solid #e2e8f0;
       color: #1e293b;
-      margin-right: 20px;
+      margin-right: 30px;
+      border-bottom-left-radius: 2px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
 
-    /* IMPRESIÓN COMPACTA */
     @media print {
       @page {
         size: A4 portrait;
@@ -427,7 +414,7 @@
 <input type="file" id="inputLogoFile" accept="image/*" class="d-none" onchange="procesarArchivoLogo(event)">
 <input type="file" id="inputImportWord" accept=".docx" class="d-none" onchange="procesarArchivoWord(event)">
 
-<!-- 1. PANTALLA LOGIN Y REGISTRO (PORTAL LIMPIO) -->
+<!-- 1. PANTALLA LOGIN Y REGISTRO -->
 <div id="seccionLogin" class="container py-4 py-md-5">
   <div class="row justify-content-center">
     <div class="col-12 col-sm-8 col-md-5 col-lg-4">
@@ -440,7 +427,7 @@
           <form id="formLogin" onsubmit="ejecutarLogin(event)" class="text-start">
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Legajo o Email:</label>
-              <input type="text" class="form-control" id="loginIdentificador" placeholder="ej: 3110 o usuario@misionba.com.ar" required autofocus>
+              <input type="text" class="form-control" id="loginIdentificador" placeholder="Escriba su legajo (ej: 3110)" required autofocus>
             </div>
             <div class="mb-3">
               <label class="form-label small fw-bold mb-1">Contraseña:</label>
@@ -764,7 +751,7 @@
 
 </div>
 
-<!-- 3. PANTALLA DOCUMENTO FORMAL (SIN BOTONES REDUNDANTES DE PDF) -->
+<!-- 3. PANTALLA DOCUMENTO FORMAL -->
 <div id="seccionDocumento" class="d-none">
 
   <div class="container-fluid no-print py-2 bg-white border-bottom shadow-sm">
@@ -778,8 +765,9 @@
         <button class="btn btn-sm btn-primary fw-semibold" onclick="abrirModalConfirmacionEmail()" title="Enviar o reenviar correo de asignación a los responsables">
           📧 Notificar por Email
         </button>
-        <button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirModalConsultorIA('plan')" title="Consultar a la IA para mejorar acciones o redactar soluciones">
-          ✨ Consultar a la IA
+        <!-- BOTÓN ACTUALIZADO: CONSULTA Y CHAT CON IA -->
+        <button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirModalConsultorIA('plan')" title="Abrir chat de revisión y propuestas de mejora con IA">
+          ✨ Revisión y Chat con IA
         </button>
         <span id="badgeEstadoPantalla" class="badge bg-secondary">BORRADOR</span>
         
@@ -788,7 +776,6 @@
         <button class="btn btn-sm btn-outline-success fw-semibold d-none" id="btnMarcarFinalizado" onclick="finalizarPlanPDCA()">🏁 Finalizar Plan</button>
         <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanAutorizado()">🔓 Reabrir Edición</button>
         
-        <!-- SOLO BOTÓN IMPRIMIR / DESCARGAR NATIVO -->
         <button class="btn btn-sm btn-secondary fw-semibold" onclick="window.print()" title="Imprimir directo o guardar en PDF">
           🖨️ Imprimir
         </button>
@@ -809,50 +796,53 @@
 <!-- MODALES DEL SISTEMA                                      -->
 <!-- ======================================================== -->
 
-<!-- MODAL CONSULTOR IA INTERACTIVO (GEMINI) -->
+<!-- MODAL CONSULTOR IA INTERACTIVO (CHAT MULTI-TURNO COMPATIBLE CON CUALQUIER VERSIÓN DE GEMINI) -->
 <div class="modal fade" id="modalRespuestaGemini" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header bg-dark text-white py-2">
-        <h6 class="modal-title m-0 fw-bold">✨ Consultor Técnico IA de Mejora Continua</h6>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      <div class="modal-header bg-dark text-white py-2 d-flex justify-content-between align-items-center">
+        <h6 class="modal-title m-0 fw-bold">✨ Asistente IA - Revisión y Chat de Mejora PDCA</h6>
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-xs btn-outline-light py-0 px-2" style="font-size: 8pt;" onclick="reiniciarChatIA()" title="Reiniciar conversación">🔄 Reiniciar Chat</button>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
       </div>
       <div class="modal-body py-3">
-        <div class="bg-light p-2 rounded border mb-3">
-          <label class="form-label small fw-bold m-0 text-dark">Plan o Acción a consultar:</label>
+        <div class="bg-light p-2 rounded border mb-2">
+          <label class="form-label small fw-bold m-0 text-dark">Alcance de la consulta:</label>
           <select class="form-select form-select-sm mt-1" id="selectAmbitoAuditoria" onchange="seleccionarAmbitoConsulta(this.value)"></select>
         </div>
 
         <div class="mb-3">
-          <label class="form-label small fw-bold mb-1 text-muted">Consultas rápidas de ingeniería y calidad:</label>
+          <label class="form-label small fw-bold mb-1 text-muted">Consultas técnicas rápidas (1 clic):</label>
           <div class="d-flex flex-wrap gap-1">
-            <button class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 8pt;" onclick="ejecutarConsultaRapidaIA('mejorar_5w2h')">
-              💡 Mejorar redacción 5W2H
+            <button class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size: 8pt;" onclick="ejecutarConsultaRapidaIA('evaluar_pdca')">
+              📋 ¿Está bien planteado el PDCA?
+            </button>
+            <button class="btn btn-sm btn-outline-success py-1 px-2" style="font-size: 8pt;" onclick="ejecutarConsultaRapidaIA('mejorar_5w2h')">
+              💡 Sugerir propuestas de mejora
             </button>
             <button class="btn btn-sm btn-outline-warning text-dark py-1 px-2" style="font-size: 8pt;" onclick="ejecutarConsultaRapidaIA('riesgos_taller')">
-              ⚙️ Identificar riesgos en taller
+              ⚠️ Identificar riesgos en taller
             </button>
-            <button class="btn btn-sm btn-outline-success py-1 px-2" style="font-size: 8pt;" onclick="ejecutarConsultaRapidaIA('kpis_control')">
-              📊 Sugerir indicadores / KPIs
-            </button>
-            <button class="btn btn-sm btn-outline-info text-dark py-1 px-2" style="font-size: 8pt;" onclick="ejecutarConsultaRapidaIA('acciones_extra')">
-              🛠️ Proponer acciones complementarias
+            <button class="btn btn-sm btn-outline-info text-dark py-1 px-2" style="font-size: 8pt;" onclick="ejecutarConsultaRapidaIA('kpis_control')">
+              📊 Recomendar indicadores y KPIs
             </button>
           </div>
         </div>
 
-        <div id="geminiChatContainer" class="p-3 border rounded bg-light mb-3" style="min-height: 200px; max-height: 45vh; overflow-y: auto;">
-          <div id="geminiSpinner" class="text-center py-4 d-none">
+        <!-- CONTENEDOR DE CONVERSACIÓN DE CHAT -->
+        <div id="geminiChatContainer" class="p-3 border rounded bg-light mb-3" style="min-height: 250px; max-height: 50vh; overflow-y: auto;">
+          <div id="geminiContenido" class="small lh-base"></div>
+          <div id="geminiSpinner" class="text-center py-3 d-none">
             <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
-            <p class="small text-muted mt-2" id="geminiSpinnerText">Analizando alternativas de mejora...</p>
-          </div>
-          <div id="geminiContenido" class="small lh-base">
-            <p class="text-muted m-0 fst-italic">Haga una consulta rápida o escriba su pregunta técnica para optimizar las acciones del plan.</p>
+            <p class="small text-muted mt-2" id="geminiSpinnerText">Analizando y elaborando respuesta...</p>
           </div>
         </div>
 
+        <!-- FORMULARIO DE MENSAJE -->
         <form onsubmit="ejecutarConsultaPersonalizadaIA(event)" class="d-flex gap-2">
-          <input type="text" class="form-control form-control-sm" id="inputPreguntaLibreIA" placeholder="Escriba su consulta técnica... Ej: ¿Cómo hago para que esta acción sea más medible?" required>
+          <input type="text" class="form-control form-control-sm" id="inputPreguntaLibreIA" placeholder="Escribí tu consulta técnica... (ej: ¿Cómo mejoro la meta? o ¿Esta tarea atiende el problema?)" required autocomplete="off">
           <button type="submit" class="btn btn-sm btn-primary fw-bold text-nowrap px-3" id="btnEnviarConsultaIA">
             Enviar ➔
           </button>
@@ -860,7 +850,7 @@
       </div>
       <div class="modal-footer py-1">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-sm btn-outline-primary" onclick="navigator.clipboard.writeText(document.getElementById('geminiContenido').innerText); alert('Respuesta copiada al portapapeles.');">Copiar Respuesta</button>
+        <button type="button" class="btn btn-sm btn-outline-primary" onclick="copiarConversacionChat()">📋 Copiar Conversación</button>
       </div>
     </div>
   </div>
@@ -961,7 +951,7 @@
       </div>
       <div class="modal-footer py-2">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-sm btn-success fw-bold px-3" id="btnEjecutarEnvioEmail" onclick="ejecutarEnvioEmailConfirmado()">
+        <button type="submit" class="btn btn-sm btn-success fw-bold px-3" id="btnEjecutarEnvioEmail" onclick="ejecutarEnvioEmailConfirmado()">
           ✉️ Enviar Notificaciones Ahora
         </button>
       </div>
@@ -2413,12 +2403,6 @@
     const btnApr = document.getElementById("btnAprobarPlan");
     const btnFin = document.getElementById("btnMarcarFinalizado");
     const btnDesbloq = document.getElementById("btnDesbloquearPlan");
-    const btnVerPdf = document.getElementById("btnVerPdfCloud");
-
-    if (btnVerPdf) {
-      if (plan.pdfBase64) btnVerPdf.classList.remove("d-none");
-      else btnVerPdf.classList.add("d-none");
-    }
 
     const esFacilitador = usuarioSesion && usuarioSesion.rol === "FACILITADOR";
     const esGerente = usuarioSesion && usuarioSesion.rol === "GERENTE";
@@ -3276,7 +3260,35 @@
     }
   }
 
+  // ========================================================
+  // ASISTENTE / CHAT CONVERSACIONAL DE IA (MULTI-TURNO & MULTI-MODELO)
+  // ========================================================
   let chatIAHistoria = [];
+
+  function construirContextoBasePDCA() {
+    const plan = baseDatos[indiceActual];
+    let contexto = `Actúa como un experto Consultor Senior en Ingeniería de Transporte Público, Mantenimiento de Flota de Colectivos, Metodología PDCA, ISO 9001 e IRAM 3810.
+Estás en un CHAT INTERACTIVO con el equipo operativo de Misión Buenos Aires.
+Tu objetivo es analizar si el PDCA está bien planteado, detectar inconsistencias, evaluar riesgos y sugerir mejoras directas y prácticas para el taller y la operación de los colectivos.
+
+INFORMACIÓN DEL PLAN PDCA ACTUAL:
+• Título / Objeto: ${plan.titulo}
+• Política Institucional: ${plan.politica}
+• Objetivo: ${plan.objetivo}
+• Meta: ${plan.meta}
+• Efecto Esperado: ${plan.efecto}
+• Responsable: ${plan.responsable}
+• Plazo (Dead Line): ${plan.deadline}
+• Estado: ${plan.estado}
+
+TAREAS 5W2H REGISTRADAS:\n`;
+
+    (plan.acciones || []).forEach(a => {
+      contexto += `• Tarea #${a.orden}: ¿Qué?: ${a.que} | ¿Por qué?: ${a.porQue} | ¿Cómo?: ${a.como} | Responsable: ${a.quien} | Lugar: ${a.donde} | Plazo: ${a.cuando} | Estado: ${a.estado}\n`;
+    });
+
+    return contexto;
+  }
 
   function abrirModalConsultorIA(tipo = 'plan', indexAccion = -1) {
     let apiKey = localStorage.getItem("gemini_api_key");
@@ -3284,10 +3296,11 @@
       if (usuarioSesion && usuarioSesion.rol === "SISTEMAS") {
         abrirConfigIntegraciones();
       } else {
-        alert("Consulte al Operador de Sistemas para configurar la API Key de Gemini.");
+        alert("Consulte al Operador de Sistemas para configurar la API Key de Gemini en '⚙ Config'.");
       }
       return;
     }
+
     const plan = baseDatos[indiceActual];
     const select = document.getElementById("selectAmbitoAuditoria");
     select.innerHTML = "";
@@ -3304,166 +3317,262 @@
       select.appendChild(optAcc);
     });
 
-    chatIAHistoria = [];
-    document.getElementById("geminiContenido").innerHTML = `
-      <div class="alert alert-info py-2 mb-2" style="font-size: 8pt;">
-        👋 <strong>Asistente Técnico PDCA activado:</strong> Seleccione una consulta rápida o escriba su pregunta abajo para mejorar la redacción, definir controles o proponer soluciones técnicas para taller y flota.
-      </div>
-    `;
-    document.getElementById("inputPreguntaLibreIA").value = "";
-
     if (tipo === 'accion' && indexAccion >= 0) {
       select.value = `accion_${indexAccion}`;
     } else {
       select.value = "plan";
     }
 
+    reiniciarChatIA(false);
     new bootstrap.Modal(document.getElementById('modalRespuestaGemini')).show();
   }
 
-  function seleccionarAmbitoConsulta(val) {
-    document.getElementById("geminiContenido").innerHTML = `
-      <p class="text-muted m-0 fst-italic">Ámbito cambiado a: <strong>${val === 'plan' ? 'Plan Completo' : 'Acción puntual'}</strong>. Haga una consulta o presione un botón de mejora.</p>
+  function reiniciarChatIA(mostrarAlerta = true) {
+    chatIAHistoria = [];
+    const contenedor = document.getElementById("geminiContenido");
+    const plan = baseDatos[indiceActual];
+    
+    contenedor.innerHTML = `
+      <div class="alert alert-info py-2 mb-3" style="font-size: 8.5pt;">
+        👋 <strong>Asistente Técnico PDCA conectado:</strong> Tengo cargado el plan <em>"${plan.titulo}"</em>.<br>
+        Podés preguntarme si está bien planteado, pedirme propuestas de mejora para las acciones o consultar sobre riesgos operativos. Escribí tu duda abajo o elegí una consulta rápida.
+      </div>
     `;
+    document.getElementById("inputPreguntaLibreIA").value = "";
+    if (mostrarAlerta) {
+      const scrollBox = document.getElementById("geminiChatContainer");
+      scrollBox.scrollTop = 0;
+    }
+  }
+
+  function seleccionarAmbitoConsulta(val) {
+    const contenedor = document.getElementById("geminiContenido");
+    const divAviso = document.createElement("div");
+    divAviso.className = "text-center my-2 text-muted fst-italic small";
+    divAviso.innerText = `— Ámbito de consulta cambiado a: ${val === 'plan' ? 'Plan Completo' : 'Acción puntual'} —`;
+    contenedor.appendChild(divAviso);
+    const scrollBox = document.getElementById("geminiChatContainer");
+    scrollBox.scrollTop = scrollBox.scrollHeight;
   }
 
   function ejecutarConsultaRapidaIA(tipoConsulta) {
-    const ambitoVal = document.getElementById("selectAmbitoAuditoria").value;
-    let preguntaTexto = "";
-
-    if (tipoConsulta === 'mejorar_5w2h') {
-      preguntaTexto = "Por favor analiza la redacción actual y proponé una versión mejorada del 5W2H (especialmente ¿Cómo? y ¿Qué?) con lenguaje técnico claro y procedimiento paso a paso para el taller.";
+    let pregunta = "";
+    if (tipoConsulta === 'evaluar_pdca') {
+      pregunta = "¿El plan PDCA está bien planteado y estructurado? Evaluá la coherencia técnica entre el objetivo, la meta y las acciones 5W2H, e indicame si es viable y medible.";
+    } else if (tipoConsulta === 'mejorar_5w2h') {
+      pregunta = "Analizá el plan y sugerí propuestas de mejora concretas: cómo redactar mejor las acciones 5W2H (especialmente ¿Cómo? y ¿Qué?) y qué controles adicionales incorporar en el taller.";
     } else if (tipoConsulta === 'riesgos_taller') {
-      preguntaTexto = "Identificá los principales riesgos o fallas operativas habituales en taller/calle que podrían impedir el cumplimiento de esto y cómo prevenirlas.";
+      pregunta = "¿Cuáles son los principales riesgos operativos, de taller o en calle que podrían hacer fallar este plan, y qué acciones preventivas recomendás para mitigarlos?";
     } else if (tipoConsulta === 'kpis_control') {
-      preguntaTexto = "Sugerí indicadores clave (KPI) o métodos de verificación sencillos para comprobar que esta tarea se cumplió con éxito y sin desvíos.";
-    } else if (tipoConsulta === 'acciones_extra') {
-      preguntaTexto = "Proponé 2 o 3 acciones complementarias que refuercen la meta de este PDCA y ayuden al responsable a asegurar el resultado.";
+      pregunta = "¿Qué indicadores clave (KPI) y métodos sencillos de medición periódica recomendás para verificar que este plan cumpla su objetivo en la flota?";
     }
 
-    enviarConsultaAGemini(preguntaTexto, ambitoVal);
+    if (pregunta) {
+      document.getElementById("inputPreguntaLibreIA").value = "";
+      enviarMensajeAlChatIA(pregunta);
+    }
   }
 
   function ejecutarConsultaPersonalizadaIA(e) {
     e.preventDefault();
     const input = document.getElementById("inputPreguntaLibreIA");
-    const preguntaTexto = input.value.trim();
-    if (!preguntaTexto) return;
-
-    const ambitoVal = document.getElementById("selectAmbitoAuditoria").value;
+    const pregunta = input.value.trim();
+    if (!pregunta) return;
     input.value = "";
-    enviarConsultaAGemini(preguntaTexto, ambitoVal);
+    enviarMensajeAlChatIA(pregunta);
   }
 
-  async function enviarConsultaAGemini(preguntaUsuario, ambito) {
+  async function enviarMensajeAlChatIA(preguntaTexto) {
     const apiKey = localStorage.getItem("gemini_api_key");
     if (!apiKey) {
-      alert("Falta configurar la API Key de Gemini.");
+      alert("Falta configurar la API Key de Gemini en '⚙ Config'.");
       return;
     }
 
-    const plan = baseDatos[indiceActual];
-    const contenedorChat = document.getElementById("geminiContenido");
+    const contenedor = document.getElementById("geminiContenido");
     const spinner = document.getElementById("geminiSpinner");
     const btnEnviar = document.getElementById("btnEnviarConsultaIA");
+    const scrollBox = document.getElementById("geminiChatContainer");
 
-    const userMsgDiv = document.createElement("div");
-    userMsgDiv.className = "chat-ia-msg chat-ia-msg-user";
-    userMsgDiv.innerHTML = `<strong>👤 Consulta:</strong> ${preguntaUsuario}`;
-    contenedorChat.appendChild(userMsgDiv);
+    // 1. Mostrar mensaje del usuario en pantalla
+    const msgUserDiv = document.createElement("div");
+    msgUserDiv.className = "chat-ia-msg chat-ia-msg-user";
+    msgUserDiv.innerHTML = `<strong>👤 Consulta:</strong><br>${preguntaTexto.replace(/\n/g, '<br>')}`;
+    contenedor.appendChild(msgUserDiv);
+    scrollBox.scrollTop = scrollBox.scrollHeight;
 
     spinner.classList.remove("d-none");
     btnEnviar.disabled = true;
 
-    let contextoTecnico = `Contexto del Sistema de Calidad (Transporte Público Automotor / Misión Buenos Aires):\n`;
-    contextoTecnico += `• Plan PDCA: ${plan.titulo}\n• Política: ${plan.politica}\n• Objetivo: ${plan.objetivo}\n• Meta: ${plan.meta}\n• Responsable: ${plan.responsable}\n\n`;
+    // 2. Preparar payload con historial conversacional multi-turno
+    const ambito = document.getElementById("selectAmbitoAuditoria").value;
+    let textoParaIA = preguntaTexto;
 
-    if (ambito.startsWith("accion_")) {
-      const idx = parseInt(ambito.replace("accion_", ""));
-      const acc = plan.acciones[idx];
-      contextoTecnico += `Acción N° ${acc.orden} analizada puntualmente:\n`;
-      contextoTecnico += `• ¿Qué?: ${acc.que}\n• ¿Por qué?: ${acc.porQue}\n• ¿Cómo?: ${acc.como}\n• ¿Quién?: ${acc.quien}\n• ¿Dónde?: ${acc.donde}\n• ¿Cuándo?: ${acc.cuando}\n• Estado actual: ${acc.estado}\n\n`;
-    } else {
-      contextoTecnico += `Acciones actuales del plan:\n`;
-      (plan.acciones || []).forEach(a => {
-        contextoTecnico += `  #${a.orden} ${a.que} (Resp: ${a.quien}, Lugar: ${a.donde}, Plazo: ${a.cuando})\n`;
-      });
-      contextoTecnico += `\n`;
-    }
-
-    const promptFinal = `Actúa como un experto Consultor Senior en Calidad y Mantenimiento de Flota (ISO 9001, IRAM 3810, PDCA).
-Ayuda al responsable a optimizar esta acción o plan de transporte con soluciones prácticas, concisas y directamente aplicables al taller.
-
-${contextoTecnico}
-Pregunta o requerimiento del operador:
-"${preguntaUsuario}"`;
-
-    const modelos = ["gemini-2.0-flash", "gemini-1.5-flash"];
-    let respuestaTexto = "";
-    let errorDetalle = "";
-
-    for (const mod of modelos) {
-      try {
-        let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mod}:generateContent?key=${apiKey}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
-        });
-        
-        if (!res.ok) {
-          const errData = await res.json().catch(() => null);
-          errorDetalle = errData?.error?.message || `HTTP ${res.status}`;
-          
-          if (res.status === 503 || errorDetalle.toLowerCase().includes("high demand")) {
-            await new Promise(r => setTimeout(r, 1200));
-            res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mod}:generateContent?key=${apiKey}`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
-            });
-            if (res.ok) {
-              const dataRetry = await res.json();
-              respuestaTexto = dataRetry.candidates?.[0]?.content?.parts?.[0]?.text;
-              if (respuestaTexto) break;
-            }
-          }
-          continue;
-        }
-
-        const data = await res.json();
-        respuestaTexto = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (respuestaTexto) {
-          break;
-        }
-      } catch (err) {
-        errorDetalle = err.message;
+    // Si es el primer mensaje de la conversación, inyectamos el contexto completo del PDCA
+    if (chatIAHistoria.length === 0) {
+      let contextoInicial = construirContextoBasePDCA();
+      if (ambito.startsWith("accion_")) {
+        const idx = parseInt(ambito.replace("accion_", ""));
+        const plan = baseDatos[indiceActual];
+        const acc = plan.acciones[idx];
+        contextoInicial += `\nNOTA: El usuario está enfocado puntualmente en la Tarea #${acc.orden}: "${acc.que}".`;
       }
+      textoParaIA = `${contextoInicial}\n\nPregunta inicial del usuario:\n"${preguntaTexto}"`;
+    } else if (ambito.startsWith("accion_")) {
+      const idx = parseInt(ambito.replace("accion_", ""));
+      const plan = baseDatos[indiceActual];
+      const acc = plan.acciones[idx];
+      textoParaIA = `[Enfocado en Tarea #${acc.orden}: ${acc.que}]\n${preguntaTexto}`;
     }
+
+    // Agregar mensaje del usuario a la historia
+    chatIAHistoria.push({
+      role: "user",
+      parts: [{ text: textoParaIA }]
+    });
+
+    // 3. Ejecución de la llamada a la API con resolución dinámica de modelos
+    const resultado = await llamarApiGeminiUniversal(apiKey, chatIAHistoria);
 
     spinner.classList.add("d-none");
     btnEnviar.disabled = false;
 
-    const botMsgDiv = document.createElement("div");
-    botMsgDiv.className = "chat-ia-msg chat-ia-msg-bot";
+    const msgBotDiv = document.createElement("div");
+    msgBotDiv.className = "chat-ia-msg chat-ia-msg-bot";
 
-    if (respuestaTexto) {
-      const textoFormateado = respuestaTexto
+    if (resultado.ok) {
+      // Guardar respuesta del modelo en el historial de chat
+      chatIAHistoria.push({
+        role: "model",
+        parts: [{ text: resultado.texto }]
+      });
+
+      const formateado = resultado.texto
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\n/g, '<br>');
-      botMsgDiv.innerHTML = `<strong>✨ Consultor IA:</strong><br>${textoFormateado}`;
+
+      msgBotDiv.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-1">
+          <strong class="text-primary">✨ Consultor IA (${resultado.modelo}):</strong>
+        </div>
+        <div>${formateado}</div>
+      `;
     } else {
-      let mensajeError = errorDetalle;
-      if (errorDetalle.toLowerCase().includes("high demand") || errorDetalle.includes("503")) {
-        mensajeError = "Los servidores de Google AI Studio experimentan congestión temporal en su capa gratuita. Aguardá 5 segundos y presioná Enviar nuevamente.";
-      } else if (errorDetalle.toLowerCase().includes("api_key_invalid") || errorDetalle.toLowerCase().includes("expired")) {
-        mensajeError = "La clave API Key ingresada no es válida. Verificala en el panel de Sistemas (⚙ Config).";
+      // Si falló, quitamos el último mensaje del usuario para que pueda reintentar
+      chatIAHistoria.pop();
+
+      let errorMsg = resultado.error || "No se pudo conectar con el servicio de IA.";
+      if (errorMsg.toLowerCase().includes("high demand") || errorMsg.includes("503")) {
+        errorMsg = "Los servidores de Google AI Studio están experimentando una congestión temporal de alta demanda en la capa gratuita. Por favor, aguardá unos segundos y presioná Enviar nuevamente.";
+      } else if (errorMsg.toLowerCase().includes("api_key_invalid") || errorMsg.toLowerCase().includes("expired")) {
+        errorMsg = "La API Key ingresada no es válida o expiró. Por favor verificala en '⚙ Config'.";
       }
-      botMsgDiv.innerHTML = `<span class="text-danger">⚠️ ${mensajeError}</span>`;
+
+      msgBotDiv.innerHTML = `<span class="text-danger">⚠️ ${errorMsg}</span>`;
     }
 
-    contenedorChat.appendChild(botMsgDiv);
-    const chatBox = document.getElementById("geminiChatContainer");
-    chatBox.scrollTop = chatBox.scrollHeight;
+    contenedor.appendChild(msgBotDiv);
+    scrollBox.scrollTop = scrollBox.scrollHeight;
+  }
+
+  // Motor de conexión universal con descubrimiento de modelos activos
+  async function llamarApiGeminiUniversal(apiKey, historiaContenidos) {
+    let modelosAProbar = [];
+
+    // Paso 1: Intentar consultar la lista oficial de modelos habilitados para tu API Key
+    try {
+      const resList = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+      if (resList.ok) {
+        const dataList = await resList.json();
+        if (dataList && dataList.models) {
+          const validos = dataList.models
+            .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+            .map(m => m.name.replace("models/", ""));
+
+          const prioridades = [
+            "gemini-2.0-flash",
+            "gemini-1.5-flash",
+            "gemini-2.5-flash",
+            "gemini-2.0-flash-lite",
+            "gemini-1.5-pro",
+            "gemini-pro"
+          ];
+
+          prioridades.forEach(p => {
+            if (validos.includes(p) && !modelosAProbar.includes(p)) modelosAProbar.push(p);
+          });
+          validos.forEach(v => {
+            if (!modelosAProbar.includes(v) && !v.includes("embedding") && !v.includes("aqa")) {
+              modelosAProbar.push(v);
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Fallo al listar modelos dinámicamente:", e);
+    }
+
+    // Paso 2: Si no se pudo listar por red, usar lista de contingencia garantizada
+    if (modelosAProbar.length === 0) {
+      modelosAProbar = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-2.5-flash", "gemini-pro"];
+    }
+
+    let ultimoError = "";
+    const versionesApi = ["v1beta", "v1"];
+
+    // Paso 3: Probar los modelos válidos encontrados
+    for (const version of versionesApi) {
+      for (const mod of modelosAProbar) {
+        try {
+          let res = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${mod}:generateContent?key=${apiKey}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: historiaContenidos })
+          });
+
+          if (!res.ok) {
+            const errJson = await res.json().catch(() => null);
+            ultimoError = errJson?.error?.message || `HTTP ${res.status}`;
+
+            // Reintento automático ante saturación 503 / High Demand
+            if (res.status === 503 || ultimoError.toLowerCase().includes("high demand")) {
+              await new Promise(r => setTimeout(r, 1200));
+              res = await fetch(`https://generativelanguage.googleapis.com/${version}/models/${mod}:generateContent?key=${apiKey}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: historiaContenidos })
+              });
+              if (res.ok) {
+                const dataRetry = await res.json();
+                const texto = dataRetry.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (texto) return { ok: true, texto: texto, modelo: `${mod}` };
+              }
+            }
+            continue;
+          }
+
+          const data = await res.json();
+          const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (texto) {
+            return { ok: true, texto: texto, modelo: `${mod}` };
+          }
+        } catch (errNet) {
+          ultimoError = errNet.message;
+        }
+      }
+    }
+
+    return { ok: false, error: ultimoError };
+  }
+
+  function copiarConversacionChat() {
+    const contenedor = document.getElementById("geminiContenido");
+    if (!contenedor || !contenedor.innerText.trim()) {
+      alert("No hay mensajes para copiar.");
+      return;
+    }
+    navigator.clipboard.writeText(contenedor.innerText);
+    alert("¡Conversación copiada al portapapeles!");
   }
 
   // INICIALIZACIÓN INMEDIATA
