@@ -30,6 +30,7 @@
       padding: 0;
     }
 
+    /* BARRA SUPERIOR FIJA */
     .top-navbar-mba {
       background-color: #ffffff;
       border-bottom: 2px solid #005f73;
@@ -42,6 +43,7 @@
       object-fit: contain;
     }
 
+    /* PESTAÑAS DEL DASHBOARD */
     .nav-tabs-custom {
       border-bottom: 2px solid #dee2e6;
       margin-bottom: 20px;
@@ -62,6 +64,7 @@
       background: none;
     }
 
+    /* TARJETAS DEL DASHBOARD */
     .kpi-card {
       border-radius: 10px;
       border: 1px solid rgba(0,0,0,0.06);
@@ -69,13 +72,16 @@
       background-color: #ffffff;
       transition: transform 0.15s ease;
     }
-    .kpi-card:hover { transform: translateY(-2px); }
+    .kpi-card:hover {
+      transform: translateY(-2px);
+    }
     .kpi-numero {
       font-size: 2.1rem;
       font-weight: 700;
       line-height: 1.1;
     }
 
+    /* TARJETAS ESTILO PIZARRA */
     .card-pizarra {
       border-radius: 8px;
       border: 1px solid #e2e8f0;
@@ -110,6 +116,7 @@
       color: #1a202c;
     }
 
+    /* TABLERO KANBAN ESTILO TRELLO */
     .kanban-board {
       display: flex;
       gap: 16px;
@@ -158,8 +165,11 @@
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0,0,0,0.12);
     }
-    .kanban-card.dragging { opacity: 0.4; }
+    .kanban-card.dragging {
+      opacity: 0.4;
+    }
 
+    /* CONTENEDOR Y HOJAS A4 VERTICALES */
     .contenedor-hojas-trabajo {
       display: flex;
       flex-direction: column;
@@ -180,6 +190,7 @@
       justify-content: flex-start;
     }
 
+    /* ENCABEZADO INSTITUCIONAL OFICIAL */
     .tabla-encabezado-oficial {
       width: 100%;
       border-collapse: collapse;
@@ -228,6 +239,7 @@
       white-space: nowrap;
     }
 
+    /* METADATOS DEL PLAN */
     .bloque-metadatos-plan { margin-bottom: 5px; }
     .doc-linea {
       margin-bottom: 3px;
@@ -237,6 +249,7 @@
     }
     .doc-label { font-weight: bold; color: #000; }
 
+    /* TABLA 5W2H */
     .tabla-contenedor-inner { width: 100%; margin-top: 3px; }
     .table-doc {
       width: 100%;
@@ -263,6 +276,7 @@
     .table-doc td.text-center, .table-doc th.text-center { text-align: center; }
     .col-como { white-space: pre-line; }
 
+    /* PIE DE FIRMAS */
     .bloque-pie-reglamentario {
       margin-top: auto;
       padding-top: 8px;
@@ -304,6 +318,7 @@
 
     .cursor-pointer { cursor: pointer; }
 
+    /* ESTILOS DEL CHAT IA */
     .chat-ia-msg {
       padding: 10px 14px;
       border-radius: 8px;
@@ -327,6 +342,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
 
+    /* IMPRESIÓN COMPACTA */
     @media print {
       @page {
         size: A4 portrait;
@@ -774,6 +790,7 @@
         <button class="btn btn-sm btn-outline-success fw-semibold d-none" id="btnMarcarFinalizado" onclick="finalizarPlanPDCA()">🏁 Finalizar Plan</button>
         <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanAutorizado()">🔓 Reabrir Edición</button>
         
+        <!-- SOLO BOTÓN IMPRIMIR NATIVO -->
         <button class="btn btn-sm btn-secondary fw-semibold" onclick="window.print()" title="Imprimir directo o guardar en PDF">
           🖨️ Imprimir
         </button>
@@ -794,7 +811,7 @@
 <!-- MODALES DEL SISTEMA                                      -->
 <!-- ======================================================== -->
 
-<!-- MODAL CONSULTOR IA INTERACTIVO (CON SELECTOR DE PROVEEDOR GEMINI / GROQ) -->
+<!-- MODAL CONSULTOR IA INTERACTIVO (CHAT CONVERSACIONAL) -->
 <div class="modal fade" id="modalRespuestaGemini" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -840,7 +857,7 @@
 
         <!-- FORMULARIO DE MENSAJE -->
         <form onsubmit="ejecutarConsultaPersonalizadaIA(event)" class="d-flex gap-2">
-          <input type="text" class="form-control form-control-sm" id="inputPreguntaLibreIA" placeholder="Escribí tu consulta técnica... (ej: ¿Cómo mejoro la meta? o ¿Qué opinás del método?)" required autocomplete="off">
+          <input type="text" class="form-control form-control-sm" id="inputPreguntaLibreIA" placeholder="Escribí tu consulta técnica... (ej: ¿Cómo mejoro la meta? o ¿Qué opinás de la tarea 1?)" required autocomplete="off">
           <button type="submit" class="btn btn-sm btn-primary fw-bold text-nowrap px-3" id="btnEnviarConsultaIA">
             Enviar ➔
           </button>
@@ -1029,7 +1046,7 @@
   </div>
 </div>
 
-<!-- MODAL INTEGRACIONES (SOLO SISTEMAS: EMAILJS + SELECTOR DE IA) -->
+<!-- MODAL INTEGRACIONES (SOLO SISTEMAS) -->
 <div class="modal fade" id="modalConfigIntegraciones" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -1054,23 +1071,23 @@
 
         <h6 class="fw-bold text-dark border-bottom pb-1 small pt-2">✨ Motor de Inteligencia Artificial</h6>
         <div class="mb-2">
-          <label class="form-label small fw-bold mb-1">Proveedor de IA:</label>
+          <label class="form-label small fw-bold mb-1">Proveedor de IA activo:</label>
           <select class="form-select form-select-sm" id="selectProveedorIA" onchange="alternarCamposProveedorIA(this.value)">
-            <option value="groq">Groq Cloud (Llama 3.3 70B - Recomendado: Ultra Rápido)</option>
             <option value="gemini">Google Gemini (AI Studio)</option>
+            <option value="groq">Groq Cloud (Llama 3.3 70B - Ultra Rápido)</option>
           </select>
         </div>
         
-        <div class="mb-2" id="grupoKeyGroq">
-          <label class="form-label small fw-bold mb-1">API Key de Groq (Gratis en console.groq.com):</label>
-          <input type="password" class="form-control form-control-sm" id="inputApiKeyGroq" placeholder="gsk_...">
-          <small class="text-muted" style="font-size: 7.5pt;">Modelo: Llama 3.3 70B. Respuesta inmediata sin congestión de red.</small>
-        </div>
-
-        <div class="mb-2 d-none" id="grupoKeyGemini">
+        <div class="mb-2" id="grupoKeyGemini">
           <label class="form-label small fw-bold mb-1">API Key de Google Gemini (AI Studio):</label>
           <input type="password" class="form-control form-control-sm" id="inputApiKeyGemini" placeholder="AIzaSy...">
-          <small class="text-muted" style="font-size: 7.5pt;">Requiere clave creada en aistudio.google.com/app/apikey</small>
+          <small class="text-muted" style="font-size: 7.5pt;">El sistema detecta automáticamente qué modelo tiene activo tu clave.</small>
+        </div>
+
+        <div class="mb-2 d-none" id="grupoKeyGroq">
+          <label class="form-label small fw-bold mb-1">API Key de Groq (Gratis en console.groq.com):</label>
+          <input type="password" class="form-control form-control-sm" id="inputApiKeyGroq" placeholder="gsk_...">
+          <small class="text-muted" style="font-size: 7.5pt;">Modelo Llama 3.3 70B: respuesta en 1 segundo sin errores de versión.</small>
         </div>
       </div>
       <div class="modal-footer py-1">
@@ -1083,17 +1100,19 @@
 
 <!-- MODAL CAMBIAR POLÍTICA -->
 <div class="modal fade" id="modalPoliticaActiva" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-content">
-    <div class="modal-header bg-dark text-white py-2">
-      <h6 class="modal-title m-0 fw-bold">Seleccionar Política 2026</h6>
-      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-    </div>
-    <div class="modal-body py-2">
-      <select class="form-select form-select-sm" id="selectPoliticaActiva"></select>
-    </div>
-    <div class="modal-footer py-1">
-      <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-      <button type="submit" class="btn btn-sm btn-primary fw-bold" onclick="guardarCambioPolitica()">Aplicar</button>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white py-2">
+        <h6 class="modal-title m-0 fw-bold">Seleccionar Política 2026</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body py-2">
+        <select class="form-select form-select-sm" id="selectPoliticaActiva"></select>
+      </div>
+      <div class="modal-footer py-1">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="submit" class="btn btn-sm btn-primary fw-bold" onclick="guardarCambioPolitica()">Aplicar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1728,7 +1747,7 @@
     document.getElementById("inputEmailJsTemplateId").value = localStorage.getItem("emailjs_template_id") || "template_pdca";
     document.getElementById("inputEmailJsPublicKey").value = localStorage.getItem("emailjs_public_key") || "vl0LNjFsArj315Skm";
     
-    const prov = localStorage.getItem("ia_proveedor_activo") || "groq";
+    const prov = localStorage.getItem("ia_proveedor_activo") || "gemini";
     document.getElementById("selectProveedorIA").value = prov;
     document.getElementById("inputApiKeyGemini").value = localStorage.getItem("gemini_api_key") || "";
     document.getElementById("inputApiKeyGroq").value = localStorage.getItem("groq_api_key") || "";
@@ -2876,6 +2895,9 @@
     return String(maximo + 1).padStart(4, '0') + '/' + anio;
   }
 
+  // ========================================================
+  // MODIFICACIÓN DE ESTADO DE ACCIONES
+  // ========================================================
   function rotarEstadoAccion(originalIndex) {
     if (!usuarioSesion) {
       alert("Inicie sesión con su Legajo para actualizar avances de tareas.");
@@ -2897,6 +2919,9 @@
     if (solapaActualDashboard === "kanban") renderizarTableroKanban();
   }
 
+  // ========================================================
+  // BORRAR PDCA: FACILITADOR Y SISTEMAS
+  // ========================================================
   async function eliminarPDCA(index) {
     if (!usuarioSesion || (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "SISTEMAS")) {
       alert("PERMISO DENEGADO: Solo el Facilitador de Mantenimiento o el Operador de Sistemas pueden eliminar planes.");
@@ -2930,209 +2955,4 @@
         cargarPDCA(indiceActual);
       }
     }
-    alert("El plan ha sido eliminado correctamente.");
-  }
-
-  function eliminarPDCAActual() {
-    eliminarPDCA(indiceActual);
-  }
-
-  function editarTituloPlan() {
-    if (!usuarioSesion) return;
-    const plan = baseDatos[indiceActual];
-    if (plan.bloqueado && (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "GERENTE" && usuarioSesion.rol !== "SISTEMAS")) {
-      alert("El plan está formalizado. Solo el Facilitador o Gerente pueden modificarlo.");
-      return;
-    }
-    const nuevo = prompt("Modificar Nombre / Objeto del PDCA (Cabecera):", plan.titulo);
-    if (nuevo !== null && nuevo.trim() !== "") {
-      plan.titulo = nuevo.trim();
-      sincronizarPlanEnCloud(plan);
-      actualizarSelectDocumento(indiceActual);
-      actualizarDashboard();
-      renderizarDocumentoOficialPaginado(plan);
-    }
-  }
-
-  function cambiarVista(vista) {
-    const sLogin = document.getElementById("seccionLogin");
-    const sDash = document.getElementById("seccionDashboard");
-    const sDoc = document.getElementById("seccionDocumento");
-    const navUser = document.getElementById("usuarioInfoNavbar");
-
-    sLogin.classList.add("d-none");
-    sDash.classList.add("d-none");
-    sDoc.classList.add("d-none");
-
-    if (vista === "login") {
-      sLogin.classList.remove("d-none");
-      navUser.classList.add("d-none");
-    } else if (vista === "dashboard") {
-      sDash.classList.remove("d-none");
-      navUser.classList.remove("d-none");
-      actualizarDashboard();
-    } else if (vista === "documento") {
-      sDoc.classList.remove("d-none");
-      navUser.classList.remove("d-none");
-      cargarPDCA(indiceActual);
-    }
-  }
-
-  function actualizarDashboard() {
-    actualizarDatosUsuarioSesion();
-    let totalPlanes = baseDatos.length;
-    let enProceso = 0;
-    let aprobados = 0;
-    let finalizados = 0;
-
-    baseDatos.forEach(plan => {
-      evaluarEstadoPlan(plan);
-      if (plan.estado === "FINALIZADO") finalizados++;
-      else if (plan.estado === "APROBADO") aprobados++;
-      else enProceso++;
-    });
-
-    document.getElementById("kpiTotalPlanes").innerText = totalPlanes;
-    document.getElementById("kpiEnProceso").innerText = enProceso;
-    document.getElementById("kpiAprobados").innerText = aprobados;
-    document.getElementById("kpiFinalizados").innerText = finalizados;
-
-    renderizarTablaDashboard();
-    if (solapaActualDashboard === "pizarra") {
-      renderizarTableroControlPDCA();
-    } else if (solapaActualDashboard === "kanban") {
-      renderizarTableroKanban();
-    }
-  }
-
-  function renderizarTablaDashboard() {
-    const tbody = document.getElementById("tablaDashboardBody");
-    tbody.innerHTML = "";
-    const filtro = document.getElementById("filtroEstadoDashboard").value;
-    const busqueda = (document.getElementById("inputBuscarPlan")?.value || "").toLowerCase().trim();
-    const esAutorizadoBorrar = usuarioSesion && (usuarioSesion.rol === "FACILITADOR" || usuarioSesion.rol === "SISTEMAS");
-
-    baseDatos.forEach((plan, i) => {
-      evaluarEstadoPlan(plan);
-
-      if (filtro === "FINALIZADO" && plan.estado !== "FINALIZADO") return;
-      if (filtro === "APROBADO" && plan.estado !== "APROBADO") return;
-      if (filtro === "REVISADO" && plan.estado !== "REVISADO") return;
-      if (filtro === "BORRADOR" && plan.estado !== "BORRADOR") return;
-
-      if (busqueda) {
-        const textoFila = `${plan.numPdca} ${plan.titulo} ${plan.responsable}`.toLowerCase();
-        if (!textoFila.includes(busqueda)) return;
-      }
-
-      let badgeEstado = '<span class="badge bg-secondary">Borrador</span>';
-      if (plan.estado === "REVISADO") badgeEstado = '<span class="badge bg-warning text-dark">Revisado</span>';
-      if (plan.estado === "APROBADO") badgeEstado = '<span class="badge bg-info text-dark">Aprobado 🔒</span>';
-      if (plan.estado === "FINALIZADO") badgeEstado = '<span class="badge bg-success">Finalizado 🔒</span>';
-
-      const badgePdf = plan.pdfBase64 
-        ? '<span class="badge bg-primary">☁️ PDF Listo</span>' 
-        : '<span class="badge bg-light text-muted border">Sin PDF</span>';
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="fw-bold">${plan.numPdca || '<span class="text-muted fst-italic">Pendiente</span>'}</td>
-        <td><strong>${plan.titulo}</strong></td>
-        <td class="d-none d-md-table-cell">
-          <span class="d-block">${plan.responsable}</span>
-          <span class="text-muted small">Plazo: ${plan.deadline}</span>
-        </td>
-        <td class="text-center">${badgePdf}</td>
-        <td class="text-center">${badgeEstado}</td>
-        <td class="text-end">
-          <div class="d-flex justify-content-end gap-1">
-            <button class="btn btn-sm btn-outline-primary py-0 px-2 fw-semibold" onclick="abrirPlanDesdeDashboard(${i})">
-              Abrir ➔
-            </button>
-            ${esAutorizadoBorrar ? `
-              <button class="btn btn-sm btn-outline-danger py-0 px-2 fw-semibold" onclick="eliminarPDCA(${i})" title="Borrar PDCA">
-                🗑️
-              </button>
-            ` : ''}
-          </div>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  function abrirPlanDesdeDashboard(index) {
-    indiceActual = index;
-    actualizarSelectDocumento(index);
-    cambiarVista("documento");
-  }
-
-  function conectarCloudFirestore() {
-    const badge = document.getElementById("badgeCloudStatus");
-    if (!db) {
-      if (badge) {
-        badge.className = "badge bg-warning text-dark";
-        badge.innerText = "🟡 Modo Local";
-      }
-      return;
-    }
-
-    db.collection("planes_pdca").onSnapshot((snapshot) => {
-      if (badge) {
-        badge.className = "badge bg-success";
-        badge.innerText = "🟢 Cloud Activo";
-      }
-
-      const listaRemota = [];
-      snapshot.forEach(doc => {
-        listaRemota.push({ id: doc.id, ...doc.data() });
-      });
-
-      baseDatos = listaRemota;
-      guardarLocal();
-      actualizarSelectDocumento(indiceActual < baseDatos.length ? indiceActual : 0);
-      actualizarDashboard();
-      if (!document.getElementById("seccionDocumento").classList.contains("d-none")) {
-        if (baseDatos.length > 0) cargarPDCA(indiceActual);
-        else cambiarVista("dashboard");
-      }
-    }, (error) => {
-      console.warn("Firestore offline/fallback:", error);
-      if (badge) {
-        badge.className = "badge bg-warning text-dark";
-        badge.innerText = "🟡 Modo Local";
-      }
-    });
-  }
-
-  function sincronizarPlanEnCloud(plan) {
-    guardarLocal();
-    if (!db) return;
-    try {
-      if (plan.id) {
-        db.collection("planes_pdca").doc(plan.id).set(plan).catch(e => console.warn(e));
-      } else {
-        db.collection("planes_pdca").add(plan).then(docRef => {
-          plan.id = docRef.id;
-          guardarLocal();
-        }).catch(e => console.warn(e));
-      }
-    } catch (e) {
-      console.warn("Sync error:", e);
-    }
-  }
-
-  function procesarArchivoLogo(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      const base64 = evt.target.result;
-      localStorage.setItem("pdca_logo_mba", base64);
-      aplicarLogoATodos(base64);
-      cargarPDCA(indiceActual);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function aplicarLogoATodos(src)
+    alert
