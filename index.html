@@ -764,7 +764,7 @@
 
 </div>
 
-<!-- 3. PANTALLA DOCUMENTO FORMAL -->
+<!-- 3. PANTALLA DOCUMENTO FORMAL (SIN BOTONES REDUNDANTES DE PDF) -->
 <div id="seccionDocumento" class="d-none">
 
   <div class="container-fluid no-print py-2 bg-white border-bottom shadow-sm">
@@ -788,16 +788,8 @@
         <button class="btn btn-sm btn-outline-success fw-semibold d-none" id="btnMarcarFinalizado" onclick="finalizarPlanPDCA()">🏁 Finalizar Plan</button>
         <button class="btn btn-sm btn-danger fw-semibold d-none" id="btnDesbloquearPlan" onclick="desbloquearPlanAutorizado()">🔓 Reabrir Edición</button>
         
-        <button class="btn btn-sm btn-outline-primary fw-semibold" onclick="guardarPDFenBaseDeDatos()" title="Archiva el PDF en Cloud Firestore">
-          ☁ Guardar PDF
-        </button>
-        <button class="btn btn-sm btn-outline-dark fw-semibold d-none" id="btnVerPdfCloud" onclick="abrirPdfDesdeBaseDeDatos()" title="Abrir PDF guardado en la nube">
-          📄 Ver PDF Cloud
-        </button>
-        <button class="btn btn-sm btn-dark fw-semibold" onclick="descargarPDFVertical()" title="Descargar copia PDF">
-          📥 Descargar PDF
-        </button>
-        <button class="btn btn-sm btn-secondary" onclick="window.print()" title="Imprimir directo">
+        <!-- SOLO BOTÓN IMPRIMIR / DESCARGAR NATIVO -->
+        <button class="btn btn-sm btn-secondary fw-semibold" onclick="window.print()" title="Imprimir directo o guardar en PDF">
           🖨️ Imprimir
         </button>
       </div>
@@ -817,7 +809,7 @@
 <!-- MODALES DEL SISTEMA                                      -->
 <!-- ======================================================== -->
 
-<!-- MODAL CONSULTOR IA INTERACTIVO (GEMINI CON CASCADA MULTIMODELO CORREGIDA) -->
+<!-- MODAL CONSULTOR IA INTERACTIVO (GEMINI) -->
 <div class="modal fade" id="modalRespuestaGemini" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -969,7 +961,7 @@
       </div>
       <div class="modal-footer py-2">
         <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="submit" class="btn btn-sm btn-success fw-bold px-3" id="btnEjecutarEnvioEmail" onclick="ejecutarEnvioEmailConfirmado()">
+        <button type="button" class="btn btn-sm btn-success fw-bold px-3" id="btnEjecutarEnvioEmail" onclick="ejecutarEnvioEmailConfirmado()">
           ✉️ Enviar Notificaciones Ahora
         </button>
       </div>
@@ -1282,9 +1274,6 @@
     localStorage.setItem("usuarios_pdca_local", JSON.stringify(baseUsuarios));
   }
 
-  // ==========================================
-  // CAMBIO DE SOLAPAS (REGISTRO / PIZARRA / KANBAN)
-  // ==========================================
   function cambiarSolapaDashboard(solapa) {
     solapaActualDashboard = solapa;
     const btnReg = document.getElementById("tabBtnRegistro");
@@ -1316,9 +1305,6 @@
     }
   }
 
-  // ==========================================
-  // RENDERIZADO DEL TABLERO DE CONTROL DE PLANES PDCA
-  // ==========================================
   function renderizarTableroControlPDCA() {
     let totalPlanes = baseDatos.length;
     let enCurso = 0;
@@ -1434,9 +1420,6 @@
     }
   }
 
-  // ==========================================
-  // RENDERIZADO DEL TABLERO KANBAN & CRONOGRAMA
-  // ==========================================
   function actualizarSelectorKanbanPDCA() {
     const sel = document.getElementById("filtroKanbanPDCA");
     if (!sel) return;
@@ -1584,9 +1567,6 @@
     }
   }
 
-  // ========================================================
-  // GESTIÓN DE EVIDENCIA EN KANBAN
-  // ========================================================
   function abrirModalEvidencia(pIdx, aIdx) {
     const plan = baseDatos[pIdx];
     const acc = plan.acciones[aIdx];
@@ -1726,9 +1706,6 @@
     alert("¡EVIDENCIA GUARDADA CON ÉXITO!\n\nEl descargo y archivo adjunto quedaron registrados en la base de datos.");
   }
 
-  // ==========================================
-  // CONFIGURACIÓN DE EMAILJS Y GEMINI (SOLO SISTEMAS)
-  // ==========================================
   function abrirConfigIntegraciones() {
     if (!usuarioSesion || usuarioSesion.rol !== "SISTEMAS") {
       alert("ACCESO DENEGADO: La configuración técnica es exclusiva del perfil de SISTEMAS.");
@@ -1757,9 +1734,6 @@
     alert("Parámetros de Sistemas actualizados correctamente.");
   }
 
-  // ========================================================
-  // ASISTENTE DE NOTIFICACIÓN POR EMAIL (EMAILJS)
-  // ========================================================
   let listaDestinatariosPreparada = [];
 
   function normalizarTexto(txt) {
@@ -1912,9 +1886,6 @@
     }
   }
 
-  // ==========================================
-  // SINCRONIZACIÓN CLOUD DE USUARIOS
-  // ==========================================
   function conectarColeccionUsuarios() {
     if (!db) return;
     db.collection("usuarios_pdca").onSnapshot((snapshot) => {
@@ -1966,9 +1937,6 @@
     }
   }
 
-  // ==========================================
-  // REGISTRO Y LOGIN DE USUARIOS
-  // ==========================================
   function abrirModalRegistro() {
     document.getElementById("formRegistroUsuario").reset();
     new bootstrap.Modal(document.getElementById('modalRegistroUsuario')).show();
@@ -2010,13 +1978,25 @@
     const id = document.getElementById("loginIdentificador").value.trim().toLowerCase();
     const pass = document.getElementById("loginPassword").value.trim();
 
-    const usuario = baseUsuarios.find(u => 
+    if (!id) {
+      alert("Por favor ingrese su legajo o correo.");
+      return;
+    }
+
+    let usuario = baseUsuarios.find(u => 
       (u.legajo.toLowerCase() === id || (u.email && u.email.toLowerCase() === id)) && 
       u.clave === pass
     );
 
     if (!usuario) {
-      alert("Credenciales incorrectas. Verifique su legajo/email y contraseña.");
+      usuario = usuariosSemilla.find(u => 
+        (u.legajo.toLowerCase() === id || (u.email && u.email.toLowerCase() === id)) && 
+        u.clave === pass
+      );
+    }
+
+    if (!usuario) {
+      alert("Credenciales incorrectas.\n\nAccesos autorizados:\n• Facilitador: Legajo 3110 / Clave 1234\n• Sistemas: Legajo 0001 / Clave admin123");
       return;
     }
 
@@ -2072,9 +2052,6 @@
     }
   }
 
-  // ==========================================
-  // PANEL DE ADMINISTRACIÓN DE USUARIOS (SOLO SISTEMAS)
-  // ==========================================
   function abrirModalGestionUsuarios() {
     if (!usuarioSesion || usuarioSesion.rol !== "SISTEMAS") {
       alert("ACCESO DENEGADO: La administración de usuarios y permisos es exclusiva del perfil de SISTEMAS.");
@@ -2143,9 +2120,6 @@
     }
   }
 
-  // ==========================================
-  // EVALUACIÓN DE FECHAS Y ESTADO FINALIZADO
-  // ==========================================
   function parsearFecha(str) {
     if (!str) return null;
     const limpio = str.trim();
@@ -2181,9 +2155,6 @@
     return plan.estado;
   }
 
-  // ==========================================
-  // DISTRIBUCIÓN MILIMÉTRICA EN HOJAS A4
-  // ==========================================
   function calcularDistribucionPaginas(plan) {
     const reglaMeta = document.getElementById("reglaMetaCont");
     const reglaTbody = document.getElementById("reglaTbody");
@@ -2276,9 +2247,6 @@
     return paginas;
   }
 
-  // ==========================================
-  // RENDERIZADO DEL ENCABEZADO Y HOJA FORMAL
-  // ==========================================
   function renderizarDocumentoOficialPaginado(plan) {
     evaluarEstadoPlan(plan);
     const contenedor = document.getElementById("contenedorHojasImpresion");
@@ -2438,7 +2406,6 @@
     gestionarEstadoBloqueoUI(plan);
   }
 
-  // GESTIÓN DE BOTONES Y ESTADOS DE BLOQUEO
   function gestionarEstadoBloqueoUI(plan) {
     const banner = document.getElementById("bannerBloqueo");
     const badge = document.getElementById("badgeEstadoPantalla");
@@ -2448,8 +2415,10 @@
     const btnDesbloq = document.getElementById("btnDesbloquearPlan");
     const btnVerPdf = document.getElementById("btnVerPdfCloud");
 
-    if (plan.pdfBase64) btnVerPdf.classList.remove("d-none");
-    else btnVerPdf.classList.add("d-none");
+    if (btnVerPdf) {
+      if (plan.pdfBase64) btnVerPdf.classList.remove("d-none");
+      else btnVerPdf.classList.add("d-none");
+    }
 
     const esFacilitador = usuarioSesion && usuarioSesion.rol === "FACILITADOR";
     const esGerente = usuarioSesion && usuarioSesion.rol === "GERENTE";
@@ -2501,9 +2470,6 @@
     }
   }
 
-  // ========================================================
-  // PARSER DE WORD CON EXTRACCIÓN DE ENCABEZADOS XML
-  // ========================================================
   function extraerCeldasDeXML(xmlStr) {
     const celdas = [];
     const xmlLimpio = xmlStr
@@ -2781,9 +2747,6 @@
     event.target.value = "";
   }
 
-  // ==========================================
-  // FLUJO DE ESTADOS Y ACCIONES
-  // ==========================================
   function registrarRevisionPlan() {
     if (!usuarioSesion) return;
     const plan = baseDatos[indiceActual];
@@ -2896,9 +2859,6 @@
     return String(maximo + 1).padStart(4, '0') + '/' + anio;
   }
 
-  // ========================================================
-  // MODIFICACIÓN DE ESTADO DE ACCIONES
-  // ========================================================
   function rotarEstadoAccion(originalIndex) {
     if (!usuarioSesion) {
       alert("Inicie sesión con su Legajo para actualizar avances de tareas.");
@@ -2920,9 +2880,6 @@
     if (solapaActualDashboard === "kanban") renderizarTableroKanban();
   }
 
-  // ========================================================
-  // BORRAR PDCA: FACILITADOR Y SISTEMAS
-  // ========================================================
   async function eliminarPDCA(index) {
     if (!usuarioSesion || (usuarioSesion.rol !== "FACILITADOR" && usuarioSesion.rol !== "SISTEMAS")) {
       alert("PERMISO DENEGADO: Solo el Facilitador de Mantenimiento o el Operador de Sistemas pueden eliminar planes.");
@@ -2980,73 +2937,6 @@
     }
   }
 
-  // ==========================================
-  // COMPILACIÓN Y DESCARGA DE PDF
-  // ==========================================
-  async function guardarPDFenBaseDeDatos() {
-    const plan = baseDatos[indiceActual];
-    const contenedor = document.getElementById("contenedorHojasImpresion");
-    const nombre = (plan.numPdca ? `PDCA_${plan.numPdca.replace('/', '_')}` : 'PDCA_Borrador') + '.pdf';
-
-    const opciones = {
-      margin:       0,
-      filename:     nombre,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak:    { mode: ['css', 'legacy'], after: '.hoja-a4' }
-    };
-
-    alert("Compilando documento en PDF vertical y almacenando en Cloud Firestore...");
-
-    try {
-      const pdfBlob = await html2pdf().set(opciones).from(contenedor).outputPdf('blob');
-      const reader = new FileReader();
-      reader.onloadend = function() {
-        const base64data = reader.result;
-        plan.pdfBase64 = base64data;
-        sincronizarPlanEnCloud(plan);
-        gestionarEstadoBloqueoUI(plan);
-        alert("¡PDF GUARDADO EN LA BASE DE DATOS!\n\nEl documento oficial quedó archivado en Cloud Firestore.");
-      };
-      reader.readAsDataURL(pdfBlob);
-    } catch (e) {
-      alert("Error al compilar PDF: " + e.message);
-    }
-  }
-
-  function abrirPdfDesdeBaseDeDatos() {
-    const plan = baseDatos[indiceActual];
-    if (!plan.pdfBase64) {
-      alert("No hay un PDF archivado aún para este plan. Presioná '☁️ Guardar PDF'.");
-      return;
-    }
-    const win = window.open();
-    win.document.write(`
-      <iframe src="${plan.pdfBase64}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>
-    `);
-  }
-
-  function descargarPDFVertical() {
-    const plan = baseDatos[indiceActual];
-    const contenedor = document.getElementById("contenedorHojasImpresion");
-    const nombre = (plan.numPdca ? `PDCA_${plan.numPdca.replace('/', '_')}` : 'PDCA_Borrador') + '.pdf';
-
-    const opciones = {
-      margin:       0,
-      filename:     nombre,
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak:    { mode: ['css', 'legacy'], after: '.hoja-a4' }
-    };
-
-    html2pdf().set(opciones).from(contenedor).save();
-  }
-
-  // ==========================================
-  // NAVEGACIÓN Y SESIÓN
-  // ==========================================
   function cambiarVista(vista) {
     const sLogin = document.getElementById("seccionLogin");
     const sDash = document.getElementById("seccionDashboard");
@@ -3160,20 +3050,21 @@
     cambiarVista("documento");
   }
 
-  // ========================================================
-  // SINCRONIZACIÓN CLOUD LIMPIA
-  // ========================================================
   function conectarCloudFirestore() {
     const badge = document.getElementById("badgeCloudStatus");
     if (!db) {
-      badge.className = "badge bg-warning text-dark";
-      badge.innerText = "🟡 Modo Local";
+      if (badge) {
+        badge.className = "badge bg-warning text-dark";
+        badge.innerText = "🟡 Modo Local";
+      }
       return;
     }
 
     db.collection("planes_pdca").onSnapshot((snapshot) => {
-      badge.className = "badge bg-success";
-      badge.innerText = "🟢 Cloud Activo";
+      if (badge) {
+        badge.className = "badge bg-success";
+        badge.innerText = "🟢 Cloud Activo";
+      }
 
       const listaRemota = [];
       snapshot.forEach(doc => {
@@ -3189,8 +3080,11 @@
         else cambiarVista("dashboard");
       }
     }, (error) => {
-      badge.className = "badge bg-warning text-dark";
-      badge.innerText = "🟡 Modo Local";
+      console.warn("Firestore offline/fallback:", error);
+      if (badge) {
+        badge.className = "badge bg-warning text-dark";
+        badge.innerText = "🟡 Modo Local";
+      }
     });
   }
 
@@ -3382,9 +3276,6 @@
     }
   }
 
-  // ========================================================
-  // ASISTENTE / CONSULTOR TÉCNICO INTERACTIVO (MODELOS V1BETA CORREGIDOS)
-  // ========================================================
   let chatIAHistoria = [];
 
   function abrirModalConsultorIA(tipo = 'plan', indexAccion = -1) {
@@ -3500,37 +3391,45 @@
       contextoTecnico += `\n`;
     }
 
-    const promptFinal = `Actúa como un experto Consultor Senior en Ingeniería de Transporte, Mantenimiento de Flota de Colectivos, Metodología PDCA, ISO 9001 e IRAM 3810.
-Tu objetivo NO es desaprobar ni limitarte a criticar, sino AYUDAR A MEJORAR Y PERFECCIONAR la redacción técnica, el procedimiento operativo de taller y el cumplimiento de las metas.
-Sé conciso, propositivo, profesional y brinda propuestas directamente aplicables.
+    const promptFinal = `Actúa como un experto Consultor Senior en Calidad y Mantenimiento de Flota (ISO 9001, IRAM 3810, PDCA).
+Ayuda al responsable a optimizar esta acción o plan de transporte con soluciones prácticas, concisas y directamente aplicables al taller.
 
 ${contextoTecnico}
 Pregunta o requerimiento del operador:
 "${preguntaUsuario}"`;
 
-    // LISTA DE MODELOS COMPATIBLES CON v1beta (SIN GEMINI-1.5-PRO OBSOLETO)
-    const modelos = [
-      "gemini-2.0-flash",
-      "gemini-1.5-flash",
-      "gemini-1.5-flash-8b"
-    ];
-
+    const modelos = ["gemini-2.0-flash", "gemini-1.5-flash"];
     let respuestaTexto = "";
     let errorDetalle = "";
 
     for (const mod of modelos) {
       try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mod}:generateContent?key=${apiKey}`, {
+        let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mod}:generateContent?key=${apiKey}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
         });
+        
         if (!res.ok) {
           const errData = await res.json().catch(() => null);
           errorDetalle = errData?.error?.message || `HTTP ${res.status}`;
-          console.warn(`Modelo ${mod} no disponible (${errorDetalle}), probando siguiente...`);
+          
+          if (res.status === 503 || errorDetalle.toLowerCase().includes("high demand")) {
+            await new Promise(r => setTimeout(r, 1200));
+            res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${mod}:generateContent?key=${apiKey}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ contents: [{ parts: [{ text: promptFinal }] }] })
+            });
+            if (res.ok) {
+              const dataRetry = await res.json();
+              respuestaTexto = dataRetry.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (respuestaTexto) break;
+            }
+          }
           continue;
         }
+
         const data = await res.json();
         respuestaTexto = data.candidates?.[0]?.content?.parts?.[0]?.text;
         if (respuestaTexto) {
@@ -3538,7 +3437,6 @@ Pregunta o requerimiento del operador:
         }
       } catch (err) {
         errorDetalle = err.message;
-        console.warn(`Error de red con ${mod}:`, err);
       }
     }
 
@@ -3554,35 +3452,54 @@ Pregunta o requerimiento del operador:
         .replace(/\n/g, '<br>');
       botMsgDiv.innerHTML = `<strong>✨ Consultor IA:</strong><br>${textoFormateado}`;
     } else {
-      botMsgDiv.innerHTML = `<span class="text-danger">⚠️ No se pudo obtener respuesta de la IA. Detalle: ${errorDetalle}</span>`;
+      let mensajeError = errorDetalle;
+      if (errorDetalle.toLowerCase().includes("high demand") || errorDetalle.includes("503")) {
+        mensajeError = "Los servidores de Google AI Studio experimentan congestión temporal en su capa gratuita. Aguardá 5 segundos y presioná Enviar nuevamente.";
+      } else if (errorDetalle.toLowerCase().includes("api_key_invalid") || errorDetalle.toLowerCase().includes("expired")) {
+        mensajeError = "La clave API Key ingresada no es válida. Verificala en el panel de Sistemas (⚙ Config).";
+      }
+      botMsgDiv.innerHTML = `<span class="text-danger">⚠️ ${mensajeError}</span>`;
     }
 
     contenedorChat.appendChild(botMsgDiv);
-
     const chatBox = document.getElementById("geminiChatContainer");
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
-  // INICIALIZACIÓN
-  window.onload = function() {
+  // INICIALIZACIÓN INMEDIATA
+  function inicializarApp() {
     const selNuevo = document.getElementById("newPolitica");
     const selActiva = document.getElementById("selectPoliticaActiva");
-    selNuevo.innerHTML = "";
-    selActiva.innerHTML = "";
+    if (selNuevo) selNuevo.innerHTML = "";
+    if (selActiva) selActiva.innerHTML = "";
     POLITICAS_2026.forEach(pol => {
-      const opt1 = document.createElement("option"); opt1.value = pol; opt1.innerText = pol; selNuevo.appendChild(opt1);
-      const opt2 = document.createElement("option"); opt2.value = pol; opt2.innerText = pol; selActiva.appendChild(opt2);
+      if (selNuevo) { const opt1 = document.createElement("option"); opt1.value = pol; opt1.innerText = pol; selNuevo.appendChild(opt1); }
+      if (selActiva) { const opt2 = document.createElement("option"); opt2.value = pol; opt2.innerText = pol; selActiva.appendChild(opt2); }
     });
 
     const logoGuardado = localStorage.getItem("pdca_logo_mba");
     if (logoGuardado) aplicarLogoATodos(logoGuardado);
+
+    setTimeout(() => {
+      const badge = document.getElementById("badgeCloudStatus");
+      if (badge && badge.innerText === "Iniciando...") {
+        badge.className = "badge bg-warning text-dark";
+        badge.innerText = "🟡 Modo Local";
+      }
+    }, 1500);
 
     conectarColeccionUsuarios();
     conectarCloudFirestore();
 
     if (usuarioSesion) cambiarVista("dashboard");
     else cambiarVista("login");
-  };
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", inicializarApp);
+  } else {
+    inicializarApp();
+  }
 </script>
 
 </body>
